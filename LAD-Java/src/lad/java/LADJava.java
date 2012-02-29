@@ -2,7 +2,7 @@ package lad.java;
 
 /**
  *
- * @author msflowers
+ * @author msflowers & kakon
  */
 public class LADJava {
 
