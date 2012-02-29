@@ -3,6 +3,7 @@ package lad.java;
 /**
  *
  * @author msflowers & kakon
+ * boom
  */
 public class LADJava {
 
