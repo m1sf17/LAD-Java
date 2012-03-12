@@ -8,7 +8,8 @@ import java.net.*;
  *
  * @author msflowers & kakon
  */
-public class LADJava {
+public class LADJava
+{
     /**
      * Handle incoming connections until this is set to false
      */
@@ -26,6 +27,7 @@ public class LADJava {
      */
     public static void main(String[] args)
     {
+        InitialIO.getInstance();
         // Variables
         ServerSocket socket = null;
 
@@ -54,7 +56,7 @@ public class LADJava {
                 new Thread( new IOThread( socketClient ) ).start();
 
             }
-            catch( SocketException s )
+            catch( SocketTimeoutException te )
             {
                 // Do nothing because this will happen every second that
                 // someone does not connect
@@ -62,6 +64,7 @@ public class LADJava {
             catch( IOException i )
             {
                 // This really shouldn't happen but just in case something broke
+                System.err.println( i.toString() );
                 System.err.println( "IO Exception with socket." );
                 System.exit( -1 );
             }

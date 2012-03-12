@@ -42,12 +42,12 @@ public class IOThread implements Runnable
 
             // Loop over each line of input
             // If we get the end transmission string then we're done
+            String processedString = "";
             while( ( inputLine = in.readLine()) != null && 
                      !inputLine.equals( "end,transmission" ) &&
                      !inputLine.equals( "end,server" ) )
             {
-                System.out.println( "Got " );
-                System.out.println( inputLine );
+                processedString += inputLine + "\n";
             }
 
             if( inputLine.equals( "end,server" ) )
@@ -55,8 +55,8 @@ public class IOThread implements Runnable
                 LADJava.listening = false;
             }
 
-            // Dummy output
-            outputLine = "alert('This response is from the Java Server!');\n";
+            // Send input to handler to get output
+            outputLine = MessageManager.getInstance().handle( processedString );
             out.write( outputLine );
 
             // Inform the PHP server we're done
