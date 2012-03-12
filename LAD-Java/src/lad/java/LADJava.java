@@ -9,10 +9,18 @@ import java.net.*;
  * @author msflowers & kakon
  */
 public class LADJava {
+    /**
+     * Handle incoming connections until this is set to false
+     */
+    static public boolean listening = true;
 
     /**
      * Awaits a connection from the PHP server, handles the server/client
-     * sockets and dispatches the message back to the PHP server
+     * sockets and creates a thread to message back to the PHP server.
+     *
+     * If a connection is not made within 1000 milliseconds the endless loop is
+     * repeated.  The loop is broken by the setting the static variable
+     * listening to false
      *
      * @param args Unused
      */
@@ -20,13 +28,13 @@ public class LADJava {
     {
         // Variables
         ServerSocket socket = null;
-        boolean listening = true;
 
         // Try and create the server socket on port 19191, if it can't be
-        // made, then abort
+        // made, then abort.
         try
         {
             socket = new ServerSocket( 19191 );
+            socket.setSoTimeout( 1000 );
         }
         catch( IOException e )
         {
@@ -43,31 +51,13 @@ public class LADJava {
                 // a connection made
                 Socket socketClient;
                 socketClient = socket.accept();
+                new Thread( new IOThread( socketClient ) ).start();
 
-                // A connection has been made, setup the input/output reader/writer
-                PrintWriter out = new PrintWriter(socketClient.getOutputStream(), true);
-                BufferedReader in = new BufferedReader( new InputStreamReader(
-                    socketClient.getInputStream() ) );
-                String inputLine, outputLine;
-
-                // Loop over each line of input
-                // If we get the end transmission string then we're done
-                while( ( inputLine = in.readLine()) != null && !inputLine.equals( "end,transmission" ) )
-                {
-                    System.out.println( "Got " );
-                    System.out.println( inputLine );
-                }
-
-                // Dummy output
-                outputLine = "alert('This response is from the Java Server!');\n";
-                out.write( outputLine );
-
-                // Inform the PHP server we're done
-                out.write( "DONE\n" );
-
-                // Close the reader/writer so they are flushed
-                out.close();
-                in.close();
+            }
+            catch( SocketException s )
+            {
+                // Do nothing because this will happen every second that
+                // someone does not connect
             }
             catch( IOException i )
             {
