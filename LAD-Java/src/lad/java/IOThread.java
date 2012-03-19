@@ -53,14 +53,19 @@ public class IOThread implements Runnable
             if( inputLine.equals( "end,server" ) )
             {
                 LADJava.listening = false;
+                GameLoop.running = false;
+                out.write( "genericErrorDialog('Server Shutdown'," +
+                           "'Shutdown completed.');" );
+            }
+            else
+            {
+                // Send input to handler to get output
+                outputLine = MessageManager.getInstance().handle( processedString );
+                out.write( outputLine );
             }
 
-            // Send input to handler to get output
-            outputLine = MessageManager.getInstance().handle( processedString );
-            out.write( outputLine );
-
             // Inform the PHP server we're done
-            out.write( "DONE\n" );
+            out.write( "\nDONE\n" );
 
             // Close the reader/writer so they are flushed
             out.close();
