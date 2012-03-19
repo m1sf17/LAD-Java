@@ -27,7 +27,6 @@ public class LADJava
      */
     public static void main(String[] args)
     {
-        InitialIO.getInstance();
         // Variables
         ServerSocket socket = null;
 
@@ -43,6 +42,9 @@ public class LADJava
             System.err.println( "Could not listen on port 19191." );
             System.exit( -1 );
         }
+
+        // Start up the game loop thread
+        new Thread( GameLoop.getInstance() ).start();
 
         // Loop until we should stop listening
         while( listening )
