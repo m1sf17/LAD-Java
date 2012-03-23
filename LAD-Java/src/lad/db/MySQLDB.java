@@ -35,7 +35,7 @@ public class MySQLDB
      * 
      * @throws SQLException
      */
-    private void initialize() throws SQLException
+    public void initialize() throws SQLException
     {
         Properties connectionProps = new Properties();
         connectionProps.put( "user", "admin_lad" );
@@ -55,11 +55,14 @@ public class MySQLDB
     }
 
     /**
-     * Gets the connection to the MySQL DB
+     * Gets the connection to the MySQL DB.
+     *
+     * @see intialize should be called first.  The internal handler for
+     * initializing within this function is to exit.
      * 
      * @return A valid connection
      */
-    public Connection getConnection()
+    private Connection getConnection()
     {
         if( conn == null )
         {

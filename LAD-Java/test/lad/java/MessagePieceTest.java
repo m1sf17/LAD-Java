@@ -45,14 +45,16 @@ public class MessagePieceTest
     @Test
     public void testVariable()
     {
-        System.out.println( "setVariable" );
+        System.out.println( "get/setVariable" );
         String n_var = "a";
         MessagePiece instance = new MessagePiece();
         instance.setVariable( n_var );
         String ret = instance.getVariable();
+        assertTrue( "Failed to set variable. Set: " + n_var + ". Get: " + ret,
+                    ret.compareTo( n_var ) == 0 );
         if( ret.compareTo( n_var ) != 0 )
         {
-            fail( "Failed to set variable. Set: " + n_var + ". Get: " + ret );
+            fail(  );
         }
     }
 
@@ -62,38 +64,30 @@ public class MessagePieceTest
     @Test
     public void testValue()
     {
-        System.out.println( "setValue" );
+        System.out.println( "get/setValue" );
         String n_val = "a";
         MessagePiece instance = new MessagePiece();
         instance.setValue( n_val );
         String ret = instance.getValue();
-        if( ret.compareTo( n_val ) != 0 )
-        {
-            fail( "Failed to set value. Set: " + n_val + ". Get: " + ret );
-        }
+        assertTrue( "Failed to set value. Set: " + n_val + ". Get: " + ret,
+                    ret.compareTo( n_val ) == 0 );
     }
 
     /**
      * Test of ctor, of class MessagePiece.
      */
     @Test
-    public void testGetVariable()
+    public void testCtor()
     {
         String var = "a", val = "b";
-        System.out.println( "getVariable" );
+        System.out.println( "ctor" );
         MessagePiece instance = new MessagePiece( var, val );
         String retvar = instance.getVariable();
         String retval = instance.getValue();
-        if( retvar.compareTo( var ) != 0 )
-        {
-            fail( "Failed to set variable in ctor. Set: " + var + ". Get: " +
-                  retvar );
-        }
-        if( retval.compareTo( val ) != 0 )
-        {
-            fail( "Failed to set value in ctor. Set: " + val + ". Get: " +
-                  retval );
-        }
+        assertTrue( "Failed to set variable in ctor. Set: " + var + ". Get: " +
+                    retvar, retvar.compareTo( var ) == 0 );
+        assertTrue( "Failed to set value in ctor. Set: " + val + ". Get: " +
+                    retval, retval.compareTo( val ) == 0 );
     }
 
 }
