@@ -38,14 +38,23 @@ public class Minion
      */
     static PreparedStatement stmt = null;
     
-    // Ctor (Adding to DB)
+    /**
+     * Ctor (Adding to DB)
+     */
     public Minion()
     { 
         
     }
 
-    // Ctor (from DB)
-    public Minion( int n_exp, int n_level, int n_ID, int n_owner )
+    /**
+     * Ctor (from DB)
+     *
+     * @param n_ID ID of the minion
+     * @param n_exp Experience of the minion
+     * @param n_level Level of the minion
+     * @param n_owner Owner of the minion
+     */
+    public Minion( int n_ID, int n_exp, int n_level, int n_owner )
     {
         exp = n_exp;
         level = n_level;
@@ -132,6 +141,7 @@ public class Minion
      * Creates a new minion and adds it to the DB in the process
      *
      * @param owner The owner of the minion
+     * @return The created minion
      */
     public static Minion create( int owner )
     {
@@ -147,9 +157,9 @@ public class Minion
             }
 
             // Set statement values
-            stmt.setValue( 1, owner );
-            stmt.setValue( 2, 0 );
-            stmt.setValue( 3, 0 );
+            stmt.setInt( 1, owner );
+            stmt.setInt( 2, 0 );
+            stmt.setInt( 3, 0 );
 
             // Validate it works/run it
             int affectedRows = preparedStatement.executeUpdate();
