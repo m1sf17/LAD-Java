@@ -36,7 +36,12 @@ public class Minion
     /**
      * Statement for inserting a new minion
      */
-    static PreparedStatement stmt = null;
+    static PreparedStatement insertStmt = null;
+
+    /**
+     * Statement for deleting a minion
+     */
+    static PreparedStatement deleteStmt = null;
     
     /**
      * Ctor (Adding to DB)
@@ -151,25 +156,25 @@ public class Minion
         try
         {
             // Initialize statement
-            if( stmt == null )
+            if( insertStmt == null )
             {
-                stmt = conn.prepareStatement( "INSERT INTO MINIONS VALUES( NULL, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS );
+                insertStmt = conn.prepareStatement( "INSERT INTO MINIONS VALUES( NULL, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS );
             }
 
             // Set statement values
-            stmt.setInt( 1, owner );
-            stmt.setInt( 2, 0 );
-            stmt.setInt( 3, 0 );
+            insertStmt.setInt( 1, owner );
+            insertStmt.setInt( 2, 0 );
+            insertStmt.setInt( 3, 0 );
 
             // Validate it works/run it
-            int affectedRows = preparedStatement.executeUpdate();
+            int affectedRows = insertStmt.executeUpdate();
             if( affectedRows == 0 )
             {
                 throw new SQLException( "Creating minion failed, no rows affected." );
             }
 
             // Get the ID
-            generatedKeys = stmt.getGeneratedKeys();
+            generatedKeys = insertStmt.getGeneratedKeys();
             if( generatedKeys.next() )
             {
                 ret.ID = generatedKeys.getLong( 1 );
@@ -185,5 +190,37 @@ public class Minion
             System.exit( -1 );
         }
         return ret;
+    }
+
+    /**
+     * Destroys the minion in the database
+     */
+    void destroy()
+    {
+        // Ensure the delete statement is prepared
+        Connection conn = MySQLDB.getConn();
+
+        try
+        {
+            if( deleteStmt == null )
+            {
+                deleteStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE ID = ?" );
+            }
+
+            deleteStmt.setInt( 1, ID );
+
+            // Run the delete
+            int affectedRows = deleteStmt.executeUpdate();
+
+            if( affectedRows == 0 )
+            {
+                throw new MySQLException( "No rows were deleted." );
+            }
+        }
+        catch( MySQLException e )
+        {
+            System.err.println( "Error while deleting minion: " + e.toString() );
+            System.exit( -1 );
+        }
     }
 }
