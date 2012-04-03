@@ -13,9 +13,29 @@ import java.sql.ResultSet;
  */
 public class Minion
 {
-    int exp = 0; 
+    /**
+     * Current experience of the minion
+     */
+    int exp = 0;
+
+    /**
+     * Current level of the minion
+     */
     int level = 0;
+
+    /**
+     * ID of the minion
+     */
     int ID = 0;
+
+    /**
+     * Owner of the minion
+     */
+    int owner = 0;
+
+    /**
+     * Statement for inserting a new minion
+     */
     static PreparedStatement stmt = null;
     
     // Ctor (Adding to DB)
@@ -25,11 +45,12 @@ public class Minion
     }
 
     // Ctor (from DB)
-    public Minion( int n_exp, int n_level, int n_ID )
+    public Minion( int n_exp, int n_level, int n_ID, int n_owner )
     {
         exp = n_exp;
         level = n_level;
         ID = n_ID;
+        owner = n_owner;
     }
     
     /**
@@ -83,6 +104,16 @@ public class Minion
     }
 
     /**
+     * Gets the owner
+     *
+     * @return owner
+     */
+    public int getOwner()
+    {
+        return owner;
+    }
+
+    /**
      *  Adds the given amount of experience.
      *  Levels the minion if the appropriate amount of experience has been met.
      *
@@ -99,8 +130,10 @@ public class Minion
     }
     /**
      * Creates a new minion and adds it to the DB in the process
+     *
+     * @param owner The owner of the minion
      */
-    public static Minion create()
+    public static Minion create( int owner )
     {
         Minion ret = new Minion();
         Connection conn = MySQLDB.getConn();
@@ -110,12 +143,13 @@ public class Minion
             // Initialize statement
             if( stmt == null )
             {
-                stmt = conn.prepareStatement( "INSERT INTO MINIONS VALUES( NULL, ?, ? )", Statement.RETURN_GENERATED_KEYS );
+                stmt = conn.prepareStatement( "INSERT INTO MINIONS VALUES( NULL, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS );
             }
 
             // Set statement values
-            stmt.setValue( 1, 0 );
+            stmt.setValue( 1, owner );
             stmt.setValue( 2, 0 );
+            stmt.setValue( 3, 0 );
 
             // Validate it works/run it
             int affectedRows = preparedStatement.executeUpdate();
