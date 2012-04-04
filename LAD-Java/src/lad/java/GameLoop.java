@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.Semaphore;
 import lad.db.MySQLDB;
+import lad.db.TrainerManager;
 
 /**
  * Performs the game loop to update data accordingly.  Run in a separate thread,
@@ -25,14 +26,9 @@ public class GameLoop implements Runnable
     private Semaphore semaphore = null;
 
     /**
-     * Holds whether this thread should keep running or stop
-     */
-    public static boolean running = true;
-
-    /**
      * Simple object used to synchronize data
      */
-    private Object data = new Object();
+    private final Object data = new Object();
 
     /**
      * Initializes the game loop by creating the semaphore and acquiring the
@@ -72,20 +68,11 @@ public class GameLoop implements Runnable
      */
     private void initializeData()
     {
-        try
-        {
-            Connection conn = MySQLDB.getConn();
-            Statement stmt = conn.createStatement();
-            stmt.executeQuery( "USE admin_lad" );
+        // Ensure the MySQL DB is connected
+        MySQLDB.getConn();
 
-            // Pull the rest of the data from the DB
-        }
-        catch( SQLException e )
-        {
-            System.err.println( "Error while initializing data from DB." );
-            System.err.println( e.toString() );
-            System.exit( -1 );
-        }
+        // Pull the rest of the data from the DB
+        TrainerManager.getInstance().initialize();
     }
 
     /**
@@ -132,6 +119,7 @@ public class GameLoop implements Runnable
     @Override
     public void run()
     {
+        System.out.println( "Started Game Loop Thread" );
         initializeHandlers();
         initializeData();
         semaphore.release();
@@ -139,7 +127,7 @@ public class GameLoop implements Runnable
         {
             try
             {
-                while( running )
+                while( LADJava.running )
                 {
                     semaphore.acquire();
                     data.wait( 980 );
@@ -153,6 +141,7 @@ public class GameLoop implements Runnable
                 //wait
             }
         }
+        System.out.println( "Ended Game Loop Thread" );
     }
 
     private static class GameLoopHolder

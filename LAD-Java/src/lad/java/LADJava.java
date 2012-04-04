@@ -11,9 +11,9 @@ import java.net.*;
 public class LADJava
 {
     /**
-     * Handle incoming connections until this is set to false
+     * Global variable to hold whether any threads should stop running
      */
-    static public boolean listening = true;
+    static public boolean running = true;
 
     /**
      * Awaits a connection from the PHP server, handles the server/client
@@ -47,7 +47,7 @@ public class LADJava
         new Thread( GameLoop.getInstance() ).start();
 
         // Loop until we should stop listening
-        while( listening )
+        while( running )
         {
             try
             {

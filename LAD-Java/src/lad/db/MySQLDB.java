@@ -2,8 +2,13 @@ package lad.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
+import lad.java.LADJava;
 
 /**
  * Manages the connection to the MySQL DB.
@@ -19,6 +24,17 @@ public class MySQLDB
      * Holds the actual connection to the database.
      */
     private Connection conn = null;
+
+    /**
+     * Holds the runner that performs a delayed (not really) execution of MySQL
+     * statements
+     */
+    private DelayedRunner runner = null;
+
+    /**
+     * A list of all the tables currently loaded into the database.
+     */
+    private LinkedList< String > loadedTables = new LinkedList<>();
 
     /**
      * Private ctor.
@@ -42,6 +58,25 @@ public class MySQLDB
         connectionProps.put( "password", "password" );
         conn = DriverManager.getConnection( "jdbc:mysql://localhost/",
                                             connectionProps );
+
+        try
+        {
+            Statement stmt = conn.createStatement();
+            stmt.executeQuery( "USE admin_lad" );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while selecting database." +
+                                e.toString() );
+            System.exit( -1 );
+        }
+        
+        // Start the Delayed runner thread
+        runner = new DelayedRunner( conn.createStatement() );
+        new Thread( runner ).start();
+
+        // Populate the table list
+        populateTableList();
     }
 
     /**
@@ -81,6 +116,52 @@ public class MySQLDB
     }
 
     /**
+     * Initializes the tables list.
+     */
+    public void populateTableList()
+    {
+        try
+        {
+            Statement stmt = conn.createStatement();
+            ResultSet result = stmt.executeQuery( "SHOW TABLES" );
+            while( result.next() )
+            {
+                loadedTables.add( result.getString( 1 ) );
+            }
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while retrieving table list." +
+                                e.toString() );
+            System.exit( -1 );
+        }
+    }
+
+    /**
+     * Returns the list of tables that is currently loaded in the MySQL DB.
+     *
+     * @return loadedTables
+     */
+    public static String[] getTableList()
+    {
+        return getInstance().loadedTables.toArray( new String[0] );
+    }
+
+    /**
+     * Adds a statement to be delay-executed.
+     *
+     * The statement is added to a queue that is continuously emptied in a
+     * separate thread.  That threads sole responsibility is to make sure the
+     * queue remains empty so it will be relatively small.
+     *
+     * @param stmt The string to be delay-executed
+     */
+    public static void delaySQL( String stmt )
+    {
+        getInstance().runner.addStmt( stmt );
+    }
+
+    /**
      * Gets the instance
      *
      * @return Singleton
@@ -93,5 +174,68 @@ public class MySQLDB
     private static class MySQLDBHolder
     {
         private static final MySQLDB INSTANCE = new MySQLDB();
+    }
+
+    private class DelayedRunner implements Runnable
+    {
+        private final Object notifier = new Object();
+        private final LinkedList< String > stmts;
+        private final Statement stmt;
+
+        DelayedRunner( Statement n_stmt )
+        {
+            stmts = new LinkedList<>();
+            stmt = n_stmt;
+        }
+
+        void addStmt( String str )
+        {
+            synchronized( stmts )
+            {
+                stmts.add( str );
+            }
+        }
+
+        @Override
+        public void run()
+        {
+            System.out.println( "Started MySQL Delayed Runner Thread" );
+            try
+            {
+                while( LADJava.running )
+                {
+                    synchronized( notifier )
+                    {
+                        notifier.wait();
+                        emptyQueue();
+                    }
+                }
+            }
+            catch( InterruptedException e )
+            {
+            }
+            emptyQueue();
+            System.out.println( "Ended MySQL Delayed Runner Thread" );
+        }
+
+        private void emptyQueue()
+        {
+            try
+            {
+                synchronized( stmts )
+                {
+                    while( stmts.size() > 0 )
+                    {
+                        String stmtString = stmts.poll();
+                        stmt.execute( stmtString );
+                    }
+                }
+            }
+            catch( SQLException e )
+            {
+                System.err.println( "Delayed execution of SQL failed." );
+                System.err.println( e.toString() );
+            }
+        }
     }
 }

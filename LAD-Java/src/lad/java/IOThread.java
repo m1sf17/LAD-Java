@@ -52,8 +52,7 @@ public class IOThread implements Runnable
 
             if( inputLine.equals( "end,server" ) )
             {
-                LADJava.listening = false;
-                GameLoop.running = false;
+                LADJava.running = false;
                 out.write( "genericErrorDialog('Server Shutdown'," +
                            "'Shutdown completed.');" );
             }
@@ -76,6 +75,7 @@ public class IOThread implements Runnable
             System.out.println( "IO Exception" );
             System.exit( -1 );
         }
+        System.out.println( "Ran IO Thread" );
     }
 
 }
