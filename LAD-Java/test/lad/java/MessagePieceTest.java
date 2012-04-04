@@ -22,6 +22,7 @@ public class MessagePieceTest
     @BeforeClass
     public static void setUpClass() throws Exception
     {
+        System.out.println( "===Message Piece===" );
     }
 
     @AfterClass

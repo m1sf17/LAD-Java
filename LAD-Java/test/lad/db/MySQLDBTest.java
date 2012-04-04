@@ -14,9 +14,7 @@ import org.junit.Test;
  */
 public class MySQLDBTest
 {
-    MySQLDB db1 = null;
-    MySQLDB db2 = null;
-    Connection conn = null;
+    private Connection conn = null;
 
     public MySQLDBTest()
     {
@@ -25,6 +23,7 @@ public class MySQLDBTest
     @BeforeClass
     public static void setUpClass() throws Exception
     {
+        System.out.println( "===MySQLDB===" );
     }
 
     @AfterClass
