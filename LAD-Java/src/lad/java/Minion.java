@@ -1,9 +1,11 @@
 package lad.java;
 
-import lad.db.MySQLDB;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import lad.db.MySQLDB;
 
 /**
  * Data handler for minions
@@ -16,32 +18,32 @@ public class Minion
     /**
      * Current experience of the minion
      */
-    int exp = 0;
+    private int exp = 0;
 
     /**
      * Current level of the minion
      */
-    int level = 0;
+    private int level = 0;
 
     /**
      * ID of the minion
      */
-    int ID = 0;
+    private int ID = 0;
 
     /**
      * Owner of the minion
      */
-    int owner = 0;
+    private int owner = 0;
 
     /**
      * Statement for inserting a new minion
      */
-    static PreparedStatement insertStmt = null;
+    private static PreparedStatement insertStmt = null;
 
     /**
      * Statement for deleting a minion
      */
-    static PreparedStatement deleteStmt = null;
+    private static PreparedStatement deleteStmt = null;
     
     /**
      * Ctor (Adding to DB)
@@ -82,9 +84,19 @@ public class Minion
      *
      * @param e The new experience
      */
-    public void setExp(int e)
+    public void setExp( int e )
     {
         exp = e;
+    }
+
+    /**
+     * Sets the owner
+     *
+     * @param o The new owner
+     */
+    public void setOwner( int o )
+    {
+        owner = o;
     }
     
     /**
@@ -152,7 +164,7 @@ public class Minion
     {
         Minion ret = new Minion();
         Connection conn = MySQLDB.getConn();
-        ResultSet generatedKeys = null;
+        ResultSet generatedKeys;
         try
         {
             // Initialize statement
@@ -177,7 +189,7 @@ public class Minion
             generatedKeys = insertStmt.getGeneratedKeys();
             if( generatedKeys.next() )
             {
-                ret.ID = generatedKeys.getLong( 1 );
+                ret.ID = generatedKeys.getInt( 1 );
             }
             else
             {
@@ -214,10 +226,10 @@ public class Minion
 
             if( affectedRows == 0 )
             {
-                throw new MySQLException( "No rows were deleted." );
+                throw new SQLException( "No rows were deleted." );
             }
         }
-        catch( MySQLException e )
+        catch( SQLException e )
         {
             System.err.println( "Error while deleting minion: " + e.toString() );
             System.exit( -1 );
