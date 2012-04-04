@@ -148,6 +148,66 @@ public class MySQLDB
     }
 
     /**
+     * Validates that a MySQL Table is valid for information.
+     *
+     * @param fields Array of fields that the table should have
+     * @param tblName Name of the table
+     * @throws SQLException when either a header is mismatched or the column count is wrong
+     */
+    public void validateStructure( String[] fields, String tblName ) throws SQLException
+    {
+        boolean valid = true;
+        Statement stmt = getConnection().createStatement();
+        ResultSet result = stmt.executeQuery( "SHOW COLUMNS FROM " + tblName );
+        int i = 0;
+
+        // Iterate over each column and make sure it matches
+        while( result.next() )
+        {
+            if( fields[ i ].compareToIgnoreCase( result.getString( 1 ) ) != 0 )
+            {
+                throw new SQLException( "Table header error." );
+            }
+            i++;
+        }
+
+        // Just in case a column is missing off the end
+        if( i != fields.length )
+        {
+            throw new SQLException( "Table column miscount." );
+        }
+    }
+
+    /**
+     * Validates that a MySQL Table exists.
+     *
+     * @param tblName Name of the table
+     * @param creationStr String to run to load the table if it is not created
+     * @throws SQLException if the table fails to create
+     */
+    public void validateTable( String tblName, String creationStr ) throws SQLException
+    {
+        // Check the list to see if it's there
+        ListIterator< String > iter = loadedTables.listIterator( 0 );
+        while( iter.hasNext() )
+        {
+            String tbl = iter.next();
+            if( tbl.compareToIgnoreCase( tblName ) == 0 )
+            {
+                // Table exists, so exit
+                return;
+            }
+        }
+
+        // Table doesn't exist, so load it
+        Statement stmt = getConnection().createStatement();
+        stmt.executeUpdate( creationStr );
+
+        // Table was successfully added, so add it to the list
+        loadedTables.add( tblName );
+    }
+
+    /**
      * Adds a statement to be delay-executed.
      *
      * The statement is added to a queue that is continuously emptied in a
