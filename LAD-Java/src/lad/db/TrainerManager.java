@@ -84,6 +84,7 @@ public class TrainerManager
      */
     private void validateTablesExist()
     {
+        String[] bothTables = { "ID", "owner", "exp", "level" };
         MySQLDB db = MySQLDB.getInstance();
         try
         {
@@ -97,8 +98,7 @@ public class TrainerManager
         }
         try
         {
-            db.validateStructure( { "ID", "owner", "exp", "level" },
-                                  "TRAINERS" );
+            db.validateStructure( bothTables, "TRAINERS" );
         }
         catch( SQLException e )
         {
@@ -118,8 +118,7 @@ public class TrainerManager
         }
         try
         {
-            db.validateStructure( { "ID", "owner", "exp", "level" },
-                                  "MINIONS" );
+            db.validateStructure( bothTables, "MINIONS" );
         }
         catch( SQLException e )
         {
