@@ -23,6 +23,17 @@ public class MessagePiece
     }
 
     /**
+     * Quick ctor with a '*' value
+     *
+     * @param n_var Initial Variable
+     */
+    public MessagePiece( String n_var )
+    {
+        setVariable( n_var );
+        setValue( "*" );
+    }
+
+    /**
      * ctor that sets both the variable and the value.
      *
      * @param n_var Initial variable
@@ -72,5 +83,60 @@ public class MessagePiece
     public String getValue( )
     {
         return val;
+    }
+
+    /**
+     * Overriden to provide a unique hashcode
+     *
+     * @return Composition of all the variables to generate a unique hashcode
+     */
+    @Override
+    public int hashCode( )
+    {
+        if( val.compareTo( "*" ) != 0 )
+        {
+            return var.hashCode() * val.hashCode();
+        }
+        return var.hashCode();
+    }
+
+    /**
+     * Overriden to provide specific equals instructions. Will return true if
+     * one of the following conditions are met:
+     * A. this == other
+     * B. other is a string that equals the variable
+     * C. other is a message piece with the same variable and one of the pieces
+     *    has '*' as their value
+     * D. other is a message piece with the same variable/value
+     *
+     * @param o Object to compare this message piece against
+     * @return True if the two objects are the same
+     */
+    @Override
+    public boolean equals( Object o )
+    {
+        if( this == o )
+        {
+            return true;
+        }
+
+        if( !( o instanceof MessagePiece ) )
+        {
+            if( !( o instanceof String ) )
+            {
+                return false;
+            }
+            return o.toString().compareTo( var ) == 0;
+        }
+
+        MessagePiece other = (MessagePiece)o;
+        if( val.compareTo( "*" ) == 0 ||
+            other.val.compareTo( "*" ) == 0 )
+        {
+            return var.compareTo( other.var ) == 0;
+        }
+
+        return var.compareTo( other.var ) == 0 &&
+               val.compareTo( other.val ) == 0;
     }
 }
