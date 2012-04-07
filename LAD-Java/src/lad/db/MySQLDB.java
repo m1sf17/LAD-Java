@@ -188,7 +188,7 @@ public class MySQLDB
     public void validateTable( String tblName, String creationStr ) throws SQLException
     {
         // Check the list to see if it's there
-        ListIterator< String > iter = loadedTables.listIterator( 0 );
+        ListIterator< String > iter = loadedTables.listIterator();
         while( iter.hasNext() )
         {
             String tbl = iter.next();

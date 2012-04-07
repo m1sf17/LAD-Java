@@ -5,6 +5,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.ListIterator;
 import lad.java.Trainer;
 
 /**
@@ -42,6 +43,7 @@ public class TrainerManager
      * The internal list of trainers.
      */
     private LinkedList< Trainer > trainers = new LinkedList<>();
+
     /**
      * Private ctor
      */
@@ -126,8 +128,61 @@ public class TrainerManager
                                 e.toString() );
             System.exit( -1 );
         }
+    }
 
+    /**
+     * Returns a list of trainers belonging to a user
+     *
+     * @param userid The ID of the user to get trainers for
+     * @return List of trainers (whether empty or populated)
+     */
+    public LinkedList< Trainer > getTrainersByUser( int userid )
+    {
+        LinkedList< Trainer > ret = new LinkedList<>();
+        ListIterator< Trainer > iter = trainers.listIterator();
 
+        while( iter.hasNext() )
+        {
+            Trainer current = iter.next();
+            if( current.getOwner() == userid )
+            {
+                ret.add( current );
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Returns a specific trainer by its ID
+     *
+     * @param id The ID of the trainer to search for
+     * @return Either the trainer if it is found
+     * @throws IndexOutOfBoundsException Thrown if the given ID is not found
+     */
+    public Trainer getTrainerByID( int id ) throws IndexOutOfBoundsException
+    {
+        ListIterator< Trainer > iter = trainers.listIterator();
+        while( iter.hasNext() )
+        {
+            Trainer current = iter.next();
+            if( current.getID() == id )
+            {
+                return current;
+            }
+        }
+        throw new IndexOutOfBoundsException( "Trainer not found." );
+    }
+
+    /**
+     * Creates a trainer for the specified user
+     *
+     * @param userid The ID of the user to create the trainer for
+     */
+    public void addTrainer( int userid )
+    {
+        Trainer creation = Trainer.create( userid );
+        trainers.add( creation );
     }
 
     /**
