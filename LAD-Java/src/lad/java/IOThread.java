@@ -2,6 +2,7 @@ package lad.java;
 
 import java.io.*;
 import java.net.*;
+import java.util.concurrent.TimeUnit;
 
 /**
  * The IO Thread that handles input/output from the PHP server.  Once a socket
@@ -32,6 +33,7 @@ public class IOThread implements Runnable
     @Override
     public void run()
     {
+        long startTime = System.nanoTime();
         try
         {
             // A connection has been made, setup the input/output reader/writer
@@ -75,7 +77,9 @@ public class IOThread implements Runnable
             System.out.println( "IO Exception" );
             System.exit( -1 );
         }
-        System.out.println( "Ran IO Thread" );
-    }
 
+        long elapsedTime = System.nanoTime() - startTime;
+        float ms = (float)elapsedTime / 1000000;
+        System.out.format( "Ran IO Thread in %.4f ms\n", ms );
+    }
 }
