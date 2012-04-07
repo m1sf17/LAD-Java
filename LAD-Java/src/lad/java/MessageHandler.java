@@ -27,9 +27,10 @@ public abstract class MessageHandler
      * Implemented by the subclass to handle the message pieces.
      *
      * @param pieces List of pieces sent by the user.
+     * @param userid ID of the user issuing the request.
      * @return Output to be sent to the user
      */
-    public abstract String handle( List< MessagePiece > pieces );
+    public abstract String handle( List< MessagePiece > pieces, int userid );
 
     /**
      * Calls @see setInstance

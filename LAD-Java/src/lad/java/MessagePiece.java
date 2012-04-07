@@ -46,6 +46,17 @@ public class MessagePiece
     }
 
     /**
+     * ctor from another message piece (copy ctor)
+     *
+     * @param other Piece to copy data from
+     */
+    public MessagePiece( MessagePiece other )
+    {
+        setVariable( other.var );
+        setValue( other.val );
+    }
+
+    /**
      * Sets the variable
      *
      * @param n_var Sets @see var to this value

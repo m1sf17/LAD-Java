@@ -74,6 +74,9 @@ public class MessageManager
      */
     public String handle( String pairs )
     {
+        // Userid of the user
+        int userid = -1;
+
         // Split up the string on new lines
         String[] strings = pairs.split( "\n" );
 
@@ -93,7 +96,15 @@ public class MessageManager
             }
             var = current.substring( 0, commaindex );
             val = current.substring( commaindex + 1 );
-            pieces.add( new MessagePiece( var, val ) );
+
+            if( var.compareTo( "userid" ) == 0 )
+            {
+                userid = Integer.decode( val );
+            }
+            else
+            {
+                pieces.add( new MessagePiece( var, val ) );
+            }
         }
 
         // If no valid messages were found something went wrong or the user sent
@@ -101,6 +112,13 @@ public class MessageManager
         if( pieces.size() <= 0 )
         {
             System.out.println( "No valid messages received from client." );
+            return "";
+        }
+
+        // If we didn't get the userid packet, something went wrong...very.
+        if( userid == -1 )
+        {
+            System.out.println( "Did not receive userid packet." );
             return "";
         }
 
@@ -140,11 +158,20 @@ public class MessageManager
             System.out.print( "No message was matched in " );
             System.out.print( handlerMap.size() );
             System.out.println( " message checks." );
-            return "";
+
+            System.out.println( "=====PAIRS=====" );
+            System.out.print( pairs );
+            System.out.println( "===END PAIRS===" );
+
+            String title = "Server Error";
+            String msg = "Not implemented.  Please try again later.";
+            String func = "$('#LAD.popup .close_popup').trigger(\"click\");";
+            return "genericErrorDialog('" + title + "','" + msg +
+                    "',function(){ " + func + "});";
         }
 
         // Run the handler and return it's result
-        return handler.handle( pieces );
+        return handler.handle( pieces, userid );
     }
 
     /**
