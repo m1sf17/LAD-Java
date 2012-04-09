@@ -2,6 +2,7 @@ package lad.db;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -222,6 +223,20 @@ public class MySQLDB
     }
 
     /**
+     * Adds a statement to be delay-executed.
+     *
+     * The statement is added to a queue that is continuously emptied in a
+     * separate thread.  That threads sole responsibility is to make sure the
+     * queue remains empty so it will be relatively small.
+     *
+     * @param stmt The prepared statement to be delay-executed
+     */
+    public static void delaySQL( PreparedStatement stmt )
+    {
+        getInstance().runner.addStmt( stmt );
+    }
+
+    /**
      * Gets the instance
      *
      * @return Singleton
@@ -240,11 +255,13 @@ public class MySQLDB
     {
         private final Object notifier = new Object();
         private final LinkedList< String > stmts;
+        private final LinkedList< PreparedStatement > pstmts;
         private final Statement stmt;
 
         DelayedRunner( Statement n_stmt )
         {
             stmts = new LinkedList<>();
+            pstmts = new LinkedList<>();
             stmt = n_stmt;
         }
 
@@ -253,6 +270,14 @@ public class MySQLDB
             synchronized( stmts )
             {
                 stmts.add( str );
+            }
+        }
+
+        void addStmt( PreparedStatement pstmt )
+        {
+            synchronized( pstmts )
+            {
+                pstmts.add( pstmt );
             }
         }
 
@@ -288,6 +313,18 @@ public class MySQLDB
                     {
                         String stmtString = stmts.poll();
                         stmt.execute( stmtString );
+
+                        System.out.println( "Delay ran a SQL stmt." );
+                    }
+                }
+                synchronized( stmts )
+                {
+                    while( pstmts.size() > 0 )
+                    {
+                        PreparedStatement pstmt = pstmts.poll();
+                        pstmt.executeUpdate( );
+
+                        System.out.println( "Delay ran a SQL pstmt." );
                     }
                 }
             }
