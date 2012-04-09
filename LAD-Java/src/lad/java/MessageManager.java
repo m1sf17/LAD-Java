@@ -2,8 +2,6 @@ package lad.java;
 
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import java.util.Set;
 
@@ -53,7 +51,7 @@ public class MessageManager
      * @param pieces List of pieces that the handler can run
      * @param handle The actual handler that gets run when a message is matched
      */
-    public void addHandler( List< MessagePiece > pieces, MessageHandler handle )
+    public void addHandler( MessageList pieces, MessageHandler handle )
     {
         int len = pieces.size();
         for( int i = 0; i < len; i++ )
@@ -83,7 +81,7 @@ public class MessageManager
         // Create the list of message pieces by iterating over each line
         // and setting the text before the first comma to the variable and the
         // text after the first comma to the value
-        LinkedList< MessagePiece > pieces = new LinkedList<>();
+        MessageList pieces = new MessageList();
         for( int i = 0; i < strings.length; i++ )
         {
             String var, val, current = strings[ i ];

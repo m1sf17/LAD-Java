@@ -1,7 +1,6 @@
 package lad.java;
 
 import java.util.LinkedList;
-import java.util.List;
 import java.util.ListIterator;
 import lad.db.TrainerManager;
 
@@ -40,7 +39,7 @@ public class InitialIO extends MessageHandler
      * View trainers piece for comparing to
      */
     private final static MessagePiece
-            viewtrainersPiece = new MessagePiece( "viewtrainers" );
+            viewalltrainersPiece = new MessagePiece( "viewalltrainers" );
 
     /**
      * Add trainers piece for comparing to
@@ -67,27 +66,35 @@ public class InitialIO extends MessageHandler
             battleminionPiece = new MessagePiece( "battleminion" );
 
     /**
+     * View a specific trainer piece for comparing to
+     */
+    private final static MessagePiece
+            viewtrainerPiece = new MessagePiece( "viewtrainer" );
+
+    /**
      * Handleable pieces.
      *
      * Piece: @see loginPiece
-     * Piece: @see viewtrainersPiece
+     * Piece: @see viewalltrainersPiece
      * Piece: @see addtrainerPiece
      * Piece: @see trainminionPiece
      * Piece: @see addminionPiece
      * Piece: @see battleminionPiece
+     * Piece: @see viewtrainerPiece
      *
      * @return List with all of the above pieces
      */
     @Override
-    public List< MessagePiece > getPieces()
+    public MessageList getPieces()
     {
-        List< MessagePiece > pieces = new LinkedList<>();
-        pieces.add( new MessagePiece( loginPiece ) );
-        pieces.add( new MessagePiece( viewtrainersPiece ) );
-        pieces.add( new MessagePiece( addtrainerPiece ) );
-        pieces.add( new MessagePiece( trainminionPiece ) );
-        pieces.add( new MessagePiece( addminionPiece ) );
-        pieces.add( new MessagePiece( battleminionPiece ) );
+        MessageList pieces = new MessageList();
+        pieces.add( loginPiece );
+        pieces.add( viewalltrainersPiece );
+        pieces.add( addtrainerPiece );
+        pieces.add( trainminionPiece );
+        pieces.add( addminionPiece );
+        pieces.add( battleminionPiece );
+        pieces.add( viewtrainerPiece );
         return pieces;
     }
 
@@ -95,7 +102,7 @@ public class InitialIO extends MessageHandler
      * Handles pieces based on their pieces
      */
     @Override
-    public String handle( List< MessagePiece > pieces, int userid )
+    public String handle( MessageList pieces, int userid )
     {
         String output = "";
 
@@ -110,15 +117,55 @@ public class InitialIO extends MessageHandler
         }
 
         if( pieces.contains( loginPiece ) ||
-            pieces.contains( new MessagePiece( "viewtrainers" ) ) )
+            pieces.contains( viewalltrainersPiece ) )
         {
             output += outputTrainerView( userid );
+        }
+        else if( pieces.contains( addtrainerPiece ) )
+        {
+            TrainerManager tm = TrainerManager.getInstance();
+            // Validation: User has less than 8 trainers
+            LinkedList< Trainer > trainers = tm.getTrainersByUser( userid );
+            if( trainers.size() >= 8 )
+            {
+                // abort, user shouldn't be able to get above 8
+                return "";
+            }
+
+            // Add the trainer and output default view
+            tm.addTrainer( userid );
+            output += outputTrainerView( userid );
+        }
+        else if( pieces.contains( viewtrainerPiece ) )
+        {
+            int minion = Integer.valueOf( pieces.getValue( "trainer" ) );
+            try
+            {
+                outputMinionView( userid, minion );
+            }
+            catch( IndexOutOfBoundsException e )
+            {
+                // abort, user tried viewing a non-existent trainer
+                return "";
+            }
+        }
+        else if( pieces.contains( trainminionPiece ) )
+        {
+
+        }
+        else if( pieces.contains( addminionPiece ) )
+        {
+
+        }
+        else if( pieces.contains( battleminionPiece ) )
+        {
+
         }
         return output;
     }
 
     /**
-     * Output the default view for viewing trainers
+     * Output the default view for viewing trainers.
      *
      * @param userid ID of the requesting user
      *
@@ -142,14 +189,92 @@ public class InitialIO extends MessageHandler
             output += "<br>');";
             output += "$('<button>View</button>').button().click(" +
                         "function(){" +
-                        "doJava( { viewtrainer: " + index + "});" +
+                        "doJava( { viewtrainer: " + curr.getID() + "});" +
                         "}).appendTo( java() );";
         }
 
-        output += "$('<button>Add Trainer</button>').button().click(" +
-                    "function(){" +
-                    "doJava( { addtrainer: '*' });" +
-                    "}).appendTo( java() );";
+        if( trainers.size() < 8 )
+        {
+            output += "$('<button>Add Trainer</button>').button().click(" +
+                        "function(){" +
+                        "doJava( { addtrainer: '' });" +
+                        "}).appendTo( java() );";
+        }
+
+        return output;
+    }
+
+    /**
+     * Output the default view for viewing a specific trainer.
+     *
+     * @param userid ID of the requesting user
+     * @param trainer ID of the trainer to view
+     *
+     * @throws IndexOutOfBoundsException Thrown when the trainer isn't found
+     * @return A string with the resulting text
+     */
+    private String outputMinionView( int userid, int trainer )
+            throws IndexOutOfBoundsException
+    {
+        String output = "";
+
+        Trainer trnr = TrainerManager.getInstance().getTrainerByID( trainer );
+
+        if( trnr.getOwner() != userid )
+        {
+            throw new IndexOutOfBoundsException( "User ID does not match." );
+        }
+
+        int level = trnr.getLevel();
+        int exp = trnr.getExp();
+
+        output += "java().append('";
+        output += "Trainer #" + trainer;
+        output += "<br>Level:" + level;
+        output += "<br>Exp:" + exp;
+        output += "<br><br>');";
+
+        ListIterator< Minion > iter = trnr.getMinions().listIterator();
+        int index = 1;
+
+        String options = "";
+        while( iter.hasNext() )
+        {
+            Minion minion = iter.next();
+            output += "java().append('" +
+                      "Minion #" + index + " " +
+                      "Level: " + minion.getLevel() + " " +
+                      "Exp: " + minion.getExp() + " ');";
+            output += "$('<button>Train</button>').button().click(" +
+                        "function(){" +
+                        "doJava( { trainminion: " + minion.getID() + "});" +
+                        "}).appendTo( java() );";
+
+            options += "<option value=" + minion.getID() + ">" + index +
+                       "</option>";
+            index++;
+        }
+
+        if( index > 2 )
+        {
+            output += "java().append('<br><br>Battle: <select id=\"minion1\">" +
+                      options + "</select> with <select id=\"minion2\">" +
+                      options + "</select>');";
+            output += "$('<button>Battle</button>').button().click(" +
+                        "function(){" +
+                        "doJava( { battleminions: ''," +
+                                  "minion1: $('#minion1').val()," +
+                                  "minion2: $('#minion2').val()});" +
+                        "}).appendTo( java() );";
+        }
+
+        if( index < 8 )
+        {
+            output += "$('<button>Add Minion</button>').button().click(" +
+                        "function(){" +
+                        "doJava( { addminion: '' });" +
+                        "}).appendTo( java() );";
+        }
 
         return output;
     }

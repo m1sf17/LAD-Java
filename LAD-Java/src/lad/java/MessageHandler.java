@@ -1,7 +1,5 @@
 package lad.java;
 
-import java.util.List;
-
 /**
  * Interface for handling messages with the PHP server.
  *
@@ -21,7 +19,7 @@ public abstract class MessageHandler
      * 
      * @return List of handleable pieces
      */
-    public abstract List< MessagePiece > getPieces();
+    public abstract MessageList getPieces();
 
     /**
      * Implemented by the subclass to handle the message pieces.
@@ -30,7 +28,7 @@ public abstract class MessageHandler
      * @param userid ID of the user issuing the request.
      * @return Output to be sent to the user
      */
-    public abstract String handle( List< MessagePiece > pieces, int userid );
+    public abstract String handle( MessageList pieces, int userid );
 
     /**
      * Calls @see setInstance
