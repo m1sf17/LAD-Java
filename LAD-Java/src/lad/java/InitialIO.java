@@ -33,30 +33,66 @@ public class InitialIO extends MessageHandler
     /**
      * Login piece for comparing to
      */
-    private final static MessagePiece loginPiece = new MessagePiece( "login" );
+    private final static MessagePiece
+            loginPiece = new MessagePiece( "login" );
+
+    /**
+     * View trainers piece for comparing to
+     */
+    private final static MessagePiece
+            viewtrainersPiece = new MessagePiece( "viewtrainers" );
+
+    /**
+     * Add trainers piece for comparing to
+     */
+    private final static MessagePiece
+            addtrainerPiece = new MessagePiece( "addtrainer" );
+
+    /**
+     * Train minion piece for comparing to
+     */
+    private final static MessagePiece
+            trainminionPiece = new MessagePiece( "trainminion" );
+
+    /**
+     * Add minion piece for comparing to
+     */
+    private final static MessagePiece
+            addminionPiece = new MessagePiece( "addminion" );
+
+    /**
+     * Battle minions piece for comparing to
+     */
+    private final static MessagePiece
+            battleminionPiece = new MessagePiece( "battleminion" );
 
     /**
      * Handleable pieces.
      *
-     * Piece: login,
-     * Piece: viewtrainers,
+     * Piece: @see loginPiece
+     * Piece: @see viewtrainersPiece
+     * Piece: @see addtrainerPiece
+     * Piece: @see trainminionPiece
+     * Piece: @see addminionPiece
+     * Piece: @see battleminionPiece
      *
-     * @return
+     * @return List with all of the above pieces
      */
     @Override
     public List< MessagePiece > getPieces()
     {
         List< MessagePiece > pieces = new LinkedList<>();
         pieces.add( new MessagePiece( loginPiece ) );
-        pieces.add( new MessagePiece( "viewtrainers" ) );
+        pieces.add( new MessagePiece( viewtrainersPiece ) );
+        pieces.add( new MessagePiece( addtrainerPiece ) );
+        pieces.add( new MessagePiece( trainminionPiece ) );
+        pieces.add( new MessagePiece( addminionPiece ) );
+        pieces.add( new MessagePiece( battleminionPiece ) );
         return pieces;
     }
 
     /**
-     * Handles pieces
-     * @param pieces Decides which response to show
-     *
-     * @return An alert saying we got it.
+     * Handles pieces based on their pieces
      */
     @Override
     public String handle( List< MessagePiece > pieces, int userid )
@@ -76,30 +112,45 @@ public class InitialIO extends MessageHandler
         if( pieces.contains( loginPiece ) ||
             pieces.contains( new MessagePiece( "viewtrainers" ) ) )
         {
-            LinkedList< Trainer > trainers =
-                TrainerManager.getInstance().getTrainersByUser( userid );
-            ListIterator< Trainer > iter = trainers.listIterator();
-
-            int index = 1;
-
-            while( iter.hasNext() )
-            {
-                Trainer curr = iter.next();
-                output += "java().append('";
-                output += "Trainer " + index + ": Level ";
-                output += curr.getLevel() + " Exp:" + curr.getExp();
-                output += "<br>');";
-                output += "$('<button>View</button>').button().click(" +
-                          "function(){" +
-                            "doJava( { viewtrainer: " + index + "});" +
-                          "}).appendTo( java() );";
-            }
-
-            output += "$('<button>Add Trainer</button>').button().click(" +
-                      "function(){" +
-                        "doJava( { addtrainer: '*' });" +
-                      "}).appendTo( java() );";
+            output += outputTrainerView( userid );
         }
+        return output;
+    }
+
+    /**
+     * Output the default view for viewing trainers
+     *
+     * @param userid ID of the requesting user
+     *
+     * @return A string with the resulting text
+     */
+    private String outputTrainerView( int userid )
+    {
+        String output = "";
+        LinkedList< Trainer > trainers =
+            TrainerManager.getInstance().getTrainersByUser( userid );
+        ListIterator< Trainer > iter = trainers.listIterator();
+
+        int index = 1;
+
+        while( iter.hasNext() )
+        {
+            Trainer curr = iter.next();
+            output += "java().append('";
+            output += "Trainer " + index + ": Level ";
+            output += curr.getLevel() + " Exp:" + curr.getExp();
+            output += "<br>');";
+            output += "$('<button>View</button>').button().click(" +
+                        "function(){" +
+                        "doJava( { viewtrainer: " + index + "});" +
+                        "}).appendTo( java() );";
+        }
+
+        output += "$('<button>Add Trainer</button>').button().click(" +
+                    "function(){" +
+                    "doJava( { addtrainer: '*' });" +
+                    "}).appendTo( java() );";
+
         return output;
     }
 
