@@ -1,8 +1,5 @@
 package lad.java;
 
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.sql.Statement;
 import java.util.concurrent.Semaphore;
 import lad.db.MySQLDB;
 import lad.db.TrainerManager;
