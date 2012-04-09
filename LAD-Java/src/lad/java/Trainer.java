@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.util.Collections;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import lad.db.MySQLDB;
 
@@ -39,7 +41,7 @@ public class Trainer
     /**
      * List of minions that this trainer owns
      */
-    private LinkedList< Minion> minionList = null;
+    private LinkedList< Minion > minionList = null;
 
     /**
      * Prepared statement for pulling all the minions for a trainer
@@ -55,6 +57,56 @@ public class Trainer
      * Statement for deleting a trainer
      */
     private static PreparedStatement deleteStmt = null;
+
+    /**
+     * Statement for deleting a trainer's minions
+     */
+    private static PreparedStatement deleteMinionStmt = null;
+
+    /**
+     * Statement for updating Level
+     */
+    private static PreparedStatement updateLevelStmt = null;
+
+    /**
+     * Statement for updating Exp
+     */
+    private static PreparedStatement updateExpStmt = null;
+
+    /**
+     * Statement for updating Owner
+     */
+    private static PreparedStatement updateOwnerStmt = null;
+
+    /**
+     * Statement for adjusting Exp
+     */
+    private static PreparedStatement adjustExpStmt = null;
+
+    /**
+     * Prepares all of the prepared statements
+     *
+     * @throws SQLException If an error occurs when preparing the statements
+     */
+    public static void prepareStatements() throws SQLException
+    {
+        Connection conn = MySQLDB.getConn();
+
+        final String pre = "UPDATE TRAINERS SET ";
+        final String post = " WHERE ID = ?";
+
+        updateLevelStmt = conn.prepareStatement( pre + "LEVEL = ?" + post );
+        updateExpStmt = conn.prepareStatement( pre + "EXP = ?" + post );
+        updateOwnerStmt = conn.prepareStatement( pre + "OWNER = ?" + post );
+        adjustExpStmt = conn.prepareStatement( pre + "LEVEL = ?, EXP = ?" +
+                                               post );
+        deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERS" + post );
+        deleteMinionStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE " +
+                                                  "OWNER = ?" );
+        insertStmt = conn.prepareStatement(
+                        "INSERT INTO TRAINERS VALUES( NULL, ?, ?, ? )",
+                        Statement.RETURN_GENERATED_KEYS );
+    }
 
     /**
      * Ctor (from DB)
@@ -173,6 +225,20 @@ public class Trainer
     public void setExp( int e )
     {
         exp = e;
+
+        try
+        {
+            updateExpStmt.setInt( 1, e );
+            updateExpStmt.setInt( 2, ID );
+
+            MySQLDB.delaySQL( updateExpStmt );
+        }
+        catch( SQLException x )
+        {
+            System.err.println( "Error while setting minion level." +
+                                x.toString() );
+            System.exit( -1 );
+        }
     }
 
     /**
@@ -183,6 +249,20 @@ public class Trainer
     public void setLevel( int l )
     {
         level = l;
+
+        try
+        {
+            updateLevelStmt.setInt( 1, l );
+            updateLevelStmt.setInt( 2, ID );
+
+            MySQLDB.delaySQL( updateLevelStmt );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while setting minion level." +
+                                e.toString() );
+            System.exit( -1 );
+        }
     }
 
     /**
@@ -193,6 +273,30 @@ public class Trainer
     public void setOwner( int o )
     {
         owner = o;
+
+        try
+        {
+            updateOwnerStmt.setInt( 1, o );
+            updateOwnerStmt.setInt( 2, ID );
+
+            MySQLDB.delaySQL( updateOwnerStmt );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while setting minion level." +
+                                e.toString() );
+            System.exit( -1 );
+        }
+    }
+
+    /**
+     * Gets the list of minions
+     *
+     * @return minionList
+     */
+    List< Minion > getMinions()
+    {
+        return Collections.unmodifiableList( minionList );
     }
 
     /**
@@ -208,15 +312,30 @@ public class Trainer
     /**
      * Adds exp and updates the level accordingly
      *
-     * @param e The exp to add
+     * @param xp The exp to add
      */
-    public void adjustExp( int e )
+    public void adjustExp( int xp )
     {
-        exp += e;
+        exp += xp;
         while( exp >= 10 )
         {
             exp -= 10;
             level++;
+        }
+
+        try
+        {
+            adjustExpStmt.setInt( 1, level );
+            adjustExpStmt.setInt( 2, exp );
+            adjustExpStmt.setInt( 3, ID );
+
+            MySQLDB.delaySQL( adjustExpStmt );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while setting minion level." +
+                                e.toString() );
+            System.exit( -1 );
         }
     }
 
@@ -281,19 +400,9 @@ public class Trainer
     public static Trainer create( int n_owner )
     {
         Trainer trainer = new Trainer( n_owner );
-        Connection conn = MySQLDB.getConn();
         ResultSet generatedKeys;
         try
         {
-            // Initialize statement
-            if( insertStmt == null )
-            {
-                insertStmt =
-                        conn.prepareStatement(
-                        "INSERT INTO TRAINERS VALUES( NULL, ?, ?, ? )",
-                                               Statement.RETURN_GENERATED_KEYS );
-            }
-
             // Set statement values
             insertStmt.setInt( 1, n_owner );
             insertStmt.setInt( 2, 0 );
@@ -333,15 +442,10 @@ public class Trainer
     void destroy()
     {
         // Ensure the delete statement is prepared
-        Connection conn = MySQLDB.getConn();
         try
         {
-            if( deleteStmt == null )
-            {
-                deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERS WHERE ID = ?" );
-            }
-
             deleteStmt.setInt( 1, ID );
+            deleteMinionStmt.setInt( 1, ID );
 
             // Run the delete
             int affectedRows = deleteStmt.executeUpdate();
@@ -350,11 +454,16 @@ public class Trainer
             {
                 throw new SQLException( "No rows were deleted." );
             }
+
+            // Minion statement does not need to be checked
+            deleteMinionStmt.executeUpdate();
         }
         catch( SQLException e )
         {
             System.err.println( "Error while deleting trainer: " + e.toString() );
             System.exit( -1 );
         }
+
+        owner = ID = exp = level = 0;
     }
 }

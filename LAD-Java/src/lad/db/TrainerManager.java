@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import lad.java.Minion;
 import lad.java.Trainer;
 
 /**
@@ -73,6 +74,9 @@ public class TrainerManager
                 trainers.add( trainer );
                 trainer.load();
             }
+
+            Minion.prepareStatements();
+            Trainer.prepareStatements();
         }
         catch( SQLException e )
         {

@@ -44,7 +44,50 @@ public class Minion
      * Statement for deleting a minion
      */
     private static PreparedStatement deleteStmt = null;
-    
+
+    /**
+     * Statement for updating Level
+     */
+    private static PreparedStatement updateLevelStmt = null;
+
+    /**
+     * Statement for updating Exp
+     */
+    private static PreparedStatement updateExpStmt = null;
+
+    /**
+     * Statement for updating Owner
+     */
+    private static PreparedStatement updateOwnerStmt = null;
+
+    /**
+     * Statement for adjusting Exp
+     */
+    private static PreparedStatement adjustExpStmt = null;
+
+    /**
+     * Prepares all of the prepared statements
+     *
+     * @throws SQLException If an error occurs when preparing the statements
+     */
+    public static void prepareStatements() throws SQLException
+    {
+        Connection conn = MySQLDB.getConn();
+
+        final String pre = "UPDATE MINIONS SET ";
+        final String post = " WHERE ID = ?";
+
+        updateLevelStmt = conn.prepareStatement( pre + "LEVEL = ?" + post );
+        updateExpStmt = conn.prepareStatement( pre + "EXP = ?" + post );
+        updateOwnerStmt = conn.prepareStatement( pre + "OWNER = ?" + post );
+        adjustExpStmt = conn.prepareStatement( pre + "LEVEL = ?, EXP = ?" +
+                                               post );
+        deleteStmt = conn.prepareStatement( "DELETE FROM MINIONS" + post );
+        insertStmt = conn.prepareStatement(
+            "INSERT INTO MINIONS VALUES( NULL, ?, ?, ? )",
+            Statement.RETURN_GENERATED_KEYS );
+    }
+
     /**
      * Ctor (Adding to DB)
      */
@@ -77,6 +120,20 @@ public class Minion
     public void setLevel( int l )
     {
         level = l;
+
+        try
+        {
+            updateLevelStmt.setInt( 1, l );
+            updateLevelStmt.setInt( 2, ID );
+
+            MySQLDB.delaySQL( updateLevelStmt );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while setting minion level." +
+                                e.toString() );
+            System.exit( -1 );
+        }
     }
 
     /**
@@ -87,6 +144,20 @@ public class Minion
     public void setExp( int e )
     {
         exp = e;
+
+        try
+        {
+            updateExpStmt.setInt( 1, e );
+            updateExpStmt.setInt( 2, ID );
+
+            MySQLDB.delaySQL( updateExpStmt );
+        }
+        catch( SQLException x )
+        {
+            System.err.println( "Error while setting minion level." +
+                                x.toString() );
+            System.exit( -1 );
+        }
     }
 
     /**
@@ -97,6 +168,20 @@ public class Minion
     public void setOwner( int o )
     {
         owner = o;
+
+        try
+        {
+            updateOwnerStmt.setInt( 1, o );
+            updateOwnerStmt.setInt( 2, ID );
+
+            MySQLDB.delaySQL( updateOwnerStmt );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while setting minion level." +
+                                e.toString() );
+            System.exit( -1 );
+        }
     }
     
     /**
@@ -148,10 +233,25 @@ public class Minion
     public void adjustExp( int xp )
     {
         exp += xp;
-        if( xp >= 10 )
+        while( exp >= 10 )
         {
             level++;
             exp -= 10;
+        }
+
+        try
+        {
+            adjustExpStmt.setInt( 1, level );
+            adjustExpStmt.setInt( 2, exp );
+            adjustExpStmt.setInt( 3, ID );
+
+            MySQLDB.delaySQL( adjustExpStmt );
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while setting minion level." +
+                                e.toString() );
+            System.exit( -1 );
         }
     }
     /**
@@ -163,16 +263,9 @@ public class Minion
     public static Minion create( int owner )
     {
         Minion ret = new Minion();
-        Connection conn = MySQLDB.getConn();
         ResultSet generatedKeys;
         try
         {
-            // Initialize statement
-            if( insertStmt == null )
-            {
-                insertStmt = conn.prepareStatement( "INSERT INTO MINIONS VALUES( NULL, ?, ?, ? )", Statement.RETURN_GENERATED_KEYS );
-            }
-
             // Set statement values
             insertStmt.setInt( 1, owner );
             insertStmt.setInt( 2, 0 );
@@ -209,16 +302,8 @@ public class Minion
      */
     void destroy()
     {
-        // Ensure the delete statement is prepared
-        Connection conn = MySQLDB.getConn();
-
         try
         {
-            if( deleteStmt == null )
-            {
-                deleteStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE ID = ?" );
-            }
-
             deleteStmt.setInt( 1, ID );
 
             // Run the delete
@@ -234,5 +319,7 @@ public class Minion
             System.err.println( "Error while deleting minion: " + e.toString() );
             System.exit( -1 );
         }
+
+        owner = ID = exp = level = 0;
     }
 }
