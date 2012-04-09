@@ -2,7 +2,6 @@ package lad.java;
 
 import java.io.*;
 import java.net.*;
-import java.util.concurrent.TimeUnit;
 
 /**
  * The IO Thread that handles input/output from the PHP server.  Once a socket
