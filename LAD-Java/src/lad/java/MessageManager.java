@@ -165,7 +165,7 @@ public class MessageManager
         // Run the handler and return it's result
         try
         {
-            return handler.handle( pieces, userid );
+            return handler.doHandle( pieces, userid );
         }
         catch( IndexOutOfBoundsException e )
         {
