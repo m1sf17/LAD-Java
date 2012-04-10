@@ -311,7 +311,8 @@ public class InitialIO extends MessageHandler
         output += "<br>Exp:" + exp;
         output += "<br><br>');";
 
-        ListIterator< Minion > iter = trnr.getMinions().listIterator();
+        List< Minion > minionList = trnr.getMinions();
+        ListIterator< Minion > iter = minionList.listIterator();
         int index = 1;
 
         String options = "";
@@ -333,7 +334,7 @@ public class InitialIO extends MessageHandler
             index++;
         }
 
-        if( index > 2 )
+        if( minionList.size() >= 2 )
         {
             output += "java().append('<br><br>Battle: <select id=\"minion1\">" +
                       options + "</select> with <select id=\"minion2\">" +
@@ -346,7 +347,7 @@ public class InitialIO extends MessageHandler
                         "}).appendTo( java() );";
         }
 
-        if( index < 8 )
+        if( minionList.size() < 8 )
         {
             output += "$('<button>Add Minion</button>').button().click(" +
                         "function(){" +
