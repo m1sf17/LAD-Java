@@ -233,10 +233,10 @@ public class Minion
     public void adjustExp( int xp )
     {
         exp += xp;
-        while( exp >= 10 )
+        while( exp >= ( 10 + level ) )
         {
+            exp -= ( 10 + level );
             level++;
-            exp -= 10;
         }
 
         try

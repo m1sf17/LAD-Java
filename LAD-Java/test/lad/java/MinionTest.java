@@ -22,6 +22,7 @@ public class MinionTest
     public static void setUpClass() throws Exception
     {
         System.out.println( "===Minion===" );
+        Minion.prepareStatements();
     }
 
     @AfterClass
@@ -91,7 +92,7 @@ public class MinionTest
         int initialExp = 5;
         int initialLevel = 2;
         int addExp = 13;
-        int expectExp = 8;
+        int expectExp = 6;
         int expectLevel = 3;
         Minion instance = new Minion( 0, initialExp, initialLevel, 0 );
         instance.adjustExp( addExp );
