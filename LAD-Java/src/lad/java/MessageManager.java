@@ -153,13 +153,7 @@ public class MessageManager
         // If no handler was found then abort
         if( handler == null )
         {
-            System.out.print( "No message was matched in " );
-            System.out.print( handlerMap.size() );
-            System.out.println( " message checks." );
-
-            System.out.println( "=====PAIRS=====" );
-            System.out.print( pairs );
-            System.out.println( "===END PAIRS===" );
+            debugInfo( "unhandled", pairs );
 
             String title = "Server Error";
             String msg = "Not implemented.  Please try again later.";
@@ -169,7 +163,42 @@ public class MessageManager
         }
 
         // Run the handler and return it's result
-        return handler.handle( pieces, userid );
+        try
+        {
+            return handler.handle( pieces, userid );
+        }
+        catch( IndexOutOfBoundsException e )
+        {
+            // abort, user tried viewing something they shouldn't
+            debugInfo( "Index out of bounds: " + e.toString(), pairs );
+            return "";
+        }
+        catch( NumberFormatException n )
+        {
+            // Parse error (typically with a number
+            debugInfo( "Parse error: " + n.toString(), pairs );
+            return "";
+        }
+    }
+
+    /**
+     * Output some debug info when an error occurs
+     *
+     * @param pairs The pairs that the system found.
+     */
+    private void debugInfo( String error, String pairs )
+    {
+        if( error.compareTo( "unhandled" ) == 0 )
+        {
+            System.out.print( "No message was matched in " );
+            System.out.print( handlerMap.size() );
+            System.out.println( " message checks." );
+        }
+
+        System.out.println( error );
+        System.out.println( "=====PAIRS=====" );
+        System.out.print( pairs );
+        System.out.println( "===END PAIRS===" );
     }
 
     /**

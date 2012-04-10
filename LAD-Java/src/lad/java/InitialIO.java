@@ -100,9 +100,12 @@ public class InitialIO extends MessageHandler
 
     /**
      * Handles pieces based on their pieces
+     *
+     * @throws IndexOutOfBoundsException Thrown if a sub function throws it
      */
     @Override
     public String handle( MessageList pieces, int userid )
+            throws IndexOutOfBoundsException
     {
         String output = "";
 
@@ -138,28 +141,97 @@ public class InitialIO extends MessageHandler
         }
         else if( pieces.contains( viewtrainerPiece ) )
         {
-            int minion = Integer.valueOf( pieces.getValue( "trainer" ) );
-            try
-            {
-                outputMinionView( userid, minion );
-            }
-            catch( IndexOutOfBoundsException e )
-            {
-                // abort, user tried viewing a non-existent trainer
-                return "";
-            }
+            int trainer = Integer.valueOf( pieces.getValue( "viewtrainer" ) );
+
+            output += outputMinionView( userid, trainer );
         }
         else if( pieces.contains( trainminionPiece ) )
         {
+            Trainer trnr = TrainerManager.getInstance().getTrainerByID(
+                    Integer.valueOf( pieces.getValue( "trainer" ) ) );
+            int minionID = Integer.valueOf( pieces.getValue( "trainminion" ) );
 
+            if( trnr.getOwner() != userid )
+            {
+                throw new IndexOutOfBoundsException( "User ID does not match." );
+            }
+
+            ListIterator< Minion > iter = trnr.getMinions().listIterator();
+            Minion target = null;
+            while( iter.hasNext() )
+            {
+                Minion min = iter.next();
+                if( min.getID() == minionID )
+                {
+                    target = min;
+                    break;
+                }
+            }
+
+            if( target == null )
+            {
+                throw new IndexOutOfBoundsException( "Minion not owned." );
+            }
+
+            target.adjustExp( 1 );
+            output += outputMinionView( userid, trnr.getID() );
         }
         else if( pieces.contains( addminionPiece ) )
         {
+            Trainer trnr = TrainerManager.getInstance().getTrainerByID(
+                    Integer.valueOf( pieces.getValue( "trainer" ) ) );
 
+            if( trnr.getOwner() != userid )
+            {
+                throw new IndexOutOfBoundsException( "User ID does not match." );
+            }
+
+            if( trnr.getMinions().size() >=8 )
+            {
+                throw new IndexOutOfBoundsException( "8 minions max." );
+            }
+
+            Minion adder = Minion.create( trnr.getID() );
+            trnr.addMinion( adder );
+
+            output += outputMinionView( userid, trnr.getID() );
         }
         else if( pieces.contains( battleminionPiece ) )
         {
+            Trainer trnr = TrainerManager.getInstance().getTrainerByID(
+                    Integer.valueOf( pieces.getValue( "trainer" ) ) );
+            int minion1ID = Integer.valueOf( pieces.getValue( "minion1" ) );
+            int minion2ID = Integer.valueOf( pieces.getValue( "minion2" ) );
 
+            if( trnr.getOwner() != userid )
+            {
+                throw new IndexOutOfBoundsException( "User ID does not match." );
+            }
+
+            ListIterator< Minion > iter = trnr.getMinions().listIterator();
+            Minion target1 = null, target2 = null;
+            while( iter.hasNext() )
+            {
+                Minion min = iter.next();
+                if( min.getID() == minion1ID )
+                {
+                    target1 = min;
+                    continue;
+                }
+                if( min.getID() == minion2ID )
+                {
+                    target2 = min;
+                    continue;
+                }
+            }
+
+            if( target1 == null || target2 == null )
+            {
+                throw new IndexOutOfBoundsException( "Minion not owned." );
+            }
+
+            trnr.battle( target1, target2 );
+            output += outputMinionView( userid, trnr.getID() );
         }
         return output;
     }
@@ -177,6 +249,8 @@ public class InitialIO extends MessageHandler
         LinkedList< Trainer > trainers =
             TrainerManager.getInstance().getTrainersByUser( userid );
         ListIterator< Trainer > iter = trainers.listIterator();
+
+        System.out.println( "Trainers: " + trainers.size() );
 
         int index = 1;
 
@@ -247,7 +321,8 @@ public class InitialIO extends MessageHandler
                       "Exp: " + minion.getExp() + " ');";
             output += "$('<button>Train</button>').button().click(" +
                         "function(){" +
-                        "doJava( { trainminion: " + minion.getID() + "});" +
+                        "doJava( { trainminion: " + minion.getID() + "," +
+                                  "trainer:" + trainer + "});" +
                         "}).appendTo( java() );";
 
             options += "<option value=" + minion.getID() + ">" + index +
@@ -272,7 +347,8 @@ public class InitialIO extends MessageHandler
         {
             output += "$('<button>Add Minion</button>').button().click(" +
                         "function(){" +
-                        "doJava( { addminion: '' });" +
+                        "doJava( { addminion: ''," +
+                                  "trainer: '" + trainer + "'});" +
                         "}).appendTo( java() );";
         }
 
