@@ -12,6 +12,12 @@ package lad.java;
 public abstract class MessageHandler
 {
     /**
+     * Set to true if the window should clear it's text before the output
+     * is printed.
+     */
+    private boolean addClear = false;
+
+    /**
      * Implemented by the subclass to return handleable pieces.
      * 
      * Set the value to '*' to handle the key but not require the value to be
@@ -20,6 +26,33 @@ public abstract class MessageHandler
      * @return List of handleable pieces
      */
     public abstract MessageList getPieces();
+
+    /**
+     * Called by the manager to call the handler
+     *
+     * @param pieces List of pieces sent by the user.
+     * @param userid ID of the user issuing the request.
+     * @return Output to be sent to the user
+     */
+    public String doHandle( MessageList pieces, int userid )
+    {
+        String output = handle( pieces, userid );
+        if( addClear )
+        {
+            output = "java().html('');" + output;
+        }
+        addClear = false;
+
+        return output;
+    }
+
+    /**
+     * Can be called by the handle func to set @see addClear to true.
+     */
+    protected void clearJava()
+    {
+        addClear = true;
+    }
 
     /**
      * Implemented by the subclass to handle the message pieces.
