@@ -107,6 +107,9 @@ public class InitialIO extends MessageHandler
     public String handle( MessageList pieces, int userid )
             throws IndexOutOfBoundsException
     {
+        // Clear the output
+        clearJava();
+
         String output = "";
 
         if( pieces.contains( loginPiece ) )
