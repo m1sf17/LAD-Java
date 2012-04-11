@@ -52,6 +52,12 @@ public class TrainerManager
     {
     }
 
+    /**
+     * Initializes the manager.
+     *
+     * Loads info from the DB.  Also ensures the integrity of the tables that
+     * data is loaded from.  Prepares data classes' statements.
+     */
     public void initialize()
     {
         // Verifies the tables
