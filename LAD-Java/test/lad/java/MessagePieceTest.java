@@ -1,9 +1,6 @@
 package lad.java;
 
-import org.junit.After;
-import org.junit.AfterClass;
 import static org.junit.Assert.*;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -14,30 +11,13 @@ import org.junit.Test;
  */
 public class MessagePieceTest
 {
-
-    public MessagePieceTest()
-    {
-    }
-
+    /**
+     * Sets up the class before all the tests
+     */
     @BeforeClass
-    public static void setUpClass() throws Exception
+    public static void setUpClass()
     {
         System.out.println( "===Message Piece===" );
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
-
-    @Before
-    public void setUp()
-    {
-    }
-
-    @After
-    public void tearDown()
-    {
     }
 
     /**

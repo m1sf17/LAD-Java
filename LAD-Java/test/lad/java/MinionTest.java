@@ -1,43 +1,27 @@
 package lad.java;
 
-import org.junit.After;
-import org.junit.AfterClass;
+import java.sql.SQLException;
 import static org.junit.Assert.*;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
+ * Tests the Minion class to ensure its functionality.
  *
  * @author msflowers
  */
 public class MinionTest
 {
-
-    public MinionTest()
-    {
-    }
-
+    /**
+     * Sets up the class before all the tests
+     * 
+     * @throws SQLException Thrown if the class fails to prepare statements
+     */
     @BeforeClass
-    public static void setUpClass() throws Exception
+    public static void setUpClass() throws SQLException
     {
         System.out.println( "===Minion===" );
         Minion.prepareStatements();
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
-
-    @Before
-    public void setUp()
-    {
-    }
-
-    @After
-    public void tearDown()
-    {
     }
 
     /**

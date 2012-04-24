@@ -2,9 +2,6 @@ package lad.java;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import org.junit.After;
-import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -15,30 +12,13 @@ import org.junit.Test;
  */
 public class TrainerBattleTest
 {
-
-    public TrainerBattleTest()
-    {
-    }
-
+    /**
+     * Sets up the class before all the tests
+     */
     @BeforeClass
-    public static void setUpClass() throws Exception
+    public static void setUpClass()
     {
         System.out.println( "===TrainerBattle===" );
-    }
-
-    @AfterClass
-    public static void tearDownClass() throws Exception
-    {
-    }
-
-    @Before
-    public void setUp()
-    {
-    }
-
-    @After
-    public void tearDown()
-    {
     }
 
     /**
