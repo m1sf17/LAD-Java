@@ -17,7 +17,8 @@ public class IOThread implements Runnable
     private Socket client;
 
     /**
-     * Constructor
+     * Basic ctor
+     *
      * @param n_client The client that is to be run
      */
     public IOThread( Socket n_client )
@@ -77,6 +78,7 @@ public class IOThread implements Runnable
             System.exit( -1 );
         }
 
+        // Calculate elapsed time
         long elapsedTime = System.nanoTime() - startTime;
         float ms = (float)elapsedTime / 1000000;
         String log = String.format( "Ran IO Thread in %.4f ms\n", ms );

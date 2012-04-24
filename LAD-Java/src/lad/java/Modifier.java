@@ -240,7 +240,7 @@ public class Modifier
         try
         {
             commitStmt.setInt( 1, battles );
-            commitStmt.setInt( 2, target.getTarget() );
+            commitStmt.setInt( 2, target.getValue() );
             commitStmt.setInt( 3, rarity );
             commitStmt.setInt( 4, owner );
             commitStmt.setInt( 5, ID );
@@ -273,7 +273,6 @@ public class Modifier
 
         Modifier adder = new Modifier( 0, targ, rare, owner,
                                        battles, battles );
-
 
         ResultSet generatedKeys;
         try

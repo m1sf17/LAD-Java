@@ -92,8 +92,7 @@ public class Minion
      * Ctor (Adding to DB)
      */
     public Minion()
-    { 
-        
+    {
     }
 
     /**
@@ -128,15 +127,15 @@ public class Minion
     /**
      * Sets the level
      *
-     * @param l The new level
+     * @param value Value to set the level to
      */
-    public void setLevel( int l )
+    public void setLevel( int value )
     {
-        level = l;
+        level = value;
 
         try
         {
-            updateLevelStmt.setInt( 1, l );
+            updateLevelStmt.setInt( 1, value );
             updateLevelStmt.setInt( 2, ID );
 
             MySQLDB.delaySQL( updateLevelStmt );
@@ -152,15 +151,15 @@ public class Minion
     /**
      * Sets the experience
      *
-     * @param e The new experience
+     * @param value Value to set the experience to
      */
-    public void setExp( int e )
+    public void setExp( int value )
     {
-        exp = e;
+        exp = value;
 
         try
         {
-            updateExpStmt.setInt( 1, e );
+            updateExpStmt.setInt( 1, value );
             updateExpStmt.setInt( 2, ID );
 
             MySQLDB.delaySQL( updateExpStmt );
@@ -176,15 +175,15 @@ public class Minion
     /**
      * Sets the owner
      *
-     * @param o The new owner
+     * @param value Value to set the owner to
      */
-    public void setOwner( int o )
+    public void setOwner( int value )
     {
-        owner = o;
+        owner = value;
 
         try
         {
-            updateOwnerStmt.setInt( 1, o );
+            updateOwnerStmt.setInt( 1, value );
             updateOwnerStmt.setInt( 2, ID );
 
             MySQLDB.delaySQL( updateOwnerStmt );

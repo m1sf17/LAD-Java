@@ -218,6 +218,9 @@ public class GameLoop implements Runnable
     {
         boolean hadProfMod = false;
         ListIterator< Modifier > iter = trainer.getModifiers().listIterator();
+
+        // Advance each of the modifiers, also check if a proficiency mod was
+        // found
         while( iter.hasNext() )
         {
             Modifier current = iter.next();
@@ -229,6 +232,8 @@ public class GameLoop implements Runnable
             }
         }
 
+        // If no proficiency mod and the trainer won, manually increment
+        // proficiency
         if( !hadProfMod && won )
         {
             int user = trainer.getTrainer().getOwner();

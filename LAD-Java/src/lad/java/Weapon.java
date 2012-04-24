@@ -41,7 +41,7 @@ public enum Weapon
     /**
      * Main Hand ( High Reload Rate, Low Damage )
      */
-    Projecter ( 8, 1.0, 1.0, 3.0, 2.0, 2.0, 3.0, 2.0, 3.0, 2.0 ),
+    Projector ( 8, 1.0, 1.0, 3.0, 2.0, 2.0, 3.0, 2.0, 3.0, 2.0 ),
     /**
      * Main Hand ( High Range, Low Defense )
      */

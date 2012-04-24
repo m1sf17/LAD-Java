@@ -16,7 +16,6 @@ import lad.db.MySQLDB;
  */
 public class Trainer
 {
-
     /**
      * Current amount of experience the trainer has
      */
@@ -41,7 +40,7 @@ public class Trainer
     /**
      * List of minions that this trainer owns
      */
-    private LinkedList< Minion > minionList = null;
+    private LinkedList< Minion > minionList = new LinkedList<>();
 
     /**
      * Prepared statement for pulling all the minions for a trainer
@@ -118,7 +117,6 @@ public class Trainer
      */
     public Trainer( int n_ID, int n_owner, int n_exp, int n_level )
     {
-        minionList = new LinkedList<>();
         exp = n_exp;
         level = n_level;
         ID = n_ID;
@@ -132,7 +130,6 @@ public class Trainer
      */
     public Trainer( int n_owner )
     {
-        minionList = new LinkedList<>();
     }
 
     /**
@@ -208,7 +205,7 @@ public class Trainer
     }
 
     /**
-     * Get Owner
+     * Get owner
      *
      * @return owner
      */
@@ -218,17 +215,17 @@ public class Trainer
     }
 
     /**
-     * Set Exp
+     * Set exp
      *
-     * @param e New exp
+     * @param value New value of the exp
      */
-    public void setExp( int e )
+    public void setExp( int value )
     {
-        exp = e;
+        exp = value;
 
         try
         {
-            updateExpStmt.setInt( 1, e );
+            updateExpStmt.setInt( 1, value );
             updateExpStmt.setInt( 2, ID );
 
             MySQLDB.delaySQL( updateExpStmt );
@@ -244,15 +241,15 @@ public class Trainer
     /**
      * Set level
      *
-     * @param l New level
+     * @param value New value of the level
      */
-    public void setLevel( int l )
+    public void setLevel( int value )
     {
-        level = l;
+        level = value;
 
         try
         {
-            updateLevelStmt.setInt( 1, l );
+            updateLevelStmt.setInt( 1, value );
             updateLevelStmt.setInt( 2, ID );
 
             MySQLDB.delaySQL( updateLevelStmt );
@@ -268,15 +265,15 @@ public class Trainer
     /**
      * Set owner
      *
-     * @param o New owner
+     * @param value New value of the owner
      */
-    public void setOwner( int o )
+    public void setOwner( int value )
     {
-        owner = o;
+        owner = value;
 
         try
         {
-            updateOwnerStmt.setInt( 1, o );
+            updateOwnerStmt.setInt( 1, value );
             updateOwnerStmt.setInt( 2, ID );
 
             MySQLDB.delaySQL( updateOwnerStmt );

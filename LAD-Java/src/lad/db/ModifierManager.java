@@ -94,6 +94,8 @@ public class ModifierManager extends DBManager
     /**
      * Gets all modifiers for the specified owner.
      *
+     * If no modifiers are found the list returned will simply be empty.
+     *
      * @param userid User ID to get modifiers for
      * @return List of found modifiers
      */
@@ -140,7 +142,10 @@ public class ModifierManager extends DBManager
     }
 
     /**
-     * Creates a modifier for the specified user
+     * Creates a modifier for the specified user.
+     *
+     * Utilizes the luck generator to determine the target and the rarity of
+     * the created modifier.
      *
      * @param userid The ID of the user to create the modifier for
      * @param luck Luck of the user ( higher values warrant better modifiers )
@@ -167,6 +172,11 @@ public class ModifierManager extends DBManager
 
     /**
      * Generates a number along a standard deviation given a luck value.
+     *
+     * Uses a standard deviation that is weighted by the luck parameter to
+     * determine how strong the lower values are.  Higher luck values (up to
+     * 255) create a more linear distribution from min to max whereas lower
+     * luck values will yield *much* lower returns from the max end.
      *
      * @param luck       Luck the user has
      * @param proficient Include the final value as an option

@@ -29,7 +29,11 @@ public class EXPManager extends DBManager
     }
 
     /**
-     * Returns the table profile to load
+     * Returns the table profile to load.
+     *
+     * The table is different from most in that it does not have an ID but
+     * uses a 3-part key.  The three parts consist of the owner (user), target
+     * (weapon) and the type (stat).
      *
      * @return A list with only the EXP table to load
      */
@@ -92,6 +96,8 @@ public class EXPManager extends DBManager
     /**
      * Gets all exp for the specified owner.
      *
+     * If no modifiers are found the list returned will simply be empty.
+     *
      * @param owner Owner to get exp for
      * @return List of found exp
      */
@@ -133,7 +139,7 @@ public class EXPManager extends DBManager
             if( exp.getOwner() == user && exp.getTarget() == target &&
                 exp.getType() == type )
             {
-                // Add it in
+                // TODO: Complete
             }
         }
     }
@@ -150,9 +156,6 @@ public class EXPManager extends DBManager
 
     private static class EXPManagerHolder
     {
-
         private static final EXPManager INSTANCE = new EXPManager();
-
     }
-
 }

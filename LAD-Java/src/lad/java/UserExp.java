@@ -184,7 +184,7 @@ public class UserExp
             updateStmt.setInt( 2, this.exp );
             updateStmt.setInt( 3, this.owner );
             updateStmt.setInt( 4, this.target.getValue() );
-            updateStmt.setInt( 5, this.getType().getTarget() );
+            updateStmt.setInt( 5, this.getType().getValue() );
 
             MySQLDB.delaySQL( updateStmt );
         }

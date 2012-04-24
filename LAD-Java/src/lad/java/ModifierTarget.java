@@ -81,19 +81,11 @@ public enum ModifierTarget
     }
 
     /**
-     * @return the target
+     * @return Value of the modifier target
      */
-    public int getTarget()
+    public int getValue()
     {
         return target;
-    }
-
-    /**
-     * @param target the target to set
-     */
-    public void setTarget( int target )
-    {
-        this.target = target;
     }
 
     /**

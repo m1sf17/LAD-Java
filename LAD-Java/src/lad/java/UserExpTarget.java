@@ -12,19 +12,58 @@ import java.util.List;
  */
 public enum UserExpTarget
 {
+    /**
+     * General target for off hand weapons
+     */
     OffHand( 1, new Weapon[]{ Weapon.Amplifier, Weapon.Generator } ),
+    /**
+     * General target for two handed weapons
+     */
     TwoHand( 2, new Weapon[]{ Weapon.Bombarder, Weapon.Lancer,
                                                 Weapon.Launcher }),
+    /**
+     * General target for either hand weapons
+     */
     EitherHand( 3, new Weapon[]{ Weapon.Pistol, Weapon.Propeller } ),
-    MainHand( 4, new Weapon[]{ Weapon.Projecter, Weapon.Catapulter }),
+    /**
+     * General target for main hand weapons
+     */
+    MainHand( 4, new Weapon[]{ Weapon.Projector, Weapon.Catapulter }),
+    /**
+     * Specific target for the amplifier
+     */
     Amplifier( 5, new Weapon[]{ Weapon.Amplifier }),
+    /**
+     * Specific target for the generator
+     */
     Generator( 6, new Weapon[]{ Weapon.Generator }),
+    /**
+     * Specific target for the bombarder
+     */
     Bombarder( 7, new Weapon[]{ Weapon.Bombarder }),
+    /**
+     * Specific target for the lancer
+     */
     Lancer( 8, new Weapon[]{ Weapon.Lancer }),
+    /**
+     * Specific target for the launcher
+     */
     Launcher( 9, new Weapon[]{ Weapon.Launcher }),
+    /**
+     * Specific target for the pistol
+     */
     Pistol( 10, new Weapon[]{ Weapon.Pistol }),
+    /**
+     * Specific target for the propeller
+     */
     Propeller( 11, new Weapon[]{ Weapon.Propeller }),
-    Projecter( 12, new Weapon[]{ Weapon.Projecter }),
+    /**
+     * Specific target for the projector
+     */
+    Projector( 12, new Weapon[]{ Weapon.Projector }),
+    /**
+     * Specific target for the catapulter
+     */
     Catapulter( 13, new Weapon[]{ Weapon.Catapulter });
 
     /**
@@ -99,7 +138,7 @@ public enum UserExpTarget
             case 11:
                 return Propeller;
             case 12:
-                return Projecter;
+                return Projector;
             case 13:
                 return Catapulter;
         }
@@ -139,7 +178,7 @@ public enum UserExpTarget
             case 11:
                 return "Propeller";
             case 12:
-                return "Projecter";
+                return "Projector";
             case 13:
                 return "Catapulter";
         }
@@ -182,7 +221,7 @@ public enum UserExpTarget
         {
             return EitherHand;
         }
-        if( weapon == Weapon.Projecter )
+        if( weapon == Weapon.Projector )
         {
             return MainHand;
         }
@@ -229,9 +268,9 @@ public enum UserExpTarget
         {
             return Pistol;
         }
-        if( weapon == Weapon.Projecter )
+        if( weapon == Weapon.Projector )
         {
-            return Projecter;
+            return Projector;
         }
         if( weapon == Weapon.Propeller )
         {

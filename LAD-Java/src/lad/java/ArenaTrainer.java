@@ -10,6 +10,10 @@ import java.util.Map;
  * Extension of trainer to support extra variables needed for battling in
  * the arena.
  *
+ * Many of the basic elements of this class are public fields to make it easier
+ * for the TrainerBattle class to make rapid changes to them.
+ *
+ * @see lad.java.TrainerBattle
  * @author msflowers
  */
 public class ArenaTrainer
@@ -27,29 +31,29 @@ public class ArenaTrainer
     /**
      * Whether this trainer is currently running
      */
-    public boolean running;
+    public boolean running = false;
 
     /**
      * A count of how many times this trainer has ran away
      */
-    public int timesRan;
+    public int timesRan = 0;
 
     /**
      * The total damage that has been inflicted upon this trainer
      */
-    public double totalDamage;
+    public double totalDamage = 0.0;
 
     /**
      * Amount of time remaining to reload
      */
-    public double reloadTimeRemain;
+    public double reloadTimeRemain = 0.0;
 
     /**
      * Left over attack speed for attacking the next round.
      *
      * If this value is negative then something else cut it off.
      */
-    public double leftOverAtkSpd;
+    public double leftOverAtkSpd = 0.0;
     /**
      * Next action the trainer will take in the battle
      */
@@ -81,9 +85,6 @@ public class ArenaTrainer
     {
         this.trainer = trainer;
         this.weapon = weapon;
-        running = false;
-        timesRan = 0;
-        totalDamage = reloadTimeRemain = leftOverAtkSpd = 0.0;
         this.modifiers = new ArrayList<>( modifiers );
 
         for( int i = 1; i <= 9; i++ )
@@ -104,6 +105,8 @@ public class ArenaTrainer
     }
 
     /**
+     * Returns the trainer object
+     *
      * @return the trainer
      */
     public Trainer getTrainer()
@@ -145,7 +148,7 @@ public class ArenaTrainer
     }
 
     /**
-     * Possible actions the trainer can take during the coming tick
+     * Possible actions the trainer can take during the coming tick.
      */
     public enum NextAction
     {

@@ -15,8 +15,8 @@ import lad.java.LADJava;
 /**
  * Manages the connection to the MySQL DB.
  *
- * MySQL calls need a Connection to be able to process.  Simply call the static
- * @see getConn to get a valid connection.
+ * MySQL calls need a Connection to be able to process.  Primary entry point to
+ * this class is the getConn method.
  *
  * @author msflowers
  */
@@ -109,9 +109,10 @@ public class MySQLDB
     /**
      * Gets the connection to the MySQL DB.
      *
-     * @see intialize should be called first.  The internal handler for
-     * initializing within this function is to exit.
-     * 
+     * The initialization should be called first.  The internal handler for
+     * initializing within this function is to exit on failure.
+     *
+     * @see lad.db.MySQLDB#initialize()
      * @return A valid connection
      */
     private Connection getConnection()
@@ -134,6 +135,11 @@ public class MySQLDB
 
     /**
      * Initializes the tables list.
+     *
+     * Pulls the list of tables from the DB and populates the loaded tables
+     * variable with all of the table names.
+     *
+     * @see lad.db.MySQLDB#loadedTables
      */
     public void populateTableList()
     {
@@ -169,9 +175,11 @@ public class MySQLDB
      *
      * @param fields Array of fields that the table should have
      * @param tblName Name of the table
-     * @throws SQLException when either a header is mismatched or the column count is wrong
+     * @throws SQLException Thrown when either a header is mismatched or the
+     *                      column count is wrong
      */
-    public void validateStructure( String[] fields, String tblName ) throws SQLException
+    public void validateStructure( String[] fields, String tblName )
+                throws SQLException
     {
         boolean valid = true;
         Statement stmt = getConnection().createStatement();
@@ -200,9 +208,10 @@ public class MySQLDB
      *
      * @param tblName Name of the table
      * @param creationStr String to run to load the table if it is not created
-     * @throws SQLException if the table fails to create
+     * @throws SQLException Thrown if the table fails to create
      */
-    public void validateTable( String tblName, String creationStr ) throws SQLException
+    public void validateTable( String tblName, String creationStr )
+                throws SQLException
     {
         // Check the list to see if it's there
         ListIterator< String > iter = loadedTables.listIterator();
@@ -286,6 +295,7 @@ public class MySQLDB
 
         DelayedRunner( Statement n_stmt )
         {
+            // Set internal variables
             stmts = new LinkedList<>();
             pstmts = new LinkedList<>();
             stmt = n_stmt;
@@ -293,6 +303,7 @@ public class MySQLDB
 
         void addStmt( String str )
         {
+            // Add statement (string)
             synchronized( stmts )
             {
                 stmts.add( str );
@@ -301,6 +312,7 @@ public class MySQLDB
 
         void addStmt( PreparedStatement pstmt )
         {
+            // Add statement (prepared)
             synchronized( pstmts )
             {
                 pstmts.add( pstmt );
@@ -310,6 +322,7 @@ public class MySQLDB
         @Override
         public void run()
         {
+            // Waits on notifier to wake up
             Debug.log( "Started MySQL Delayed Runner Thread", "Thread" );
             try
             {
@@ -331,6 +344,8 @@ public class MySQLDB
 
         private void emptyQueue()
         {
+            // Empties both the string and the prepared queues by
+            // executing all of the functions in the arrays
             try
             {
                 synchronized( stmts )
@@ -340,7 +355,7 @@ public class MySQLDB
                         String stmtString = stmts.poll();
                         stmt.execute( stmtString );
 
-                        System.out.println( "Delay ran a SQL stmt." );
+                        Debug.log( "Delay ran a SQL stmt.", "MySQL" );
                     }
                 }
                 synchronized( stmts )
@@ -350,7 +365,7 @@ public class MySQLDB
                         PreparedStatement pstmt = pstmts.poll();
                         pstmt.executeUpdate( );
 
-                        System.out.println( "Delay ran a SQL pstmt." );
+                        Debug.log( "Delay ran a SQL pstmt.", "MySQL" );
                     }
                 }
             }

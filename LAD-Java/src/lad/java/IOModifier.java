@@ -39,6 +39,8 @@ public class IOModifier extends MessageHandler
      * Handleable pieces.
      *
      * Piece: viewModifiersPiece
+     *
+     * @return List with the above pieces
      */
     @Override
     public MessageList getPieces()
@@ -93,6 +95,7 @@ public class IOModifier extends MessageHandler
             }
         }
 
+        // And include the button to return to trainer
         output += IOInitial.getInstance().outputReturnToTrainerButton();
 
         MessageManager.getInstance().clearJava();

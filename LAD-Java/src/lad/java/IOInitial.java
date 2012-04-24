@@ -167,15 +167,17 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( trainminionPiece ) )
         {
+            // Make sure the trainer belongs to the user
             Trainer trnr = TrainerManager.getInstance().getTrainerByID(
                     Integer.valueOf( pieces.getValue( "trainer" ) ) );
             int minionID = Integer.valueOf( pieces.getValue( "trainminion" ) );
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID does not match." );
+                throw new IndexOutOfBoundsException( "User ID mismatch." );
             }
 
+            // Find the current minion data from the list
             ListIterator< Minion > iter = trnr.getMinions().listIterator();
             Minion target = null;
             while( iter.hasNext() )
@@ -188,6 +190,7 @@ public class IOInitial extends MessageHandler
                 }
             }
 
+            // Make sure the minion belongs to the trainer
             if( target == null )
             {
                 throw new IndexOutOfBoundsException( "Minion not owned." );
@@ -198,14 +201,16 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( addminionPiece ) )
         {
+            // Make sure the trainer belongs to the user
             Trainer trnr = TrainerManager.getInstance().getTrainerByID(
                     Integer.valueOf( pieces.getValue( "trainer" ) ) );
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID does not match." );
+                throw new IndexOutOfBoundsException( "User ID mismatch." );
             }
 
+            // Make sure the trainer doesn't already have 8 minions
             if( trnr.getMinions().size() >=8 )
             {
                 throw new IndexOutOfBoundsException( "8 minions max." );
@@ -218,6 +223,7 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( battleminionPiece ) )
         {
+            // Make sure the trainer belongs to the user
             Trainer trnr = TrainerManager.getInstance().getTrainerByID(
                     Integer.valueOf( pieces.getValue( "battleminion" ) ) );
             int minion1ID = Integer.valueOf( pieces.getValue( "minion1" ) );
@@ -225,15 +231,17 @@ public class IOInitial extends MessageHandler
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID does not match." );
+                throw new IndexOutOfBoundsException( "User ID mismatch." );
             }
 
+            // Return a generic error if the minions match
             if( minion1ID == minion2ID )
             {
                 return "genericErrorDialog('Error','Cannot battle a minion " +
                        "with itself.');";
             }
 
+            // Find both of the minions
             ListIterator< Minion > iter = trnr.getMinions().listIterator();
             Minion target1 = null, target2 = null;
             while( iter.hasNext() )
@@ -249,11 +257,13 @@ public class IOInitial extends MessageHandler
                 }
             }
 
+            // Make sure both minions belong to the trainer
             if( target1 == null || target2 == null )
             {
                 throw new IndexOutOfBoundsException( "Minion not owned." );
             }
 
+            // Battle them and grant a modifier
             Minion loser = trnr.battle( target1, target2 );
             int luck = loser.getLevel() + trnr.getLevel();
 
@@ -262,6 +272,7 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( viewexpPiece ) )
         {
+            // Simple output of all the EXP's
             List< UserExp > userexp = EXPManager.getInstance().
                     getModifiersByUserID( userid );
             ListIterator< UserExp > iter = userexp.listIterator();
@@ -285,6 +296,7 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( trainertoarenaPiece ) )
         {
+            // Make sure the trainer belongs to the user
             Trainer trnr = TrainerManager.getInstance().getTrainerByID(
                     Integer.valueOf( pieces.getValue( "trainertoarena" ) ) );
 
@@ -293,7 +305,8 @@ public class IOInitial extends MessageHandler
                 throw new IndexOutOfBoundsException( "User ID does not match." );
             }
 
-            
+            // TODO: Fill in GUI for sending trainer to arena
+            // TODO: Add button for sending trainer to arena
         }
         
         // An error will instantly return.  It's safe to say all errors were
@@ -318,6 +331,7 @@ public class IOInitial extends MessageHandler
 
         int index = 1;
 
+        // Output each trainer
         while( iter.hasNext() )
         {
             Trainer curr = iter.next();
@@ -333,6 +347,7 @@ public class IOInitial extends MessageHandler
             index++;
         }
 
+        // Add the "Add Trainer" button
         if( trainers.size() < 8 )
         {
             output += "$('<button>Add Trainer</button>').button().click(" +
@@ -341,11 +356,13 @@ public class IOInitial extends MessageHandler
                         "}).appendTo( java() );";
         }
 
+        // Add the modifiers button
         output += "java().append( '<br/><br/>' ).append(" +
                   "$('<button>Modifiers</button>').button().click(function(){" +
                     "doJava( { viewmodifiers: '' } );" +
                   "}));";
 
+        // Add the User EXP button
         output += "java().append( " +
                   "$('<button>User EXP</button>').button().click(function(){" +
                     "doJava( { viewuserexp: '' } );" +
@@ -366,8 +383,8 @@ public class IOInitial extends MessageHandler
     private String outputMinionView( int userid, int trainer )
             throws IndexOutOfBoundsException
     {
+        // Ensure the trainer belongs to the user
         String output = "";
-
         Trainer trnr = TrainerManager.getInstance().getTrainerByID( trainer );
 
         if( trnr.getOwner() != userid )
@@ -378,6 +395,7 @@ public class IOInitial extends MessageHandler
         int level = trnr.getLevel();
         int exp = trnr.getExp();
 
+        // Output the trainer profile
         output += "java().append('";
         output += "Trainer #" + trainer;
         output += "<br>Level:" + level;
@@ -388,6 +406,7 @@ public class IOInitial extends MessageHandler
         ListIterator< Minion > iter = minionList.listIterator();
         int index = 1;
 
+        // Output each of the minions
         String options = "";
         while( iter.hasNext() )
         {
@@ -408,6 +427,7 @@ public class IOInitial extends MessageHandler
             index++;
         }
 
+        // If there's at least 2 minions, let them be able to battle
         if( minionList.size() >= 2 )
         {
             output += "java().append('<br><br>Battle: <select id=\"minion1\">" +
@@ -421,6 +441,7 @@ public class IOInitial extends MessageHandler
                         "}).appendTo( java() );";
         }
 
+        // If there is less than 8 minions, allow the trainer to get another
         if( minionList.size() < 8 )
         {
             output += "$('<button>Add Minion</button>').button().click(" +

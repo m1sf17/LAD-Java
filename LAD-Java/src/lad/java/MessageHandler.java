@@ -78,6 +78,5 @@ public abstract class MessageHandler
     private static class MessageHandlerHolder
     {
         private static MessageHandler INSTANCE = null;
-
     }
 }
