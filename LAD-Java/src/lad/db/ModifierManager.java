@@ -6,6 +6,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import lad.java.Modifier;
+import lad.java.ModifierTarget;
 
 /**
  * Manages all of the modifiers
@@ -99,7 +100,7 @@ public class ModifierManager extends DBManager
      * @param userid User ID to get modifiers for
      * @return List of found modifiers
      */
-    public List< Modifier > getModifiersByUserID( int userid )
+    public List< Modifier > getByUserID( int userid )
     {
         LinkedList< Modifier > ret = new LinkedList<>();
         ListIterator< Modifier > iter = modifiers.listIterator();
@@ -118,13 +119,89 @@ public class ModifierManager extends DBManager
     }
 
     /**
+     * Gets all not-equipped modifiers for the specified owner.
+     *
+     * Only returns modifiers that do not have a trainer set.  If no modifiers
+     * are found the list returned will simply be empty.
+     *
+     * @param userid User ID to get modifiers for
+     * @return List of found modifiers
+     */
+    public List< Modifier > getAvailableByUserID( int userid )
+    {
+        LinkedList< Modifier > ret = new LinkedList<>();
+        ListIterator< Modifier > iter = modifiers.listIterator();
+
+        while( iter.hasNext() )
+        {
+            Modifier current = iter.next();
+
+            if( current.getOwner() == userid && current.getEquipped() == null )
+            {
+                ret.add( current );
+            }
+        }
+
+        return ret;
+    }
+
+    /**
+     * Gets a set of available modifiers for the specified owner.
+     *
+     * Only returns modifiers that do not have a trainer set.  Guaranteed to
+     * only return one modifier of each type.  If no modifiers are found the
+     * list returned will simply be empty.
+     *
+     * @param userid User ID to get modifiers for
+     * @return List of found modifiers
+     */
+    public List< Modifier > getAvailableSetByUserID( int userid )
+    {
+        return getAvailableSetByUserID( userid, ModifierTarget.getLength() );
+    }
+
+    /**
+     * Gets a set of available modifiers for the specified owner.
+     *
+     * Only returns modifiers that do not have a trainer set.  Guaranteed to
+     * only return one modifier of each type.  Will not return more than the
+     * specified amount of modifiers.  If no modifiers are found the list
+     * returned will simply be empty.
+     *
+     * @param userid User ID to get modifiers for
+     * @param max    Maximum number of modifiers to get
+     * @return List of found modifiers
+     */
+    public List< Modifier > getAvailableSetByUserID( int userid, int max )
+    {
+        LinkedList< Modifier > ret = new LinkedList<>();
+        ListIterator< Modifier > iter = modifiers.listIterator();
+        List< ModifierTarget > found = new LinkedList<>();
+
+        while( iter.hasNext() )
+        {
+            Modifier current = iter.next();
+            ModifierTarget target = current.getTarget();
+
+            if( current.getOwner() == userid && current.getEquipped() == null &&
+                !found.contains( target ) )
+            {
+                ret.add( current );
+                found.add( target );
+            }
+        }
+
+        return ret;
+    }
+
+    /**
      * Gets a specific modifier
      *
      * @param id ID of the modifier to get
      * @throws IndexOutOfBoundsException Thrown if modifier is not found
      * @return Found modifier
      */
-    public Modifier getModifierByID( int id )
+    public Modifier getByID( int id )
     {
         ListIterator< Modifier > iter = modifiers.listIterator();
 

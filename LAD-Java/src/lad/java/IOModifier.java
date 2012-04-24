@@ -61,7 +61,7 @@ public class IOModifier extends MessageHandler
         {
             ModifierManager mm = ModifierManager.getInstance();
             List< Modifier > modifiers =
-                    mm.getModifiersByUserID( userid );
+                    mm.getByUserID( userid );
 
             // Output a fancy table if possible
             if( modifiers.size() > 0 )

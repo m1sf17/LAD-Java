@@ -157,4 +157,17 @@ public enum ModifierTarget
 
         throw new IndexOutOfBoundsException( "Invalid modifier to string." );
     }
+
+    /**
+     * Returns the number of valid modifier targets.
+     *
+     * Valid targets are any target except for the InvalidTarget value.  Thus,
+     * the returned value is the length of this enum minus one.
+     *
+     * @return Length of this enum - 1
+     */
+    public static int getLength()
+    {
+        return values().length - 1;
+    }
 }
