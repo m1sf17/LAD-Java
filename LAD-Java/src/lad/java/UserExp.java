@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
+import lad.db.EXPManager;
 import lad.db.MySQLDB;
 
 /**
@@ -39,6 +40,26 @@ public class UserExp
     private int exp;
 
     /**
+     * Total experience that has been earned
+     */
+    private int totalExp;
+
+    /**
+     * Calculated value for remaining amount of exp for bonus levels
+     */
+    private int bonusExp;
+
+    /**
+     * Calculated value for levels able to gain via bonus route
+     */
+    private int bonusLevel;
+
+    /**
+     * Calculated value for offset via bonus route
+     */
+    private int bonusMultiplier;
+
+    /**
      * Statement for inserting a new trainer
      */
     private static PreparedStatement insertStmt = null;
@@ -63,12 +84,13 @@ public class UserExp
         Connection conn = MySQLDB.getConn();
 
         updateStmt = conn.prepareStatement( "UPDATE USEREXP SET LEVEL = ?, " +
-                                            "EXP = ? WHERE OWNER = ? AND " +
-                                            "TARGET = ? AND TYPE = ?");
+                                            "EXP = ?, TOTALEXP = ? WHERE " +
+                                            "OWNER = ? AND TARGET = ? AND " +
+                                            "TYPE = ?" );
         deleteStmt = conn.prepareStatement( "DELETE FROM USEREXP WHERE OWNER " +
                                             "= ?");
         insertStmt = conn.prepareStatement(
-                        "INSERT INTO USEREXP VALUES( ?, ?, ?, ?, ? )",
+                        "INSERT INTO USEREXP VALUES( ?, ?, ?, 0, 0, 0 )",
                         Statement.RETURN_GENERATED_KEYS );
     }
 
@@ -80,14 +102,18 @@ public class UserExp
      * @param type Type of the experience
      * @param level Level of the experience
      * @param exp Remaining experience
+     * @param totalexp Total experience earned
      */
-    public UserExp( int owner, int target, int type, int level, int exp )
+    public UserExp( int owner, int target, int type, int level, int exp,
+                    int totalexp )
     {
         this.owner = owner;
         this.target = UserExpTarget.fromInt( target );
         this.type = ModifierTarget.fromInt( type );
         this.level = level;
         this.exp = exp;
+        this.totalExp = totalexp;
+        refreshBonuses();
     }
 
     /**
@@ -97,7 +123,7 @@ public class UserExp
      * @param target Target of the experience to add
      * @param type Type of the experience to add
      */
-    public UserExp( int owner, int target, int type )
+    private UserExp( int owner, int target, int type )
     {
         this.owner = owner;
         this.target = UserExpTarget.fromInt( target );
@@ -137,11 +163,43 @@ public class UserExp
     }
 
     /**
+     * @return the total exp
+     */
+    public int getTotalExp()
+    {
+        return totalExp;
+    }
+
+    /**
      * @return the type
      */
     public ModifierTarget getType()
     {
         return type;
+    }
+
+    /**
+     * @return the bonusExp
+     */
+    public int getBonusExp()
+    {
+        return bonusExp;
+    }
+
+    /**
+     * @return the bonusLevel
+     */
+    public int getBonusLevel()
+    {
+        return bonusLevel;
+    }
+
+    /**
+     * @return the bonusMultiplier
+     */
+    public int getBonusMultiplier()
+    {
+        return bonusMultiplier;
     }
 
     /**
@@ -151,6 +209,7 @@ public class UserExp
     {
         this.level = level;
         runUpdate();
+        updateBonuses();
     }
 
     /**
@@ -158,8 +217,10 @@ public class UserExp
      */
     public void setExp( int exp )
     {
+        this.totalExp += exp - this.exp;
         this.exp = exp;
         runUpdate();
+        updateBonuses();
     }
 
     /**
@@ -171,6 +232,7 @@ public class UserExp
         this.level = level;
         this.exp = exp;
         runUpdate();
+        updateBonuses();
     }
 
     /**
@@ -182,9 +244,10 @@ public class UserExp
         {
             updateStmt.setInt( 1, this.level );
             updateStmt.setInt( 2, this.exp );
-            updateStmt.setInt( 3, this.owner );
-            updateStmt.setInt( 4, this.target.getValue() );
-            updateStmt.setInt( 5, this.getType().getValue() );
+            updateStmt.setInt( 3, this.totalExp );
+            updateStmt.setInt( 4, this.owner );
+            updateStmt.setInt( 5, this.target.getValue() );
+            updateStmt.setInt( 6, this.getType().getValue() );
 
             MySQLDB.delaySQL( updateStmt );
         }
@@ -212,8 +275,6 @@ public class UserExp
             insertStmt.setInt( 1, owner );
             insertStmt.setInt( 2, target );
             insertStmt.setInt( 3, type );
-            insertStmt.setInt( 4, 0 );
-            insertStmt.setInt( 5, 0 );
 
             int affectedRows = insertStmt.executeUpdate();
             if( affectedRows == 0 )
@@ -227,6 +288,74 @@ public class UserExp
             System.exit( -1 );
         }
 
+        ret.refreshBonuses();
         return ret;
+    }
+
+    /**
+     * Returns the amount of experience required for the next level of this
+     * block.
+     *
+     * This function does not calculate the remaining experience required, only
+     * the total experience required for the next level.
+     *
+     * @see lad.java.UserExp#getExpRemainingNextLevel()
+     * @return EXP required for next level.
+     */
+    public int getExpRequiredNextLevel()
+    {
+        return EXPManager.expRequiredAtLevel( this.level );
+    }
+
+    /**
+     * Returns the remaining amount of experience required for the next level
+     * of this block.
+     *
+     * This function will never return a value less than 0.  If 0 is returned,
+     * it means this block is ready to be leveled.
+     *
+     * @see lad.java.UserExp#getExpRequiredNextLevel()
+     * @return EXP remaining for next level.
+     */
+    public int getExpRemainingNextLevel()
+    {
+        int ret = getExpRequiredNextLevel() - this.exp;
+        if( ret < 0 )
+        {
+            ret = 0;
+        }
+        return ret;
+    }
+
+    /**
+     * Updates all of the bonus fields from scratch
+     */
+    private void refreshBonuses()
+    {
+        this.bonusExp = this.exp - getExpRequiredNextLevel();
+        this.bonusMultiplier = 0;
+        this.bonusLevel = 0;
+        updateBonuses();
+    }
+
+    /**
+     * Calculates all of the bonus fields.
+     */
+    private void updateBonuses()
+    {
+        int expRequired =
+                EXPManager.expRequiredAtLevel( this.level + this.getBonusLevel() );
+        while( this.getBonusExp() > expRequired )
+        {
+            if( this.getBonusLevel() > 1 )
+            {
+                this.bonusMultiplier++;
+            }
+            this.bonusLevel += this.getBonusMultiplier();
+            this.bonusExp -= expRequired;
+
+            expRequired = EXPManager.expRequiredAtLevel( this.level +
+                                                         this.getBonusLevel() );
+        }
     }
 }

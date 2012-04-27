@@ -273,8 +273,7 @@ public class IOInitial extends MessageHandler
         else if( pieces.contains( viewexpPiece ) )
         {
             // Simple output of all the EXP's
-            List< UserExp > userexp = EXPManager.getInstance().
-                    getModifiersByUserID( userid );
+            List< UserExp > userexp = EXPManager.getExpByUserID( userid );
             ListIterator< UserExp > iter = userexp.listIterator();
 
             output += "java().append(";
