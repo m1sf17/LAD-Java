@@ -106,7 +106,9 @@ public class Modifier
     }
 
     /**
-     * @return the target
+     * Returns the target of this modifier
+     *
+     * @return Target
      */
     public ModifierTarget getTarget()
     {
@@ -114,7 +116,9 @@ public class Modifier
     }
 
     /**
-     * @param target the target to set
+     * Sets the target of this modifier
+     *
+     * @param target Target to set
      */
     public void setTarget( ModifierTarget target )
     {
@@ -123,7 +127,9 @@ public class Modifier
     }
 
     /**
-     * @return the rarity
+     * Returns the rarity of this modifier
+     *
+     * @return Rarity
      */
     public int getRarity()
     {
@@ -131,7 +137,9 @@ public class Modifier
     }
 
     /**
-     * @param rarity the rarity to set
+     * Sets the rarity of this modifier
+     *
+     * @param rarity Rarity to set
      */
     public void setRarity( int rarity )
     {
@@ -140,7 +148,9 @@ public class Modifier
     }
 
     /**
-     * @return the owner
+     * Returns the owner of this modifier
+     *
+     * @return Owner
      */
     public int getOwner()
     {
@@ -148,7 +158,9 @@ public class Modifier
     }
 
     /**
-     * @param owner the owner to set
+     * Sets the owner of this modifier
+     *
+     * @param owner Owner to set
      */
     public void setOwner( int owner )
     {
@@ -157,7 +169,9 @@ public class Modifier
     }
 
     /**
-     * @return the equipped
+     * Returns the trainer that has this modifier equipped
+     *
+     * @return Trainer that has this modifier equipped
      */
     public Trainer getEquipped()
     {
@@ -165,7 +179,12 @@ public class Modifier
     }
 
     /**
-     * @param equipped the equipped to set
+     * Sets the trainer that has this modifier equipped.
+     *
+     * Null is an acceptable parameter which indicates that no trainer has the
+     * modifier equipped.
+     *
+     * @param equipped Trainer that has this modifier, or null
      */
     public void setEquipped( Trainer equipped )
     {
@@ -173,7 +192,9 @@ public class Modifier
     }
 
     /**
-     * @return the battles
+     * Returns the number of battles this modifier will survive through.
+     *
+     * @return Battles
      */
     public int getBattles()
     {
