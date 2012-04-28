@@ -167,13 +167,7 @@ public class MessageManager
         // If no handler was found then abort
         if( handler == null )
         {
-            debugInfo( "unhandled", null, pairs );
-
-            String title = "Server Error";
-            String msg = "Not implemented.  Please try again later.";
-            String func = "$('#LAD.popup .close_popup').trigger(\"click\");";
-            return "genericErrorDialog('" + title + "','" + msg +
-                    "',function(){ " + func + "});";
+            return debugInfo( "unhandled", null, pairs );
         }
 
         // Run the handler and return it's result
