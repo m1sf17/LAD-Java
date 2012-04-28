@@ -1,11 +1,11 @@
 package lad.game;
 
-import lad.data.Minion;
-import lad.data.Trainer;
-import lad.data.UserExp;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.Minion;
+import lad.data.Trainer;
+import lad.data.UserExp;
 import lad.db.EXPManager;
 import lad.db.ModifierManager;
 import lad.db.TrainerManager;

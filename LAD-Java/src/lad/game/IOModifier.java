@@ -1,8 +1,8 @@
 package lad.game;
 
-import lad.data.Modifier;
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.Modifier;
 import lad.db.ModifierManager;
 
 /**

@@ -1,11 +1,11 @@
 package lad.game;
 
-import lad.data.Modifier;
-import lad.data.ModifierTarget;
-import lad.data.UserExpTarget;
 import java.util.ArrayList;
 import java.util.ListIterator;
 import java.util.concurrent.Semaphore;
+import lad.data.Modifier;
+import lad.data.ModifierTarget;
+import lad.data.UserExpTarget;
 import lad.db.EXPManager;
 import lad.db.ModifierManager;
 import lad.db.MySQLDB;

@@ -1,14 +1,14 @@
 package lad.game;
 
-import lad.data.Modifier;
-import lad.data.ModifierTarget;
-import lad.data.Trainer;
-import lad.data.Weapon;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import lad.data.Modifier;
+import lad.data.ModifierTarget;
+import lad.data.Trainer;
+import lad.data.Weapon;
 
 /**
  * Extension of trainer to support extra variables needed for battling in

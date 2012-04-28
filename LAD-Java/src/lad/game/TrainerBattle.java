@@ -1,16 +1,16 @@
 package lad.game;
 
-import lad.data.Modifier;
-import lad.data.ModifierTarget;
-import lad.data.Trainer;
-import lad.data.Weapon;
-import lad.data.UserExp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import lad.data.Modifier;
+import lad.data.ModifierTarget;
+import lad.data.Trainer;
+import lad.data.UserExp;
+import lad.data.Weapon;
 import lad.db.EXPManager;
 import lad.db.ModifierManager;
 
