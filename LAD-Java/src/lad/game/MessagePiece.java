@@ -59,7 +59,7 @@ public class MessagePiece
     /**
      * Sets the variable
      *
-     * @param n_var Sets @see var to this value
+     * @param n_var Sets var to this value
      */
     public final void setVariable( String n_var )
     {
@@ -69,7 +69,7 @@ public class MessagePiece
     /**
      * Sets the value
      *
-     * @param n_val Sets @see val to this value
+     * @param n_val Sets val to this value
      */
     public final void setValue( String n_val )
     {
@@ -79,7 +79,7 @@ public class MessagePiece
     /**
      * Simply returns the variable
      *
-     * @return @see var
+     * @return var
      */
     public String getVariable( )
     {
@@ -89,9 +89,9 @@ public class MessagePiece
     /**
      * Simply returns the value
      *
-     * @return @see val
+     * @return val
      */
-    public String getValue( )
+    public String getValue()
     {
         return val;
     }
@@ -102,7 +102,7 @@ public class MessagePiece
      * @return Composition of all the variables to generate a unique hashcode
      */
     @Override
-    public int hashCode( )
+    public int hashCode()
     {
         if( val.compareTo( "*" ) != 0 )
         {
