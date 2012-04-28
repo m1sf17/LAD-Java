@@ -55,7 +55,7 @@ public enum ModifierTarget
     /**
      * Holds the actual target.
      */
-    private int target = 0;
+    private int target;
 
     /**
      * Ctor from int
@@ -70,14 +70,6 @@ public enum ModifierTarget
         }
 
         target = targ;
-    }
-
-    /**
-     * Empty ctor.
-     */
-    ModifierTarget( )
-    {
-        target = -1;
     }
 
     /**
