@@ -84,7 +84,7 @@ public class Minion
                                                post );
         deleteStmt = conn.prepareStatement( "DELETE FROM MINIONS" + post );
         insertStmt = conn.prepareStatement(
-            "INSERT INTO MINIONS VALUES( NULL, ?, ?, ? )",
+            "INSERT INTO MINIONS VALUES( NULL, ?, 0, 0 )",
             Statement.RETURN_GENERATED_KEYS );
     }
 
@@ -296,8 +296,6 @@ public class Minion
         {
             // Set statement values
             insertStmt.setInt( 1, owner );
-            insertStmt.setInt( 2, 0 );
-            insertStmt.setInt( 3, 0 );
 
             // Validate it works/run it
             int affectedRows = insertStmt.executeUpdate();
