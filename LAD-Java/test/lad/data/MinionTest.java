@@ -1,5 +1,6 @@
-package lad.java;
+package lad.data;
 
+import lad.data.Minion;
 import java.sql.SQLException;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;

@@ -4,8 +4,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.ListIterator;
-import lad.java.Minion;
-import lad.java.Trainer;
+import lad.data.Minion;
+import lad.data.Trainer;
 
 /**
  * Manages all of the trainers (and consequently their minions)

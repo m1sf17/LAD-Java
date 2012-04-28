@@ -5,8 +5,8 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import lad.java.Modifier;
-import lad.java.ModifierTarget;
+import lad.data.Modifier;
+import lad.data.ModifierTarget;
 
 /**
  * Manages all of the modifiers

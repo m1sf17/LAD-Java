@@ -66,8 +66,8 @@ public abstract class DBManager
             {
                 System.err.println( "Error with " + tableName + " headers." +
                                     e.toString() );
-                System.exit( -1 );
-            }
+                    System.exit( -1 );
+                }
 
             try
             {

@@ -1,4 +1,4 @@
-package lad.java;
+package lad.data;
 
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -11,9 +11,7 @@ import org.junit.runners.Suite;
 @RunWith(Suite.class)
 @Suite.SuiteClasses(
 {
-    lad.java.MinionTest.class,
-    lad.java.MessagePieceTest.class,
-    lad.java.TrainerBattleTest.class
+    lad.data.MinionTest.class
 })
 public class TestSuite
 {

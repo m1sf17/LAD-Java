@@ -9,8 +9,8 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.ListIterator;
 import java.util.Properties;
-import lad.java.Debug;
-import lad.java.LADJava;
+import lad.game.Debug;
+import lad.game.LADJava;
 
 /**
  * Manages the connection to the MySQL DB.

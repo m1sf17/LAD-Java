@@ -5,9 +5,9 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import lad.java.ModifierTarget;
-import lad.java.UserExp;
-import lad.java.UserExpTarget;
+import lad.data.ModifierTarget;
+import lad.data.UserExp;
+import lad.data.UserExpTarget;
 
 /**
  * Manages all of the User EXP
