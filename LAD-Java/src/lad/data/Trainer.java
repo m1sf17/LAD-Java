@@ -108,7 +108,7 @@ public class Trainer
         deleteMinionStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE " +
                                                   "OWNER = ?" );
         insertStmt = conn.prepareStatement(
-                        "INSERT INTO TRAINERS VALUES( NULL, ?, ?, ? )",
+                        "INSERT INTO TRAINERS VALUES( NULL, ?, 0, 0 )",
                         Statement.RETURN_GENERATED_KEYS );
     }
 
@@ -449,8 +449,6 @@ public class Trainer
         {
             // Set statement values
             insertStmt.setInt( 1, n_owner );
-            insertStmt.setInt( 2, 0 );
-            insertStmt.setInt( 3, 0 );
 
             // Validate it works/run it
             int affectedRows = insertStmt.executeUpdate();
