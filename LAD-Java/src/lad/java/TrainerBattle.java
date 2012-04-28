@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
+import lad.db.EXPManager;
 import lad.db.ModifierManager;
 
 /**
@@ -275,12 +276,48 @@ public class TrainerBattle
      * 
      * @param trainer Trainer to evaluate for
      * @param mods    Modifiers to evaluate for
+     * @param weapon  Weapon the trainer will be using
      * @return Map of bonuses
      */
     private static Map< ModifierTarget, Double > generateBonuses(
-            Trainer trainer, List< Modifier > mods )
+            Trainer trainer, List< Modifier > mods, Weapon weapon )
     {
+        int user = trainer.getOwner();
         Map< ModifierTarget, Double > ret = new HashMap<>( 10 );
+        List< UserExp > exps = EXPManager.getExpByUserID( user );
+        ListIterator< UserExp > expiter = exps.listIterator();
+        ListIterator< Modifier > moditer = mods.listIterator();
+
+        // Start by adding in the bonuses for the exp
+        while( expiter.hasNext() )
+        {
+            UserExp current = expiter.next();
+            if( current.getTarget().weaponAffected( weapon ) )
+            {
+                ModifierTarget target = current.getType();
+                Double level = (double)current.getLevel() * 0.01;
+                Double currentBonus = ret.get( target );
+                if( currentBonus == null )
+                {
+                    currentBonus = 0.0;
+                }
+                ret.put( target, level + currentBonus );
+            }
+        }
+
+        // Then add in the bonuses for the mods
+        while( moditer.hasNext() )
+        {
+            Modifier current = moditer.next();
+            ModifierTarget target = current.getTarget();
+            Double currentBonus = ret.get( target );
+            if( currentBonus == null )
+            {
+                currentBonus = 0.0;
+            }
+            ret.put( target, 0.02 + currentBonus );
+        }
+
         return ret;
     }
 
@@ -316,11 +353,10 @@ public class TrainerBattle
     public static TrainerBattle battle( Trainer t1, Trainer t2,
                                         Weapon w1, Weapon w2 )
     {
-        TrainerBattle ret = null;
         List< Modifier > mod1 = generateModifiers( t1 );
         List< Modifier > mod2 = generateModifiers( t2 );
-        Map< ModifierTarget, Double > bonus1 = generateBonuses( t1, mod1 ),
-                                      bonus2 = generateBonuses( t2, mod2 );
+        Map< ModifierTarget, Double > bonus1 = generateBonuses( t1, mod1, w1 ),
+                                      bonus2 = generateBonuses( t2, mod2, w2 );
         return new TrainerBattle( t1, t2, w1, w2, mod1, mod2, bonus1, bonus2 );
     }
 }

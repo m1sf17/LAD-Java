@@ -308,4 +308,53 @@ public enum Weapon
 
         return ret;
     }
+
+    /**
+     * Looks up an attribute adding a multiplier in the process.
+     *
+     * @param target Attribute to look up
+     * @param value  Multiplier to multiply in
+     * @return Resulting value
+     */
+    public double getAttributeWithMult( ModifierTarget target, Double value )
+    {
+        double mult = value == null ? 0.0 : value;
+        if( target == ModifierTarget.Accuracy )
+        {
+            return getAccuracy() + ( accuracyMult * mult );
+        }
+        if( target == ModifierTarget.Aim )
+        {
+            return getAim() + ( aimMult * mult );
+        }
+        if( target == ModifierTarget.AttackSpeed )
+        {
+            return getAtkSpd() + ( atkSpdMult * mult );
+        }
+        if( target == ModifierTarget.Damage )
+        {
+            return getDamage() + ( damageMult * mult );
+        }
+        if( target == ModifierTarget.Flexibility )
+        {
+            return getFlexibility() + ( flexibilityMult * mult );
+        }
+        if( target == ModifierTarget.Mobility )
+        {
+            return getMobility() + ( mobilityMult * mult );
+        }
+        if( target == ModifierTarget.Range )
+        {
+            return getRange() + ( rangeMult * mult );
+        }
+        if( target == ModifierTarget.ReloadRate )
+        {
+            return getReloadRate() + ( reloadMult * mult );
+        }
+        if( target == ModifierTarget.Shielding )
+        {
+            return getShielding() + ( shieldingMult * mult );
+        }
+        throw new IndexOutOfBoundsException( "Invalid target: " + target );
+    }
 }

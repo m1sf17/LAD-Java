@@ -92,12 +92,7 @@ public class ArenaTrainer
             ModifierTarget target = ModifierTarget.fromInt( i );
             Double mult = userMult.get( target );
 
-            Double value = 1.0;
-            if( mult != null )
-            {
-                value = value.doubleValue() * mult;
-            }
-
+            Double value = weapon.getAttributeWithMult( target, mult );
             attributes.put( target, value );
         }
 

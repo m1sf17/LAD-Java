@@ -106,6 +106,17 @@ public enum UserExpTarget
     }
 
     /**
+     * Checks if a given weapon is affected by this target.
+     *
+     * @param weapon Weapon to check if this exp affects
+     * @return True if the weapon is affected by this exp, false otherwise
+     */
+    public boolean weaponAffected( Weapon weapon )
+    {
+        return getWeaponAffectors().contains( weapon );
+    }
+
+    /**
      * Returns the appropriate target for a given integer
      *
      * @param val Value to lookup the target for
