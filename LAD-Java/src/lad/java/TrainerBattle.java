@@ -2,6 +2,7 @@ package lad.java;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
@@ -289,8 +290,8 @@ public class TrainerBattle
         ListIterator< UserExp > expiter = exps.listIterator();
         ListIterator< Modifier > moditer = mods.listIterator();
 
-        // TODO: Proficiency
         // Start by adding in the bonuses for the exp
+        Double prof = 0.0;
         while( expiter.hasNext() )
         {
             UserExp current = expiter.next();
@@ -298,12 +299,31 @@ public class TrainerBattle
             {
                 ModifierTarget target = current.getType();
                 Double level = (double)current.getLevel() * 0.01;
-                Double currentBonus = ret.get( target );
-                if( currentBonus == null )
+                if( target == ModifierTarget.Proficiency )
                 {
-                    currentBonus = 0.0;
+                    prof += level;
                 }
-                ret.put( target, level + currentBonus );
+                else
+                {
+                    Double currentBonus = ret.get( target );
+                    if( currentBonus == null )
+                    {
+                        currentBonus = 0.0;
+                    }
+                    ret.put( target, level + currentBonus );
+                }
+            }
+        }
+        
+        // Add in proficiency bonus to all targets
+        if( prof > 0.0 )
+        {
+            Iterator< ModifierTarget > targetIter = ret.keySet().iterator();
+
+            while( targetIter.hasNext() )
+            {
+                ModifierTarget target = targetIter.next();
+                ret.put( target, ret.get( target ) + prof );
             }
         }
 
