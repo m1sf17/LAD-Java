@@ -1,13 +1,11 @@
 package lad.game;
 
-import lad.data.Modifier;
-import lad.data.Weapon;
-import lad.data.ModifierTarget;
-import lad.game.ArenaTrainer;
-import lad.data.Trainer;
-import lad.game.TrainerBattle;
 import java.util.ArrayList;
 import java.util.HashMap;
+import lad.data.Modifier;
+import lad.data.ModifierTarget;
+import lad.data.Trainer;
+import lad.data.Weapon;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -33,7 +31,6 @@ public class TrainerBattleTest
     @Test
     public void testAll()
     {
-
         Trainer trnr = new Trainer( true );
         ArrayList< Modifier > mods = new ArrayList<>( 1 );
 
