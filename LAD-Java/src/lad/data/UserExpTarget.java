@@ -90,7 +90,9 @@ public enum UserExpTarget
     }
 
     /**
-     * @return the value
+     * Returns the numerical value of this target
+     *
+     * @return Numerical value
      */
     public int getValue()
     {
@@ -98,7 +100,9 @@ public enum UserExpTarget
     }
 
     /**
-     * @return the weaponAffectors
+     * Returns a list of weapons this user exp target will affect.
+     *
+     * @return Unmodifiable list of weapon affectors
      */
     public List< Weapon > getWeaponAffectors()
     {
@@ -159,7 +163,7 @@ public enum UserExpTarget
     /**
      * Returns a string representation of the target
      *
-     * @returns The target with an additional space in a couple of cases
+     * @returns Target with an additional space in a couple of cases
      */
     @Override
     public String toString()
