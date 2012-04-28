@@ -209,13 +209,20 @@ public class GameLoop implements Runnable
      *
      * Iterates over each of the modifiers the trainer had equipped and
      * update's their stats.  Also, updates the user's proficiency if there
-     * was no proficiency modifier equipped.
+     * was no proficiency modifier equipped.  Aborts if the trainer is an NPC.
      *
      * @param trainer Trainer that finished the battle
      * @param won True if the trainer won, false otherwise
      */
     private void trainerPostBattle( ArenaTrainer trainer, boolean won )
     {
+        // Abort if NPC
+        if( trainer.getTrainer().isNPC() )
+        {
+            return;
+        }
+
+        // Variables
         boolean hadProfMod = false;
         ListIterator< Modifier > iter = trainer.getModifiers().listIterator();
 
