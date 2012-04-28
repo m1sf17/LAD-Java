@@ -127,7 +127,8 @@ public class IOInitial extends MessageHandler
      */
     @Override
     public String handle( MessageList pieces, int userid )
-            throws IndexOutOfBoundsException
+            throws IndexOutOfBoundsException,
+                   InterruptedException
     {
 
         String output = "";
@@ -159,7 +160,9 @@ public class IOInitial extends MessageHandler
             }
 
             // Add the trainer and output default view
+            GameLoop.acquire();
             tm.addTrainer( userid );
+            GameLoop.release();
             output += outputTrainerView( userid );
         }
         else if( pieces.contains( viewtrainerPiece ) )
@@ -199,7 +202,9 @@ public class IOInitial extends MessageHandler
                 throw new IndexOutOfBoundsException( "Minion not owned." );
             }
 
+            GameLoop.acquire();
             target.adjustExp( 1 );
+            GameLoop.release();
             output += outputMinionView( userid, trnr.getID() );
         }
         else if( pieces.contains( addminionPiece ) )
@@ -219,8 +224,10 @@ public class IOInitial extends MessageHandler
                 throw new IndexOutOfBoundsException( "8 minions max." );
             }
 
+            GameLoop.acquire();
             Minion adder = Minion.create( trnr.getID() );
             trnr.addMinion( adder );
+            GameLoop.release();
 
             output += outputMinionView( userid, trnr.getID() );
         }
@@ -267,10 +274,11 @@ public class IOInitial extends MessageHandler
             }
 
             // Battle them and grant a modifier
+            GameLoop.acquire();
             Minion loser = trnr.battle( target1, target2 );
             int luck = loser.getLevel() + trnr.getLevel();
-
             ModifierManager.getInstance().addModifier( userid, luck );
+            GameLoop.release();
             output += outputMinionView( userid, trnr.getID() );
         }
         else if( pieces.contains( viewexpPiece ) )

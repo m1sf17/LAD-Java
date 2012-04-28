@@ -189,8 +189,13 @@ public class MessageManager
         }
         catch( NumberFormatException n )
         {
-            // Parse error (typically with a number
+            // Parse error (typically with a number)
             return debugInfo( "Parse error", n, pairs );
+        }
+        catch( InterruptedException ie )
+        {
+            // Interrupted (system abort?)
+            return debugInfo( "System interrupted", ie, pairs );
         }
         catch( Exception e )
         {
