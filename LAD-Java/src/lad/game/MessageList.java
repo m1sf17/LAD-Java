@@ -27,7 +27,7 @@ public class MessageList extends LinkedList< MessagePiece >
         while( iter.hasNext() )
         {
             MessagePiece piece = iter.next();
-            if( piece.getVariable().compareToIgnoreCase( variable ) == 0 )
+            if( piece.equals( variable ) )
             {
                 return piece;
             }

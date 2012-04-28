@@ -137,7 +137,7 @@ public class MessagePiece
             {
                 return false;
             }
-            return o.toString().compareTo( var ) == 0;
+            return o.toString().compareToIgnoreCase( var ) == 0;
         }
 
         MessagePiece other = (MessagePiece)o;
