@@ -326,7 +326,7 @@ public class Trainer
      *
      * @return minionList
      */
-    List< Minion > getMinions()
+    public List< Minion > getMinions()
     {
         return Collections.unmodifiableList( minionList );
     }
