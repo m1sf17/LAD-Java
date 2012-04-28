@@ -3,15 +3,14 @@ package lad.game;
 /**
  * Interface for handling messages with the PHP server.
  *
- * To implement, return a list of handleable messages with @see getPieces,
- * implement @see handle to handle any of the given message, and finally call
+ * To implement, return a list of handleable messages with getPieces,
+ * implement the handle to handle any of the given message, and finally call
  * super from the constructor.
  *
  * @author msflowers
  */
 public abstract class MessageHandler
 {
-
     /**
      * Implemented by the subclass to return handleable pieces.
      * 
@@ -46,7 +45,11 @@ public abstract class MessageHandler
     public abstract String handle( MessageList pieces, int userid );
 
     /**
-     * Calls @see setInstance
+     * Ctor.
+     *
+     * Simply sets the instance.
+     *
+     * @see lad.game.MessageHandler#setInstance()
      */
     protected MessageHandler()
     {
@@ -66,8 +69,10 @@ public abstract class MessageHandler
     /**
      * Sets the singleton.
      *
-     * Called during the constructor to set the constructor.  Also calls
-     * @see MessageHandler.addHandler.
+     * Called during the constructor to set the constructor.  Also adds itself
+     * to the manager's list.
+     *
+     * @see lad.game.MessageManager#addHandler(lad.game.MessageList, lad.game.MessageHandler)
      */
     private void setInstance( )
     {
