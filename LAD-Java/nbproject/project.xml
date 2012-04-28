@@ -12,11 +12,13 @@
             </test-roots>
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
+            <word>accessor</word>
             <word>bombarder</word>
             <word>Ctor</word>
             <word>enum</word>
             <word>exp</word>
             <word>hashcode</word>
+            <word>loop's</word>
             <word>Overriden</word>
         </spellchecker-wordlist>
     </configuration>
