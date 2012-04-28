@@ -32,10 +32,15 @@ public class Trainer
     private int ID;
 
     /**
-     * Owner of the trainer. Referenced from the ID from the
+     * Owner of the trainer. Referenced from the user ID from the
      * PHP server.
      */
     private int owner;
+
+    /**
+     * Set to true when this trainer is actually an NPC.
+     */
+    private boolean isNPC;
 
     /**
      * List of minions that this trainer owns
@@ -121,6 +126,7 @@ public class Trainer
         level = n_level;
         ID = n_ID;
         owner = n_owner;
+        isNPC = false;
     }
 
     /**
@@ -128,8 +134,27 @@ public class Trainer
      *
      * @param n_owner Owner of the trainer to add
      */
-    public Trainer( int n_owner )
+    private Trainer( int n_owner )
     {
+        owner = n_owner;
+        isNPC = false;
+    }
+
+    /**
+     * Ctor (for NPCs)
+     *
+     * @param npc Throws an exception if this is not true
+     * @throws IndexOutOfBoundsException Thrown if npc is not true
+     */
+    public Trainer( boolean npc ) throws IndexOutOfBoundsException
+    {
+        if( !npc )
+        {
+            throw new IndexOutOfBoundsException( "Making NPC trainer false." );
+        }
+
+        isNPC = true;
+        exp = level = ID = owner = 0;
     }
 
     /**
@@ -212,6 +237,16 @@ public class Trainer
     public int getOwner()
     {
         return owner;
+    }
+
+    /**
+     * Get whether this trainer is an NPC or not
+     *
+     * @return True if it is, false otherwise
+     */
+    public boolean isNPC()
+    {
+        return this.isNPC;
     }
 
     /**

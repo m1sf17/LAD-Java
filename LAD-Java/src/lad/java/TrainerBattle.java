@@ -1,5 +1,6 @@
 package lad.java;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.ListIterator;
@@ -288,6 +289,7 @@ public class TrainerBattle
         ListIterator< UserExp > expiter = exps.listIterator();
         ListIterator< Modifier > moditer = mods.listIterator();
 
+        // TODO: Proficiency
         // Start by adding in the bonuses for the exp
         while( expiter.hasNext() )
         {
@@ -316,6 +318,44 @@ public class TrainerBattle
                 currentBonus = 0.0;
             }
             ret.put( target, 0.02 + currentBonus );
+        }
+
+        return ret;
+    }
+
+    /**
+     * Creates the map of bonuses for the user based on the user's exp
+     * bonuses and the modifiers.
+     *
+     * @param trainer Trainer to evaluate for
+     * @param mods    Modifiers to evaluate for
+     * @param weapon  Weapon the trainer will be using
+     * @return Map of bonuses
+     */
+    private static Map< ModifierTarget, Double > generateNPCBonuses(
+            Trainer trainer, Weapon weapon )
+    {
+        int user = trainer.getOwner();
+        Map< ModifierTarget, Double > ret = new HashMap<>( 10 );
+        List< UserExp > exps = EXPManager.getExpByUserID( user );
+        ListIterator< UserExp > expiter = exps.listIterator();
+
+        // Start by adding in the bonuses for the exp
+        int count = 0;
+        while( expiter.hasNext() && count < 18 )
+        {
+            UserExp current = expiter.next();
+            ModifierTarget target = ModifierTarget.getRandom( true );
+            Double userLevel = (double)current.getLevel() * 0.01;
+            Double currentBonus = ret.get( target );
+            Double modifier = 0.8 + ( Math.random() * 0.4 );
+            if( currentBonus == null )
+            {
+                currentBonus = 0.0;
+            }
+            ret.put( target, ( userLevel * modifier ) + currentBonus );
+
+            count++;
         }
 
         return ret;
@@ -358,5 +398,32 @@ public class TrainerBattle
         Map< ModifierTarget, Double > bonus1 = generateBonuses( t1, mod1, w1 ),
                                       bonus2 = generateBonuses( t2, mod2, w2 );
         return new TrainerBattle( t1, t2, w1, w2, mod1, mod2, bonus1, bonus2 );
+    }
+
+    /**
+     * Creates a new battle between a trainer and a similar NPC.
+     *
+     * @param trainer Trainer that is battling
+     * @param weapon  Weapon that the trainer is wielding
+     * @return Generated battle
+     */
+    public static TrainerBattle battleNPC( Trainer trainer, Weapon weapon )
+    {
+        // Variables
+        Trainer npcTrainer = new Trainer( true );
+        Weapon npcWeapon = Weapon.getRandom();
+        List< Modifier > npcMods = new ArrayList<>( 0 ), userMods;
+        Map< ModifierTarget, Double > npcBonus, userBonus;
+
+        // Pull user info
+        userMods = generateModifiers( trainer );
+        userBonus = generateBonuses( trainer, userMods, weapon );
+
+        // Obfuscate the user bonuses and copy them to the NPC's
+        npcBonus = generateNPCBonuses( trainer, npcWeapon );
+
+        // Return the generated battle
+        return new TrainerBattle( trainer, npcTrainer, weapon, npcWeapon,
+                                  userMods, npcMods, userBonus, npcBonus );
     }
 }

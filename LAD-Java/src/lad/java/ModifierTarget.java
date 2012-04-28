@@ -170,4 +170,23 @@ public enum ModifierTarget
     {
         return values().length - 1;
     }
+
+    /**
+     * Gets a random target.
+     *
+     * @param incProf Set to true to allow proficiency as a possible return
+     * @return Random target
+     */
+    public static ModifierTarget getRandom( boolean incProf )
+    {
+        if( !incProf )
+        {
+            int index = (int)(Math.floor( Math.random() * getLength() ));
+            return fromInt( index );
+        }
+
+        int index = (int)(Math.floor( Math.random() * ( getLength() - 1 ) ));
+        return fromInt( index + 1 );
+    }
+
 }
