@@ -28,7 +28,7 @@ public class TrainerBattleTest
     public void testAll()
     {
 
-        Trainer trnr = new Trainer( 1 );
+        Trainer trnr = new Trainer( true );
         ArrayList< Modifier > mods = new ArrayList<>( 1 );
 
         final HashMap< Weapon, Integer > wins = new HashMap<>( 9 );
@@ -77,13 +77,7 @@ public class TrainerBattleTest
      */
     private ArenaTrainer doArena( Trainer trnr, ArrayList< Modifier > mods )
     {
-        Weapon weapons[] = Weapon.values();
-        Double rand = Math.random() * (double)(weapons.length);
-        int index = (int)(Math.floor( rand ) );
-        Weapon weapon = weapons[ index ];
-        Double rand2 = Math.random() * (double)(weapons.length);
-        int index2 = (int)(Math.floor( rand2 ) );
-        Weapon weapon2 = weapons[ index2 ];
+        Weapon weapon = Weapon.getRandom(), weapon2 = Weapon.getRandom();
         HashMap< ModifierTarget, Double > maps = new HashMap<>( 1 );
 
         TrainerBattle battle = new TrainerBattle( trnr, trnr, weapon, weapon2,

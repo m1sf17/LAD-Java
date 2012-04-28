@@ -357,4 +357,17 @@ public enum Weapon
         }
         throw new IndexOutOfBoundsException( "Invalid target: " + target );
     }
+
+    /**
+     * Gets a random weapon.
+     *
+     * @return Random weapon
+     */
+    public static Weapon getRandom()
+    {
+        Weapon values[] = Weapon.values();
+        int index = (int)(Math.floor( Math.random() * values.length ));
+
+        return values[ index ];
+    }
 }
