@@ -199,7 +199,7 @@ public enum Weapon
      */
     public double getDamage()
     {
-        return damage;
+        return this.damage;
     }
 
     /**
@@ -219,7 +219,7 @@ public enum Weapon
      */
     public double getReloadRate()
     {
-        return reloadRate;
+        return this.reloadRate;
     }
 
     /**
@@ -239,7 +239,7 @@ public enum Weapon
      */
     public double getAccuracy()
     {
-        return accuracy;
+        return this.accuracy;
     }
 
     /**
@@ -249,7 +249,7 @@ public enum Weapon
      */
     public double getMobility()
     {
-        return mobility;
+        return this.mobility;
     }
     /**
      * Returns the flexibility
@@ -258,7 +258,7 @@ public enum Weapon
      */
     public double getFlexibility()
     {
-        return flexibility;
+        return this.flexibility;
     }
     /**
      * Returns the shielding
@@ -267,7 +267,7 @@ public enum Weapon
      */
     public double getShielding()
     {
-        return shielding;
+        return this.shielding;
     }
     /**
      * Returns the aim
@@ -276,7 +276,7 @@ public enum Weapon
      */
     public double getAim()
     {
-        return aim;
+        return this.aim;
     }
     /**
      * Returns the range
@@ -285,7 +285,7 @@ public enum Weapon
      */
     public double getRange()
     {
-        return range;
+        return this.range;
     }
 
     /**
@@ -295,17 +295,17 @@ public enum Weapon
      */
     public Map< ModifierTarget, Double > getAttributes()
     {
-        HashMap< ModifierTarget, Double > ret = new HashMap<>( 9 );
-        ret.put( ModifierTarget.Accuracy, accuracy );
-        ret.put( ModifierTarget.Aim, aim );
-        ret.put( ModifierTarget.AttackSpeed, atkSpd );
-        ret.put( ModifierTarget.Damage, damage );
-        ret.put( ModifierTarget.Flexibility, flexibility );
-        ret.put( ModifierTarget.Mobility, mobility );
-        ret.put( ModifierTarget.Range, range );
-        ret.put( ModifierTarget.ReloadRate, reloadRate );
-        ret.put( ModifierTarget.Shielding, shielding );
-
+        // Create the map, populate it, return it
+        Map< ModifierTarget, Double > ret = new HashMap<>( 9 );
+        ret.put( ModifierTarget.Accuracy, getAccuracy() );
+        ret.put( ModifierTarget.Aim, getAim() );
+        ret.put( ModifierTarget.AttackSpeed, getAtkSpd() );
+        ret.put( ModifierTarget.Damage, getDamage() );
+        ret.put( ModifierTarget.Flexibility, getFlexibility() );
+        ret.put( ModifierTarget.Mobility, getMobility() );
+        ret.put( ModifierTarget.Range, getRange() );
+        ret.put( ModifierTarget.ReloadRate, getReloadRate() );
+        ret.put( ModifierTarget.Shielding, getShielding() );
         return ret;
     }
 
@@ -318,7 +318,10 @@ public enum Weapon
      */
     public double getAttributeWithMult( ModifierTarget target, Double value )
     {
+        // Validate the multiplier object
         double mult = value == null ? 0.0 : value;
+
+        // Return the appropriate value with the multiplier added in
         if( target == ModifierTarget.Accuracy )
         {
             return getAccuracy() + ( accuracyMult * mult );
