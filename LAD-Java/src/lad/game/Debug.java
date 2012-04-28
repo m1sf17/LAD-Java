@@ -1,6 +1,7 @@
 package lad.game;
 
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Provides debugging capabilities with areas that can be toggled.
@@ -12,7 +13,7 @@ public class Debug
     /**
      * Array of logs that are enabled.
      */
-    private static ArrayList< String > enabledDebugs = new ArrayList<>( 20 );
+    private static List< String > enabledDebugs = new ArrayList<>( 20 );
 
     /**
      * Attempts to log based on the class name.
