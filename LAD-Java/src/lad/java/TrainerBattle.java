@@ -1,6 +1,7 @@
 package lad.java;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -47,7 +48,7 @@ public class TrainerBattle
      * @param b2 User bonuses for the second trainer
      */
     public TrainerBattle( Trainer t1, Trainer t2, Weapon w1, Weapon w2,
-                          ArrayList< Modifier > m1, ArrayList< Modifier > m2,
+                          List< Modifier > m1, List< Modifier > m2,
                           Map< ModifierTarget, Double > b1,
                           Map< ModifierTarget, Double > b2 )
     {

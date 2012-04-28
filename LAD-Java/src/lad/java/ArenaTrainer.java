@@ -67,7 +67,7 @@ public class ArenaTrainer
     /**
      * Modifiers this trainer has equipped
      */
-    private ArrayList< Modifier > modifiers;
+    private List< Modifier > modifiers;
 
     /**
      * All of the calculated attributes of the trainer
@@ -80,7 +80,7 @@ public class ArenaTrainer
      * @param w Weapon that the trainer is wielding
      */
     ArenaTrainer( Trainer trainer, Weapon weapon,
-                  ArrayList< Modifier > modifiers,
+                  List< Modifier > modifiers,
                   Map< ModifierTarget, Double > userMult )
     {
         this.trainer = trainer;
