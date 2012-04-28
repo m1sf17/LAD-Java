@@ -1,8 +1,10 @@
 package lad.java;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.ListIterator;
 import java.util.Map;
+import lad.db.ModifierManager;
 
 /**
  * Class that manages a battle between trainers.
@@ -265,5 +267,60 @@ public class TrainerBattle
             winningIndex = trainer[ 0 ].totalDamage >
                            trainer[ 1 ].totalDamage ? 1 : 0;
         }
+    }
+    
+    /**
+     * Creates the map of bonuses for the user based on the user's exp
+     * bonuses and the modifiers.
+     * 
+     * @param trainer Trainer to evaluate for
+     * @param mods    Modifiers to evaluate for
+     * @return Map of bonuses
+     */
+    private static Map< ModifierTarget, Double > generateBonuses(
+            Trainer trainer, List< Modifier > mods )
+    {
+        Map< ModifierTarget, Double > ret = new HashMap<>( 10 );
+        return ret;
+    }
+
+    /**
+     * Creates the list of modifiers for the user.
+     *
+     * @param trainer Trainer to evaluate for
+     * @return List of modifiers
+     */
+    public static List< Modifier > generateModifiers( Trainer trainer )
+    {
+        int user = trainer.getOwner();
+        List< Modifier > mods =
+            ModifierManager.getInstance().getAvailableSetByUserID( user, 3 );
+        ListIterator< Modifier > iter = mods.listIterator();
+        while( iter.hasNext() )
+        {
+            iter.next().setEquipped( trainer );
+        }
+
+        return mods;
+    }
+
+    /**
+     * Creates a new battle between two trainers.
+     *
+     * @param t1 First trainer to battle
+     * @param t2 Second trainer to battle
+     * @param w1 Weapon of the first trainer
+     * @param w2 Weapon of the second trainer
+     * @return Generated battle
+     */
+    public static TrainerBattle battle( Trainer t1, Trainer t2,
+                                        Weapon w1, Weapon w2 )
+    {
+        TrainerBattle ret = null;
+        List< Modifier > mod1 = generateModifiers( t1 );
+        List< Modifier > mod2 = generateModifiers( t2 );
+        Map< ModifierTarget, Double > bonus1 = generateBonuses( t1, mod1 ),
+                                      bonus2 = generateBonuses( t2, mod2 );
+        return new TrainerBattle( t1, t2, w1, w2, mod1, mod2, bonus1, bonus2 );
     }
 }
