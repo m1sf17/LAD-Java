@@ -8,7 +8,7 @@ import lad.db.EXPManager;
 import lad.db.MySQLDB;
 
 /**
- * Class for the various types of Experience a user can have.
+ * Data class for the user's experience
  *
  * @author msflowers
  */
@@ -292,6 +292,26 @@ public class UserExp
         return ret;
     }
 
+    /**
+     * Deletes all of the experience belonging to a specific user.
+     *
+     * @param owner Owner of the EXP
+     */
+    public static void deleteByUser( int owner )
+    {
+        try
+        {
+            deleteStmt.setInt( 1, owner );
+            deleteStmt.executeUpdate();
+            // Don't need to make sure some were deleted since it's possible
+            // the user didn't have any
+        }
+        catch( SQLException e )
+        {
+            System.err.println( "Error while deleting exp: " + e.toString() );
+            System.exit( -1 );
+        }
+    }
     /**
      * Returns the amount of experience required for the next level of this
      * block.
