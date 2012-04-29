@@ -43,6 +43,11 @@ public class Trainer
     private boolean isNPC;
 
     /**
+     * Current state (arena battling) the trainer is in
+     */
+    private BattleState battleState = BattleState.NoBattleState;
+
+    /**
      * List of minions that this trainer owns
      */
     private LinkedList< Minion > minionList = new LinkedList<>();
@@ -247,6 +252,26 @@ public class Trainer
     public boolean isNPC()
     {
         return this.isNPC;
+    }
+
+    /**
+     * Gets the state of battling the trainer is in.
+     *
+     * @return Current battle state
+     */
+    public BattleState getBattleState()
+    {
+        return battleState;
+    }
+
+    /**
+     * Sets the state of battling this trainer is in
+     *
+     * @param battleState New state to set
+     */
+    public void setBattleState( BattleState battleState )
+    {
+        this.battleState = battleState;
     }
 
     /**
@@ -508,4 +533,23 @@ public class Trainer
 
         owner = ID = exp = level = 0;
     }
+
+    /**
+     * Possible states the trainer can be in for battling
+     */
+    public enum BattleState
+    {
+       /**
+        * Trainer is not interacting with the arena battles.
+        */
+        NoBattleState,
+        /**
+         * Trainer is in a queue to join an arena battle.
+         */
+        InBattleQueueState,
+        /**
+         * Trainer is in an arena battle.
+         */
+        InBattleState
+    };
 }
