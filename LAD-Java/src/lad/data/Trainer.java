@@ -43,11 +43,6 @@ public class Trainer
     private boolean isNPC;
 
     /**
-     * Set to true when this trainer is in a trainer battle.
-     */
-    private boolean isBattling;
-
-    /**
      * List of minions that this trainer owns
      */
     private LinkedList< Minion > minionList = new LinkedList<>();
@@ -131,7 +126,7 @@ public class Trainer
         level = n_level;
         ID = n_ID;
         owner = n_owner;
-        isNPC = isBattling = false;
+        isNPC = false;
     }
 
     /**
@@ -142,7 +137,7 @@ public class Trainer
     private Trainer( int n_owner )
     {
         owner = n_owner;
-        isNPC = isBattling = false;
+        isNPC = false;
     }
 
     /**
@@ -160,7 +155,6 @@ public class Trainer
 
         isNPC = true;
         exp = level = ID = owner = 0;
-        isBattling = false;
     }
 
     /**
@@ -253,26 +247,6 @@ public class Trainer
     public boolean isNPC()
     {
         return this.isNPC;
-    }
-
-    /**
-     * Gets whether this trainer is in a trainer battle
-     *
-     * @return True if it is, false otherwise
-     */
-    public boolean isBattling()
-    {
-        return this.isBattling;
-    }
-
-    /**
-     * Set whether this trainer is in a trainer battle
-     *
-     * @param isBattling True if in a battle, false otherwise
-     */
-    public void setIsBattling( boolean isBattling )
-    {
-        this.isBattling = isBattling;
     }
 
     /**
