@@ -97,7 +97,7 @@ public class IOModifier extends MessageHandler
         }
 
         // And include the button to return to trainer
-        output += IOInitial.getInstance().outputReturnToTrainerButton();
+        output += IOInitial.getInstance().outputReturnToMainButton();
 
         MessageManager.getInstance().clearJava();
         return output;
