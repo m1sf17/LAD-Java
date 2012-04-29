@@ -146,7 +146,7 @@ public class IOInitial extends MessageHandler
         if( pieces.contains( loginPiece ) ||
             pieces.contains( viewalltrainersPiece ) )
         {
-            output += outputTrainerView( userid );
+            output += outputMainView( userid );
         }
         else if( pieces.contains( addtrainerPiece ) )
         {
@@ -163,13 +163,13 @@ public class IOInitial extends MessageHandler
             GameLoop.acquire();
             tm.addTrainer( userid );
             GameLoop.release();
-            output += outputTrainerView( userid );
+            output += outputMainView( userid );
         }
         else if( pieces.contains( viewtrainerPiece ) )
         {
             int trainer = Integer.valueOf( pieces.getValue( "viewtrainer" ) );
 
-            output += outputMinionView( userid, trainer );
+            output += outputTrainerView( userid, trainer );
         }
         else if( pieces.contains( trainminionPiece ) )
         {
@@ -205,7 +205,7 @@ public class IOInitial extends MessageHandler
             GameLoop.acquire();
             target.adjustExp( 1 );
             GameLoop.release();
-            output += outputMinionView( userid, trnr.getID() );
+            output += outputTrainerView( userid, trnr.getID() );
         }
         else if( pieces.contains( addminionPiece ) )
         {
@@ -229,7 +229,7 @@ public class IOInitial extends MessageHandler
             trnr.addMinion( adder );
             GameLoop.release();
 
-            output += outputMinionView( userid, trnr.getID() );
+            output += outputTrainerView( userid, trnr.getID() );
         }
         else if( pieces.contains( battleminionPiece ) )
         {
@@ -279,7 +279,7 @@ public class IOInitial extends MessageHandler
             int luck = loser.getLevel() + trnr.getLevel();
             ModifierManager.getInstance().addModifier( userid, luck );
             GameLoop.release();
-            output += outputMinionView( userid, trnr.getID() );
+            output += outputTrainerView( userid, trnr.getID() );
         }
         else if( pieces.contains( viewexpPiece ) )
         {
@@ -302,7 +302,7 @@ public class IOInitial extends MessageHandler
                 }
             }
 
-            output += ");" + outputReturnToTrainerButton();
+            output += ");" + outputReturnToMainButton();
         }
         else if( pieces.contains( trainertoarenaPiece ) )
         {
@@ -326,13 +326,13 @@ public class IOInitial extends MessageHandler
     }
 
     /**
-     * Output the default view for viewing trainers.
+     * Output the default view for viewing trainers and other main options.
      *
      * @param userid ID of the requesting user
      *
      * @return A string with the resulting text
      */
-    private String outputTrainerView( int userid )
+    private String outputMainView( int userid )
     {
         String output = "";
         LinkedList< Trainer > trainers =
@@ -390,7 +390,7 @@ public class IOInitial extends MessageHandler
      * @throws IndexOutOfBoundsException Thrown when the trainer isn't found
      * @return A string with the resulting text
      */
-    private String outputMinionView( int userid, int trainer )
+    private String outputTrainerView( int userid, int trainer )
             throws IndexOutOfBoundsException
     {
         // Ensure the trainer belongs to the user
@@ -461,7 +461,7 @@ public class IOInitial extends MessageHandler
                         "}).appendTo( java() );";
         }
 
-        return output + outputReturnToTrainerButton();
+        return output + outputReturnToMainButton();
     }
 
     /**
@@ -469,10 +469,10 @@ public class IOInitial extends MessageHandler
      *
      * @return String for a button to return to trainer view.
      */
-    public String outputReturnToTrainerButton()
+    public String outputReturnToMainButton()
     {
         return "java().append(" +
-               "$('<button>Return to Trainers</button>').button()" +
+               "$('<button>Return to Overview</button>').button()" +
                ".click(function(){" +
                  "doJava({ 'viewalltrainers' : ''});" +
                "}));";
