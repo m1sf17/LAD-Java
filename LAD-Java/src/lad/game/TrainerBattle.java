@@ -69,6 +69,8 @@ public class TrainerBattle
                            trainer[ 1 ].getAttribute( ModifierTarget.Range ) ) +
                            1.0f;
 
+        t1.setBattleState( Trainer.BattleState.InBattleState );
+        t2.setBattleState( Trainer.BattleState.InBattleState );
         Debug.log( w1.toString() + " VS " + w2.toString() );
     }
 
@@ -274,6 +276,10 @@ public class TrainerBattle
         {
             winningIndex = trainer[ 0 ].totalDamage >
                            trainer[ 1 ].totalDamage ? 1 : 0;
+            trainer[ 0 ].getTrainer().setBattleState(
+                    Trainer.BattleState.NoBattleState );
+            trainer[ 1 ].getTrainer().setBattleState(
+                    Trainer.BattleState.NoBattleState );
         }
     }
     
