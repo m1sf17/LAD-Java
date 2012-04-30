@@ -131,22 +131,20 @@ public class IOInitial extends MessageHandler
             throws IndexOutOfBoundsException,
                    InterruptedException
     {
-        String output = "";
-
         if( pieces.contains( loginPiece ) )
         {
-            output += "function doJava( params ){" +
-                        "doAjax( 'java_run', params );" +
-                      "}";
-            output += "function java(){" +
-                        "return getPopupContext('LAD');" +
-                      "}";
+            write( "function doJava( params ){" +
+                     "doAjax( 'java_run', params );" +
+                   "}" );
+            write( "function java(){" +
+                     "return getPopupContext('LAD');" +
+                   "}" );
         }
 
         if( pieces.contains( loginPiece ) ||
             pieces.contains( viewalltrainersPiece ) )
         {
-            output += outputMainView( userid );
+            outputMainView( userid );
         }
         else if( pieces.contains( addtrainerPiece ) )
         {
@@ -163,13 +161,13 @@ public class IOInitial extends MessageHandler
             GameLoop.acquire();
             tm.addTrainer( userid );
             GameLoop.release();
-            output += outputMainView( userid );
+            outputMainView( userid );
         }
         else if( pieces.contains( viewtrainerPiece ) )
         {
             int trainer = Integer.valueOf( pieces.getValue( "viewtrainer" ) );
 
-            output += outputTrainerView( userid, trainer );
+            outputTrainerView( userid, trainer );
         }
         else if( pieces.contains( trainminionPiece ) )
         {
@@ -205,7 +203,7 @@ public class IOInitial extends MessageHandler
             GameLoop.acquire();
             target.adjustExp( 1 );
             GameLoop.release();
-            output += outputTrainerView( userid, trnr.getID() );
+            outputTrainerView( userid, trnr.getID() );
         }
         else if( pieces.contains( addminionPiece ) )
         {
@@ -229,7 +227,7 @@ public class IOInitial extends MessageHandler
             trnr.addMinion( adder );
             GameLoop.release();
 
-            output += outputTrainerView( userid, trnr.getID() );
+            outputTrainerView( userid, trnr.getID() );
         }
         else if( pieces.contains( battleminionPiece ) )
         {
@@ -279,7 +277,7 @@ public class IOInitial extends MessageHandler
             int luck = loser.getLevel() + trnr.getLevel();
             ModifierManager.getInstance().addModifier( userid, luck );
             GameLoop.release();
-            output += outputTrainerView( userid, trnr.getID() );
+            outputTrainerView( userid, trnr.getID() );
         }
         else if( pieces.contains( viewexpPiece ) )
         {
@@ -287,22 +285,23 @@ public class IOInitial extends MessageHandler
             List< UserExp > userexp = EXPManager.getExpByUserID( userid );
             ListIterator< UserExp > iter = userexp.listIterator();
 
-            output += "java().append(";
+            write( "java().append(" );
 
             while( iter.hasNext() )
             {
                 UserExp curr = iter.next();
-                output += "'" + curr.getTarget().toString() + ": " +
-                          "Level: " + curr.getLevel() + " Exp: " +
-                          curr.getExp() + "<br><br>'";
+                write( "'" + curr.getTarget().toString() + ": " + "Level: " +
+                       curr.getLevel() + " Exp: " + curr.getExp() +
+                       "<br><br>'" );
 
                 if( iter.hasNext() )
                 {
-                    output += "+";
+                    write( "+" );
                 }
             }
 
-            output += ");" + outputReturnToMainButton();
+            write( ");" );
+            outputReturnToMainButton();
         }
         else if( pieces.contains( trainertoarenaPiece ) )
         {
@@ -322,25 +321,22 @@ public class IOInitial extends MessageHandler
             GameLoop.queueTrainer( trnr, weapon );
 
             // Display the trainer's view
-            output += outputTrainerView( userid, trnrID );
+            outputTrainerView( userid, trnrID );
         }
         
         // An error will instantly return.  It's safe to say all errors were
         // handled so clear the window before outputting more text.
         MessageManager.getInstance().clearJava();
-        return output;
+        return buffer.toString();
     }
 
     /**
      * Output the default view for viewing trainers and other main options.
      *
      * @param userid ID of the requesting user
-     *
-     * @return A string with the resulting text
      */
-    private String outputMainView( int userid )
+    private void outputMainView( int userid )
     {
-        String output = "";
         LinkedList< Trainer > trainers =
             TrainerManager.getInstance().getTrainersByUser( userid );
         ListIterator< Trainer > iter = trainers.listIterator();
@@ -351,14 +347,14 @@ public class IOInitial extends MessageHandler
         while( iter.hasNext() )
         {
             Trainer curr = iter.next();
-            output += "java().append('";
-            output += "Trainer " + index + ": Level ";
-            output += curr.getLevel() + " Exp:" + curr.getExp();
-            output += "<br>');";
-            output += "$('<button>View</button>').button().click(" +
-                        "function(){" +
-                        "doJava( { viewtrainer: " + curr.getID() + "});" +
-                        "}).appendTo( java() );";
+            write( "java().append('" );
+            write( "Trainer " + index + ": Level " );
+            write( curr.getLevel() + " Exp:" + curr.getExp() );
+            write( "<br>');" );
+            write( "$('<button>View</button>').button().click(" +
+                     "function(){" +
+                     "doJava( { viewtrainer: " + curr.getID() + "});" +
+                     "}).appendTo( java() );" );
 
             index++;
         }
@@ -366,25 +362,23 @@ public class IOInitial extends MessageHandler
         // Add the "Add Trainer" button
         if( trainers.size() < 8 )
         {
-            output += "$('<button>Add Trainer</button>').button().click(" +
-                        "function(){" +
-                        "doJava( { addtrainer: '' });" +
-                        "}).appendTo( java() );";
+            write( "$('<button>Add Trainer</button>').button().click(" +
+                     "function(){" +
+                     "doJava( { addtrainer: '' });" +
+                   "}).appendTo( java() );" );
         }
 
         // Add the modifiers button
-        output += "java().append( '<br/><br/>' ).append(" +
-                  "$('<button>Modifiers</button>').button().click(function(){" +
-                    "doJava( { viewmodifiers: '' } );" +
-                  "}));";
+        write( "java().append( '<br/><br/>' ).append(" +
+               "$('<button>Modifiers</button>').button().click(function(){" +
+                 "doJava( { viewmodifiers: '' } );" +
+               "}));" );
 
         // Add the User EXP button
-        output += "java().append( " +
-                  "$('<button>User EXP</button>').button().click(function(){" +
-                    "doJava( { viewuserexp: '' } );" +
-                  "}));";
-
-        return output;
+        write( "java().append( " +
+               "$('<button>User EXP</button>').button().click(function(){" +
+                 "doJava( { viewuserexp: '' } );" +
+               "}));" );
     }
 
     /**
@@ -394,9 +388,8 @@ public class IOInitial extends MessageHandler
      * @param trainer ID of the trainer to view
      *
      * @throws IndexOutOfBoundsException Thrown when the trainer isn't found
-     * @return A string with the resulting text
      */
-    private String outputTrainerView( int userid, int trainer )
+    private void outputTrainerView( int userid, int trainer )
             throws IndexOutOfBoundsException
     {
         // Ensure the trainer belongs to the user
@@ -413,17 +406,17 @@ public class IOInitial extends MessageHandler
         Trainer.BattleState battleState = trnr.getBattleState();
 
         // Output the trainer profile
-        output += "java().append('";
-        output += "Trainer #" + trainer;
-        output += "<br>Level:" + level;
-        output += "<br>Exp:" + exp;
-        output += "<br>Battle State:" + battleState.toString();
+        write( "java().append('" );
+        write( "Trainer #" + trainer );
+        write( "<br>Level:" + level );
+        write( "<br>Exp:" + exp );
+        write( "<br>Battle State:" + battleState.toString() );
         if( battleState == Trainer.BattleState.InBattle )
         {
-            output += "(" + GameLoop.getTimeLeftInTrainerBattle( trnr ) +
-                      "s left)";
+            write( "(" + GameLoop.getTimeLeftInTrainerBattle( trnr ) +
+                   "s left)" );
         }
-        output += "<br><br>');";
+        write( "<br><br>');" );
 
         List< Minion > minionList = trnr.getMinions();
         ListIterator< Minion > iter = minionList.listIterator();
@@ -434,16 +427,16 @@ public class IOInitial extends MessageHandler
         while( iter.hasNext() )
         {
             Minion minion = iter.next();
-            output += "java().append('" +
-                      "Minion #" + index + " " +
-                      "Level: " + minion.getLevel() + " " +
-                      "Exp: " + minion.getExp() + " ');";
-            output += "$('<button>Train</button>').button().click(" +
-                        "function(){" +
-                        "doJava( { trainminion: " + minion.getID() + "," +
-                                  "trainer:" + trainer + "});" +
-                        "}).appendTo( java() );";
-            output += "java().append('<br/>');";
+            write( "java().append('" +
+                   "Minion #" + index + " " +
+                   "Level: " + minion.getLevel() + " " +
+                   "Exp: " + minion.getExp() + " ');" );
+            write( "$('<button>Train</button>').button().click(" +
+                     "function(){" +
+                     "doJava( { trainminion: " + minion.getID() + "," +
+                               "trainer:" + trainer + "});" +
+                     "}).appendTo( java() );" );
+            write( "java().append('<br/>');" );
 
             options += "<option value=" + minion.getID() + ">" + index +
                        "</option>";
@@ -453,65 +446,63 @@ public class IOInitial extends MessageHandler
         // If there's at least 2 minions, let them be able to battle
         if( minionList.size() >= 2 )
         {
-            output += "java().append('<br><br>Battle: <select id=\"minion1\">" +
-                      options + "</select> with <select id=\"minion2\">" +
-                      options + "</select>');";
-            output += "$('<button>Battle</button>').button().click(" +
-                        "function(){" +
-                        "doJava( { battleminion: " + trainer + "," +
-                                  "minion1: $('#minion1').val()," +
-                                  "minion2: $('#minion2').val()});" +
-                        "}).appendTo( java() );";
+            write( "java().append('<br><br>Battle: <select id=\"minion1\">" +
+                   options + "</select> with <select id=\"minion2\">" +
+                   options + "</select>');" );
+            write( "$('<button>Battle</button>').button().click(" +
+                     "function(){" +
+                     "doJava( { battleminion: " + trainer + "," +
+                               "minion1: $('#minion1').val()," +
+                               "minion2: $('#minion2').val()});" +
+                     "}).appendTo( java() );" );
         }
 
         // If there is less than 8 minions, allow the trainer to get another
         if( minionList.size() < 8 )
         {
-            output += "$('<button>Add Minion</button>').button().click(" +
-                        "function(){" +
-                        "doJava( { addminion: ''," +
-                                  "trainer: '" + trainer + "'});" +
-                        "}).appendTo( java() );";
+            write( "$('<button>Add Minion</button>').button().click(" +
+                     "function(){" +
+                     "doJava( { addminion: ''," +
+                               "trainer: '" + trainer + "'});" +
+                   "}).appendTo( java() );" );
         }
 
         // If the trainer is not battling, allow it to battle
         if( trnr.getBattleState() == Trainer.BattleState.NoBattle )
         {
-            output += "$('<button>Arena Battle</button>').button().click(" +
-                        "function(){" +
-                        "genericDialog('Weapon Selection','Select a weapon " +
-                        "for your trainer to battle with.',{";
+            write( "$('<button>Arena Battle</button>').button().click(" +
+                     "function(){" +
+                     "genericDialog('Weapon Selection','Select a weapon " +
+                     "for your trainer to battle with.',{" );
             Weapon weapons[] = Weapon.values();
             for( int i = 0; i < weapons.length; i++ )
             {
-                output += weapons[ i ].toString() + ":function(){" +
-                            "doJava({'trainertoarena':" + trainer + "," +
-                              "'weapon':" + i + "});" +
-                            "$(this).dialog('close').remove();" +
-                          "}";
+                write( weapons[ i ].toString() + ":function(){" +
+                         "doJava({'trainertoarena':" + trainer + "," +
+                           "'weapon':" + i + "});" +
+                         "$(this).dialog('close').remove();" +
+                       "}" );
                 if( i != weapons.length - 1 )
                 {
-                    output += ",";
+                    write( "," );
                 }
             }
-            output += "});}).appendTo( java() );";
+            write( "});}).appendTo( java() );" );
         }
 
-        return output + outputReturnToMainButton();
+        outputReturnToMainButton();
     }
 
     /**
-     * Creates a button for returning to the trainer view.
-     *
-     * @return String for a button to return to trainer view.
+     * Outputs a button for returning to the trainer view.
      */
-    public String outputReturnToMainButton()
+    public void outputReturnToMainButton()
     {
-        return "java().append(" +
+        write( "java().append(" +
                "$('<button>Return to Overview</button>').button()" +
                ".click(function(){" +
                  "doJava({ 'viewalltrainers' : ''});" +
-               "}));";
+               "}));" );
     }
 
     private static class IOInitialHolder

@@ -12,6 +12,21 @@ package lad.game;
 public abstract class MessageHandler
 {
     /**
+     * Internal buffer for storing text.
+     */
+    protected final StringBuffer buffer = new StringBuffer( 1024 );
+
+    /**
+     * Simply writes a string to the internal buffer.
+     *
+     * @param str String to write
+     */
+    protected void write( String str )
+    {
+        buffer.append( str );
+    }
+
+    /**
      * Implemented by the subclass to return handleable pieces.
      * 
      * Set the value to '*' to handle the key but not require the value to be

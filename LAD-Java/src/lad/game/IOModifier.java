@@ -57,7 +57,6 @@ public class IOModifier extends MessageHandler
     @Override
     public String handle( MessageList pieces, int userid )
     {
-        String output = "";
         if( pieces.contains( viewModifiersPiece ) )
         {
             ModifierManager mm = ModifierManager.getInstance();
@@ -70,37 +69,36 @@ public class IOModifier extends MessageHandler
                 ListIterator< Modifier > iter = modifiers.listIterator();
                 int index = 1;
 
-                output += "function postSortModifiers(){}";
+                write( "function postSortModifiers(){}" );
 
-                output += "java().append(";
+                write( "java().append(" );
 
-                output += "makeSortableTable([";
-                output += "'Type','Battles','Action'],";
-                output += "[";
+                write( "makeSortableTable([" );
+                write( "'Type','Battles','Action']," );
+                write( "[" );
                 while( iter.hasNext() )
                 {
                     Modifier curr = iter.next();
 
-                    output += "['" + curr.toString() +
-                              "'," + curr.getBattles() + "," +
-                              "'']";
+                    write( "['" + curr.toString() +
+                           "'," + curr.getBattles() + "," +
+                           "'']" );
                     index++;
 
                     if( iter.hasNext() )
                     {
-                        output += ",";
+                        write( "," );
                     }
                 }
-                output += "],'modifiers',postSortModifiers));";
-
+                write( "],'modifiers',postSortModifiers));" );
             }
         }
 
         // And include the button to return to trainer
-        output += IOInitial.getInstance().outputReturnToMainButton();
+        IOInitial.getInstance().outputReturnToMainButton();
 
         MessageManager.getInstance().clearJava();
-        return output;
+        return buffer.toString();
     }
 
     private static class IOModifierHolder
