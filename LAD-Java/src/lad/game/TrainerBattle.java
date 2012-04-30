@@ -276,10 +276,6 @@ public class TrainerBattle
         {
             winningIndex = trainer[ 0 ].totalDamage >
                            trainer[ 1 ].totalDamage ? 1 : 0;
-            trainer[ 0 ].getTrainer().setBattleState(
-                    Trainer.BattleState.NoBattle );
-            trainer[ 1 ].getTrainer().setBattleState(
-                    Trainer.BattleState.NoBattle );
         }
     }
     

@@ -210,8 +210,6 @@ public class GameLoop implements Runnable
      */
     private void updateTrainerBattles( Long currentTime )
     {
-        final Long winnerExtraTime = 0L;
-        final Long loserExtraTime = 30000L;
         ListIterator< TrainerBattle > iter = battles.listIterator();
         while( iter.hasNext() )
         {
@@ -223,17 +221,10 @@ public class GameLoop implements Runnable
             {
                 ArenaTrainer loser = current.getLoser();
                 ArenaTrainer winner = current.getWinner();
-                trainerPostBattle( loser, false );
-                trainerPostBattle( winner, true );
+                trainerPostBattle( currentTime, loser, false );
+                trainerPostBattle( currentTime, winner, true );
                 iter.remove();
 
-                // Put the trainers back into the queue
-                battleQueue.put( loser.getTrainer(),
-                                 currentTime + loserExtraTime );
-                battleWeapons.put( loser.getTrainer(), loser.getWeapon() );
-                battleQueue.put( winner.getTrainer(),
-                                 currentTime + winnerExtraTime );
-                battleWeapons.put( winner.getTrainer(), winner.getWeapon() );
             }
         }
     }
@@ -245,16 +236,27 @@ public class GameLoop implements Runnable
      * update's their stats.  Also, updates the user's proficiency if there
      * was no proficiency modifier equipped.  Aborts if the trainer is an NPC.
      *
+     * @param currentTime Current system time in millis
      * @param trainer Trainer that finished the battle
      * @param won True if the trainer won, false otherwise
      */
-    private void trainerPostBattle( ArenaTrainer trainer, boolean won )
+    private void trainerPostBattle( Long currentTime, ArenaTrainer trainer,
+                                    boolean won )
     {
         // Abort if NPC
         if( trainer.getTrainer().isNPC() )
         {
             return;
         }
+
+        // Put the trainer back into the queue
+        final Long winnerExtraTime = 0L;
+        final Long loserExtraTime = 30000L;
+        final Long extraTime = won ? winnerExtraTime : loserExtraTime;
+        battleQueue.put( trainer.getTrainer(), currentTime + extraTime );
+        battleWeapons.put( trainer.getTrainer(), trainer.getWeapon() );
+        trainer.getTrainer().setBattleState(
+                Trainer.BattleState.InBattleQueue );
 
         // Variables
         boolean hadProfMod = false;
