@@ -51,6 +51,7 @@ public abstract class MessageHandler
     public String doHandle( MessageList pieces, int userid )
             throws InterruptedException
     {
+        buffer.setLength( 0 );
         return handle( pieces, userid );
     }
 
