@@ -264,7 +264,7 @@ public class GameLoop implements Runnable
                                          ")";
 
                     Debug.log( winnerName + winnerWeapon + " won against " +
-                               loserName + loserWeapon );
+                               loserName + loserWeapon, log );
                 }
             }
         }
