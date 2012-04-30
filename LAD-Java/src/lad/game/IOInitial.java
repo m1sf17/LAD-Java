@@ -131,7 +131,6 @@ public class IOInitial extends MessageHandler
             throws IndexOutOfBoundsException,
                    InterruptedException
     {
-
         String output = "";
 
         if( pieces.contains( loginPiece ) )
@@ -323,7 +322,7 @@ public class IOInitial extends MessageHandler
             GameLoop.queueTrainer( trnr, weapon );
 
             // Display the trainer's view
-            outputTrainerView( userid, trnrID );
+            output += outputTrainerView( userid, trnrID );
         }
         
         // An error will instantly return.  It's safe to say all errors were
@@ -485,11 +484,10 @@ public class IOInitial extends MessageHandler
             Weapon weapons[] = Weapon.values();
             for( int i = 0; i < weapons.length; i++ )
             {
-
                 output += weapons[ i ].toString() + ":function(){" +
-                            "doJava({ trainertoarena: " + trainer + "," +
-                              "weapon: " + i +
-                            "});$(this).dialog('close').remove();" +
+                            "doJava({'trainertoarena':" + trainer + "," +
+                              "'weapon':" + i + "});" +
+                            "$(this).dialog('close').remove();" +
                           "}";
                 if( i != weapons.length - 1 )
                 {
