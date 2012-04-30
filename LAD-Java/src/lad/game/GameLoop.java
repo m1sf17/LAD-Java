@@ -156,6 +156,22 @@ public class GameLoop implements Runnable
     }
 
     /**
+     * Removes a trainer from the battle queue.
+     *
+     * @param trainer Trainer to dequeue from battling in the arena
+     * @throws InterruptedException Thrown if interrupted while acquiring
+     */
+    public static void dequeueTrainer( Trainer trainer )
+            throws InterruptedException
+    {
+        acquire();
+        trainer.setBattleState( Trainer.BattleState.NoBattle );
+        getInstance().battleQueue.remove( trainer );
+        getInstance().battleWeapons.remove( trainer );
+        release();
+    }
+
+    /**
      * Gets the time left a trainer has left in it's trainer battle.
      *
      * @param trainer Trainer to look up

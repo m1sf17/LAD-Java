@@ -91,6 +91,12 @@ public class IOInitial extends MessageHandler
             trainertoarenaPiece = new MessagePiece( "trainertoarena" );
 
     /**
+     * Piece for having a trainer leave the arena queue
+     */
+    private final static MessagePiece
+            trainerleavequeuePiece = new MessagePiece( "trainerleavequeue" );
+
+    /**
      * Handleable pieces.
      *
      * Piece: loginPiece
@@ -102,6 +108,7 @@ public class IOInitial extends MessageHandler
      * Piece: viewtrainerPiece
      * Piece: viewexpPiece
      * Piece: trainertoarenaPiece
+     * Piece: trainerleavequeuePiece
      *
      * @return List with all of the above pieces
      */
@@ -118,6 +125,7 @@ public class IOInitial extends MessageHandler
         pieces.add( viewtrainerPiece );
         pieces.add( viewexpPiece );
         pieces.add( trainertoarenaPiece );
+        pieces.add( trainerleavequeuePiece );
         return pieces;
     }
 
@@ -327,6 +335,29 @@ public class IOInitial extends MessageHandler
             // Display the trainer's view
             outputTrainerView( userid, trnrID );
         }
+        else if( pieces.contains( trainerleavequeuePiece ) )
+        {
+            // Make sure the trainer belongs to the user
+            int trnrID = Integer.valueOf( pieces.getValue(
+                    "trainerleavequeue" ) );
+            Trainer trnr = TrainerManager.getInstance().
+                    getTrainerByID( trnrID );
+
+            if( trnr.getOwner() != userid )
+            {
+                throw new IndexOutOfBoundsException( "User ID does not match." );
+            }
+
+            // Check if the trainer is actually in a queue
+            if( trnr.getBattleState() == Trainer.BattleState.InBattleQueue ||
+                trnr.getBattleState() == Trainer.BattleState.LookingForBattle )
+            {
+                GameLoop.dequeueTrainer( trnr );
+            }
+
+            // Output the trainer again
+            outputTrainerView( userid, trnrID );
+        }
         
         // An error will instantly return.  It's safe to say all errors were
         // handled so clear the window before outputting more text.
@@ -491,6 +522,16 @@ public class IOInitial extends MessageHandler
                 }
             }
             write( "});}).appendTo( java() );" );
+        }
+        
+        // If the trainer is not battling, but in queue, let it leave
+        if( trnr.getBattleState() == Trainer.BattleState.InBattleQueue ||
+            trnr.getBattleState() == Trainer.BattleState.LookingForBattle )
+        {
+            write( "$('<button>Leave Arena</button>').button().click(" +
+                     "function(){" +
+                     "doJava({'trainerleavequeue':" + trainer + "});" +
+                   "}).appendTo( java() );" );
         }
 
         outputReturnToMainButton();
