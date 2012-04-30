@@ -6,6 +6,7 @@ import java.util.ListIterator;
 import lad.data.Minion;
 import lad.data.Trainer;
 import lad.data.UserExp;
+import lad.data.Weapon;
 import lad.db.EXPManager;
 import lad.db.ModifierManager;
 import lad.db.TrainerManager;
@@ -309,14 +310,16 @@ public class IOInitial extends MessageHandler
             // Make sure the trainer belongs to the user
             Trainer trnr = TrainerManager.getInstance().getTrainerByID(
                     Integer.valueOf( pieces.getValue( "trainertoarena" ) ) );
+            Weapon weapon = Weapon.values()[ Integer.valueOf(
+                    pieces.getValue( "weapon" ))];
 
             if( trnr.getOwner() != userid )
             {
                 throw new IndexOutOfBoundsException( "User ID does not match." );
             }
 
-            // TODO: Fill in GUI for sending trainer to arena
-            // TODO: Add button for sending trainer to arena
+            // Err...send the trainer to the queue
+            GameLoop.queueTrainer( trnr, weapon );
         }
         
         // An error will instantly return.  It's safe to say all errors were
@@ -410,6 +413,7 @@ public class IOInitial extends MessageHandler
         output += "Trainer #" + trainer;
         output += "<br>Level:" + level;
         output += "<br>Exp:" + exp;
+        output += "<br>Battle State:" + trnr.getBattleState().toString();
         output += "<br><br>');";
 
         List< Minion > minionList = trnr.getMinions();
@@ -459,6 +463,30 @@ public class IOInitial extends MessageHandler
                         "doJava( { addminion: ''," +
                                   "trainer: '" + trainer + "'});" +
                         "}).appendTo( java() );";
+        }
+
+        // If the trainer is not battling, allow it to battle
+        if( trnr.getBattleState() == Trainer.BattleState.NoBattle )
+        {
+            output += "$('<button>Arena Battle</button>').button().click(" +
+                        "function(){" +
+                        "genericDialog('Weapon Selection','Select a weapon " +
+                        "for your trainer to battle with.',{";
+            Weapon weapons[] = Weapon.values();
+            for( int i = 0; i < weapons.length; i++ )
+            {
+
+                output += weapons[ i ].toString() + ":function(){" +
+                            "doJava({ trainertoarena: " + trainer + "," +
+                              "weapon: " + i +
+                            "});" +
+                          "}";
+                if( i != weapons.length - 1 )
+                {
+                    output += ",";
+                }
+            }
+            output += "});}).appendTo( java() );";
         }
 
         return output + outputReturnToMainButton();

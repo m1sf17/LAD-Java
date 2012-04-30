@@ -1,11 +1,17 @@
 package lad.game;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.concurrent.Semaphore;
 import lad.data.Modifier;
 import lad.data.ModifierTarget;
+import lad.data.Trainer;
 import lad.data.UserExpTarget;
+import lad.data.Weapon;
 import lad.db.EXPManager;
 import lad.db.ModifierManager;
 import lad.db.MySQLDB;
@@ -37,7 +43,17 @@ public class GameLoop implements Runnable
     /**
      * Holds all of the battles taking place
      */
-    private final ArrayList< TrainerBattle > battles = new ArrayList<>( 100 );
+    private final List< TrainerBattle > battles = new ArrayList<>( 100 );
+
+    /**
+     * Holds all of the trainers waiting to battle
+     */
+    private final Map< Trainer, Long > battleQueue = new HashMap<>( 100 );
+
+    /**
+     * Holds all of the weapons the trainers are going to wield
+     */
+    private final Map< Trainer, Weapon > battleWeapons = new HashMap<>( 100 );
 
     /**
      * Initializes the game loop by creating the semaphore and acquiring the
@@ -122,17 +138,19 @@ public class GameLoop implements Runnable
     }
 
     /**
-     * Adds a trainer battle to the list
+     * Adds a trainer to the battle queue.
      *
-     * @param battle Battle to add
-     * @throws InterruptedException Thrown if interrupted while waiting for
-     *                              game loop to finish
+     * @param trainer Trainer to queue for battling in the arena
+     * @param weapon  Weapon the trainer will be fighting with
+     * @throws InterruptedException Thrown if interrupted while acquiring
      */
-    public void addTrainerBattle( TrainerBattle battle ) throws
-            InterruptedException
+    public static void queueTrainer( Trainer trainer, Weapon weapon )
+            throws InterruptedException
     {
         acquire();
-        battles.add( battle );
+        trainer.setBattleState( Trainer.BattleState.InBattleQueue );
+        getInstance().battleQueue.put( trainer, System.currentTimeMillis() );
+        getInstance().battleWeapons.put( trainer, weapon );
         release();
     }
 
@@ -158,8 +176,8 @@ public class GameLoop implements Runnable
                 while( LADJava.running )
                 {
                     semaphore.acquire();
-
-                    updateTrainerBattles();
+                    updateTrainerBattles( lastRunTime );
+                    pumpTrainerBattleQueue( lastRunTime );
                     semaphore.release();
 
                     // Only run the loop once a second
@@ -187,9 +205,13 @@ public class GameLoop implements Runnable
      * Cycles through each trainer battle and advances them each one tick.  If
      * the battle is finished the trainers and users are updated accordingly
      * and the battle is removed from the list
+     *
+     * @param currentTime Current system time in millis
      */
-    private void updateTrainerBattles()
+    private void updateTrainerBattles( Long currentTime )
     {
+        final Long winnerExtraTime = 0L;
+        final Long loserExtraTime = 30000L;
         ListIterator< TrainerBattle > iter = battles.listIterator();
         while( iter.hasNext() )
         {
@@ -199,10 +221,19 @@ public class GameLoop implements Runnable
 
             if( current.isFinished() )
             {
-                trainerPostBattle( current.getLoser(), false );
-                trainerPostBattle( current.getWinner(), true );
-                // TODO: Restart battle?
+                ArenaTrainer loser = current.getLoser();
+                ArenaTrainer winner = current.getWinner();
+                trainerPostBattle( loser, false );
+                trainerPostBattle( winner, true );
                 iter.remove();
+
+                // Put the trainers back into the queue
+                battleQueue.put( loser.getTrainer(),
+                                 currentTime + loserExtraTime );
+                battleWeapons.put( loser.getTrainer(), loser.getWeapon() );
+                battleQueue.put( winner.getTrainer(),
+                                 currentTime + winnerExtraTime );
+                battleWeapons.put( winner.getTrainer(), winner.getWeapon() );
             }
         }
     }
@@ -254,6 +285,75 @@ public class GameLoop implements Runnable
             ModifierTarget target = ModifierTarget.Proficiency;
             EXPManager.grantUserEXP( user, generalTarget, target, 1 );
             EXPManager.grantUserEXP( user, specificTarget, target, 2 );
+        }
+    }
+
+    /**
+     * Pumps the trainer battle queue.
+     *
+     * @param currentTime Current system time in millis
+     */
+    private void pumpTrainerBattleQueue( long currentTime )
+    {
+        final long queueTime = 30000; // 30 secs
+        final long waitTime = 30000; // 30 secs
+        Iterator< Trainer > iter = battleQueue.keySet().iterator();
+
+        Trainer trainerOnDeck = null;
+        Trainer trainerToBattleNPC = null;
+        while( iter.hasNext() )
+        {
+            Trainer trainer = iter.next();
+            Long entryTime = battleQueue.get( trainer );
+            Long timeInQueue = currentTime - entryTime;
+
+            // Ignore this trainer if it hasn't finished it's queue
+            if( timeInQueue < queueTime )
+            {
+                continue;
+            }
+
+            // Trainer is able to battle, if another trainer can as well,
+            // Battle the two
+            if( trainerOnDeck != null )
+            {
+                Weapon weapon = battleWeapons.get( trainer );
+                Weapon onDeckWeapon = battleWeapons.get( trainerOnDeck );
+                battles.add( TrainerBattle.battle(
+                        trainerOnDeck, trainer, onDeckWeapon, weapon ) );
+                trainerOnDeck = null;
+                battleQueue.remove( trainer );
+                battleWeapons.remove( trainer );
+                battleQueue.remove( trainerOnDeck );
+                battleWeapons.remove( trainerOnDeck );
+            }
+
+            // This trainer has reached the max time, fight an NPC
+            if( timeInQueue > queueTime + waitTime )
+            {
+                trainerToBattleNPC = trainer;
+            }
+
+            // This trainer is no longer in the queue, can fight and may end up
+            // fighting an NPC.  Set it as "on deck"
+            trainerOnDeck = trainer;
+        }
+
+        // Nobody wanted to fight this trainer for the max time, so fight an NPC
+        if( trainerToBattleNPC != null )
+        {
+            trainerOnDeck = null;
+            battles.add( TrainerBattle.battleNPC( trainerToBattleNPC,
+                         battleWeapons.get( trainerToBattleNPC ) ) );
+            battleQueue.remove( trainerToBattleNPC );
+            battleWeapons.remove( trainerToBattleNPC );
+        }
+
+        // Trainer is on deck and nobody else wants to fight, set state
+        if( trainerOnDeck != null )
+        {
+            trainerOnDeck.setBattleState(
+                    Trainer.BattleState.LookingForBattle );
         }
     }
 
