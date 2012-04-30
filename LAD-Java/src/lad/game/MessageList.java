@@ -20,8 +20,10 @@ public class MessageList extends LinkedList< MessagePiece >
      *
      * @param variable The variable of the piece to get
      * @return The message piece with the variable
+     * @throws IndexOutOfBoundsException Thrown if the variable is not found
      */
     public MessagePiece get( String variable )
+            throws IndexOutOfBoundsException
     {
         ListIterator< MessagePiece > iter = listIterator();
         while( iter.hasNext() )
@@ -32,7 +34,8 @@ public class MessageList extends LinkedList< MessagePiece >
                 return piece;
             }
         }
-        return null;
+        throw new IndexOutOfBoundsException( "Message piece not found: " +
+                                             variable );
     }
 
     /**
@@ -40,18 +43,11 @@ public class MessageList extends LinkedList< MessagePiece >
      *
      * @param variable The variable of the piece to get
      * @return The message piece with the variable
+     * @throws IndexOutOfBoundsException Thrown if the variable is not found
      */
     public String getValue( String variable )
+            throws IndexOutOfBoundsException
     {
-        ListIterator< MessagePiece > iter = listIterator();
-        while( iter.hasNext() )
-        {
-            MessagePiece piece = iter.next();
-            if( piece.getVariable().compareToIgnoreCase( variable ) == 0 )
-            {
-                return piece.getValue();
-            }
-        }
-        return null;
+        return get( variable ).getValue();
     }
 }
