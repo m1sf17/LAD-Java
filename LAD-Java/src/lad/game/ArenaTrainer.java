@@ -80,6 +80,7 @@ public class ArenaTrainer
 
     /**
      * Basic ctor
+     *
      * @param t Trainer that is battling
      * @param w Weapon that the trainer is wielding
      */
