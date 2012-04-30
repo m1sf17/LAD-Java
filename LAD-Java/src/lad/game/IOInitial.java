@@ -284,23 +284,27 @@ public class IOInitial extends MessageHandler
             // Simple output of all the EXP's
             List< UserExp > userexp = EXPManager.getExpByUserID( userid );
             ListIterator< UserExp > iter = userexp.listIterator();
-
+            
+            write( "function postSortModifiers(){}" );
             write( "java().append(" );
+            write( "makeSortableTable([" );
+            write( "'Type','Target','Level','Exp']," );
+            write( "[" );
 
             while( iter.hasNext() )
             {
                 UserExp curr = iter.next();
-                write( "'" + curr.getTarget().toString() + ": " + "Level: " +
-                       curr.getLevel() + " Exp: " + curr.getExp() +
-                       "<br><br>'" );
+                write( "['" + curr.getTarget().toString() + "','" +
+                       curr.getType().toString() + "'," + curr.getLevel() +
+                       "," + curr.getExp() + ']');
 
                 if( iter.hasNext() )
                 {
-                    write( "+" );
+                    write( "," );
                 }
             }
 
-            write( ");" );
+            write( "],'userexp',postSortModifiers));" );
             outputReturnToMainButton();
         }
         else if( pieces.contains( trainertoarenaPiece ) )
@@ -393,7 +397,6 @@ public class IOInitial extends MessageHandler
             throws IndexOutOfBoundsException
     {
         // Ensure the trainer belongs to the user
-        String output = "";
         Trainer trnr = TrainerManager.getInstance().getTrainerByID( trainer );
 
         if( trnr.getOwner() != userid )
