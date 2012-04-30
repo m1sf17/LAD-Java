@@ -554,6 +554,36 @@ public class Trainer
         /**
          * Trainer is in an arena battle.
          */
-        InBattle
+        InBattle;
+
+        /**
+         * String representation of the state.
+         *
+         * Mostly just adds spaces.  Deletes a word in a case.
+         *
+         * @return String representation
+         */
+        @Override
+        public String toString()
+        {
+            if( this == NoBattle )
+            {
+                return "Not battling";
+            }
+            if( this == InBattleQueue )
+            {
+                return "In queue to battle";
+            }
+            if( this == LookingForBattle )
+            {
+                return "Looking for battle";
+            }
+            if( this == InBattle )
+            {
+                return "In battle";
+            }
+
+            throw new IndexOutOfBoundsException( "Battle state out of range." );
+        }
     };
 }
