@@ -308,8 +308,9 @@ public class IOInitial extends MessageHandler
         else if( pieces.contains( trainertoarenaPiece ) )
         {
             // Make sure the trainer belongs to the user
-            Trainer trnr = TrainerManager.getInstance().getTrainerByID(
-                    Integer.valueOf( pieces.getValue( "trainertoarena" ) ) );
+            int trnrID = Integer.valueOf( pieces.getValue( "trainertoarena" ) );
+            Trainer trnr = TrainerManager.getInstance().
+                    getTrainerByID( trnrID );
             Weapon weapon = Weapon.values()[ Integer.valueOf(
                     pieces.getValue( "weapon" ))];
 
@@ -320,6 +321,9 @@ public class IOInitial extends MessageHandler
 
             // Err...send the trainer to the queue
             GameLoop.queueTrainer( trnr, weapon );
+
+            // Display the trainer's view
+            outputTrainerView( userid, trnrID );
         }
         
         // An error will instantly return.  It's safe to say all errors were
@@ -479,7 +483,7 @@ public class IOInitial extends MessageHandler
                 output += weapons[ i ].toString() + ":function(){" +
                             "doJava({ trainertoarena: " + trainer + "," +
                               "weapon: " + i +
-                            "});" +
+                            "});$(this).dialog('close').remove();" +
                           "}";
                 if( i != weapons.length - 1 )
                 {
