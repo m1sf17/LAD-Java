@@ -248,7 +248,24 @@ public class GameLoop implements Runnable
                 trainerPostBattle( currentTime, loser, false );
                 trainerPostBattle( currentTime, winner, true );
                 iter.remove();
-                
+
+                final String log = "TrainerBattleResults";
+                if( Debug.isLogEnabled( log ) )
+                {
+                    String winnerName = winner.getTrainer().isNPC() ?
+                                        "NPC" : "Trainer #" +
+                                        winner.getTrainer().getID();
+                    String loserName = loser.getTrainer().isNPC() ?
+                                       "NPC" : "Trainer #" +
+                                       loser.getTrainer().getID();
+                    String winnerWeapon = "(" + winner.getWeapon().toString() +
+                                          ")";
+                    String loserWeapon = "(" + loser.getWeapon().toString() +
+                                         ")";
+
+                    Debug.log( winnerName + winnerWeapon + " won against " +
+                               loserName + loserWeapon );
+                }
             }
         }
     }
