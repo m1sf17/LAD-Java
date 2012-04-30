@@ -411,13 +411,19 @@ public class IOInitial extends MessageHandler
 
         int level = trnr.getLevel();
         int exp = trnr.getExp();
+        Trainer.BattleState battleState = trnr.getBattleState();
 
         // Output the trainer profile
         output += "java().append('";
         output += "Trainer #" + trainer;
         output += "<br>Level:" + level;
         output += "<br>Exp:" + exp;
-        output += "<br>Battle State:" + trnr.getBattleState().toString();
+        output += "<br>Battle State:" + battleState.toString();
+        if( battleState == Trainer.BattleState.InBattle )
+        {
+            output += "(" + GameLoop.getTimeLeftInTrainerBattle( trnr ) +
+                      "s left)";
+        }
         output += "<br><br>');";
 
         List< Minion > minionList = trnr.getMinions();

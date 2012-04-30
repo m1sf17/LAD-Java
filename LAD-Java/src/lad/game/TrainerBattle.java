@@ -113,6 +113,32 @@ public class TrainerBattle
     }
 
     /**
+     * Returns the number of ticks remaining.
+     *
+     * @return ticksRemaining
+     */
+    public int getTicksRemaining()
+    {
+        return ticksRemaining;
+    }
+
+    /**
+     * Returns whether a given trainer is/was a participant in this battle.
+     *
+     * @param trainer Trainer to check for
+     * @return True if the trainer is/was, false otherwise
+     */
+    public boolean hasTrainer( Trainer trainer )
+    {
+        if( this.trainer[ 0 ].getTrainer() == trainer ||
+            this.trainer[ 1 ].getTrainer() == trainer )
+        {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Called to run the battle.
      *
      * @param ticks For each tick, the game is advanced by one second.

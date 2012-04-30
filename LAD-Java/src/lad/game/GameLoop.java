@@ -25,6 +25,7 @@ import lad.db.TrainerManager;
  * allowed to run.
  *
  * @author msflowers
+ * @todo Replace all occurrences of IndexOutOfBounds with a custom exception
  */
 public class GameLoop implements Runnable
 {
@@ -155,6 +156,29 @@ public class GameLoop implements Runnable
     }
 
     /**
+     * Gets the time left a trainer has left in it's trainer battle.
+     *
+     * @param trainer Trainer to look up
+     * @return Time(ticks) remaining in the battle
+     * @throws IndexOutOfBoundsException Thrown if the trainer is not in a
+     *                                   battle.
+     */
+    public static int getTimeLeftInTrainerBattle( Trainer trainer )
+    {
+        ListIterator< TrainerBattle > iter =
+                getInstance().battles.listIterator();
+        while( iter.hasNext() )
+        {
+            TrainerBattle battle = iter.next();
+            if( battle.hasTrainer( trainer ) )
+            {
+                return battle.getTicksRemaining();
+            }
+        }
+        throw new IndexOutOfBoundsException( "Trainer is not in a battle." );
+    }
+
+    /**
      * Performs the thread run loop.
      *
      * Starts by initializing all data.  Runs the game loop and acquires the
@@ -224,7 +248,7 @@ public class GameLoop implements Runnable
                 trainerPostBattle( currentTime, loser, false );
                 trainerPostBattle( currentTime, winner, true );
                 iter.remove();
-
+                
             }
         }
     }
