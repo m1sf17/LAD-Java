@@ -45,7 +45,7 @@ public class Trainer
     /**
      * Current state (arena battling) the trainer is in
      */
-    private BattleState battleState = BattleState.NoBattleState;
+    private BattleState battleState = BattleState.NoBattle;
 
     /**
      * List of minions that this trainer owns
@@ -542,14 +542,18 @@ public class Trainer
        /**
         * Trainer is not interacting with the arena battles.
         */
-        NoBattleState,
+        NoBattle,
         /**
          * Trainer is in a queue to join an arena battle.
          */
-        InBattleQueueState,
+        InBattleQueue,
+        /**
+         * Trainer is actively looking for a battle.
+         */
+        LookingForBattle,
         /**
          * Trainer is in an arena battle.
          */
-        InBattleState
+        InBattle
     };
 }
