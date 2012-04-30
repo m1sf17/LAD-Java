@@ -71,4 +71,15 @@ public class Debug
     {
         enabledDebugs.remove( region );
     }
+
+    /**
+     * Gets whether a log is enabled.
+     *
+     * @param region Region to look up
+     * @return True if the region is enabled, false otherwise
+     */
+    public static boolean isLogEnabled( String region )
+    {
+        return enabledDebugs.contains( region );
+    }
 }
