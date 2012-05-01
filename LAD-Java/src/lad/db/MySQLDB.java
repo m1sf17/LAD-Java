@@ -58,6 +58,7 @@ public class MySQLDB
         Properties connectionProps = new Properties();
         connectionProps.put( "user", "admin_lad" );
         connectionProps.put( "password", "password" );
+        connectionProps.put( "autoReconnect", "true" );
         conn = DriverManager.getConnection( "jdbc:mysql://localhost/",
                                             connectionProps );
 
