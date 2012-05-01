@@ -182,7 +182,6 @@ public class MySQLDB
     public void validateStructure( String[] fields, String tblName )
                 throws SQLException
     {
-        boolean valid = true;
         Statement stmt = getConnection().createStatement();
         ResultSet result = stmt.executeQuery( "SHOW COLUMNS FROM " + tblName );
         int i = 0;
