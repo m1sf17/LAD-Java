@@ -241,7 +241,7 @@ public class MessageManager
 
         String title = "Server Error";
         String msg = "An error occurred.  Please try again later.";
-        String func = "$('#LAD.popup .close_popup').trigger(\"click\");";
+        String func = "$('div#LAD').dialog( \"close\" );";
         return "genericErrorDialog('" + title + "','" + msg +
                 "',function(){ " + func + "});";
     }
