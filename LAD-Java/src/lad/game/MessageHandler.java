@@ -12,20 +12,25 @@ package lad.game;
 public abstract class MessageHandler
 {
     /**
-     * Internal buffer for storing text.
-     */
-    protected final StringBuffer buffer = new StringBuffer( 1024 );
-
-    /**
-     * Simply writes a string to the internal buffer.
+     * Simply writes a string to the buffer in the manager.
      *
      * @param str String to write
      */
     protected void write( String str )
     {
-        buffer.append( str );
+        MessageManager.getInstance().write( str );
     }
 
+    /**
+     * Overwrites the string in the manager.
+     *
+     * @param str String to write
+     */
+    protected void writeReplace( String str )
+    {
+        MessageManager.getInstance().writeReplace( str );
+    }
+    
     /**
      * Implemented by the subclass to return handleable pieces.
      * 
@@ -42,17 +47,15 @@ public abstract class MessageHandler
      * Placeholder in case handler needs specific pre/post processing later on.
      *
      * @param pieces List of pieces sent by the user.
-     * @param userid ID of the user issuing the request.
-     * @return Output to be sent to the user
+     * @param userid ID of the user issuing the request.return Output to be sent to the user
      * @throws InterruptedException Possibly thrown if a data accessor gets
      *                              interrupted while trying to acquire the lock
      *                              on the game loop's data.
      */
-    public String doHandle( MessageList pieces, int userid )
+    public void doHandle( MessageList pieces, int userid )
             throws InterruptedException
     {
-        buffer.setLength( 0 );
-        return handle( pieces, userid );
+        handle( pieces, userid );
     }
 
     /**
@@ -60,12 +63,11 @@ public abstract class MessageHandler
      *
      * @param pieces List of pieces sent by the user.
      * @param userid ID of the user issuing the request.
-     * @return Output to be sent to the user
      * @throws InterruptedException Possibly thrown if a data accessor gets
      *                              interrupted while trying to acquire the lock
      *                              on the game loop's data.
      */
-    public abstract String handle( MessageList pieces, int userid )
+    public abstract void handle( MessageList pieces, int userid )
             throws InterruptedException;
 
     /**
@@ -101,7 +103,7 @@ public abstract class MessageHandler
     private void setInstance( )
     {
         MessageHandlerHolder.INSTANCE = this;
-        MessageManager.getInstance().addHandler( getPieces(), this );
+        MessageManager.addHandler( getPieces(), this );
     }
 
     private static class MessageHandlerHolder

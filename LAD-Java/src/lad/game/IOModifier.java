@@ -55,7 +55,7 @@ public class IOModifier extends MessageHandler
      * Handles pieces based on their pieces
      */
     @Override
-    public String handle( MessageList pieces, int userid )
+    public void handle( MessageList pieces, int userid )
     {
         if( pieces.contains( viewModifiersPiece ) )
         {
@@ -98,7 +98,6 @@ public class IOModifier extends MessageHandler
         IOInitial.getInstance().outputReturnToMainButton();
 
         MessageManager.getInstance().clearJava();
-        return buffer.toString();
     }
 
     private static class IOModifierHolder

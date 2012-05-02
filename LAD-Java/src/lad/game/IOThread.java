@@ -43,7 +43,7 @@ public class IOThread implements Runnable
             PrintWriter out = new PrintWriter(client.getOutputStream(), true);
             BufferedReader in = new BufferedReader( new InputStreamReader(
                 client.getInputStream() ) );
-            String inputLine, outputLine;
+            String inputLine;
 
             // Loop over each line of input
             // If we get the end transmission string then we're done
@@ -64,8 +64,9 @@ public class IOThread implements Runnable
             else
             {
                 // Send input to handler to get output
-                outputLine = MessageManager.getInstance().handle( processedString );
-                out.write( outputLine );
+                MessageManager mgr = new MessageManager();
+                out.write( mgr.handle( processedString ) );
+                mgr.finished();
             }
 
             // Inform the PHP server we're done

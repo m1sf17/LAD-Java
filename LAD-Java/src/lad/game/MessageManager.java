@@ -1,28 +1,30 @@
 package lad.game;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.ListIterator;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * Manages all incoming messages and dispatches them to the appropriate handler.
  *
  * Each handler initializes itself by adding the messages it can handle to the
- * list @see handlerMap.  When an incoming message is received each piece is
- * checked in the map for a match.  An asterisk denotes the value does not need
- * to be matched.
+ * list handlerMap.  When an incoming message is received each piece is checked
+ * in the map for a match.  An asterisk denotes the value does not need to be
+ * matched.  A single manager is responsible for each thread.  However, each
+ * handler is global, thus all of the output data is handled here in the
+ * manager.
  *
  * @author msflowers
  */
 public class MessageManager
 {
     /**
-     * Holds the mapping of all message pieces to their corresponding
-     * handler.
+     * Internal buffer for storing text to write.
      */
-    private HashMap< MessagePiece, MessageHandler > handlerMap =
-            new HashMap<>( 100 );
+    protected final StringBuffer buffer = new StringBuffer( 1024 );
 
     /**
      * Set to true if the window should clear it's text before the output
@@ -31,24 +33,36 @@ public class MessageManager
     private boolean addClear = false;
 
     /**
-     * Private ctor, doesn't do anything.
+     * Holds the mapping of all message pieces to their corresponding
+     * handler.
      */
-    private MessageManager()
+    private static Map< MessagePiece, MessageHandler > handlerMap =
+                   new HashMap<>( 100 );
+
+    /**
+     * Holds the list of managers (regardless of thread)
+     */
+    private static final Map< Thread, MessageManager > managerList =
+            Collections.synchronizedMap(
+              new HashMap< Thread, MessageManager >( 10 )
+            );;
+
+    /**
+     * Public ctor, adds this manager to the internal list.
+     */
+    public MessageManager()
     {
+        started();
     }
 
     /**
-     * Gets the singleton
+     * Gets the correct manager for the current thread.
      *
-     * @return The singleton
+     * @return Manager for the current thread
      */
     public static MessageManager getInstance()
     {
-        if( MessageManagerHolder.INSTANCE == null )
-        {
-            MessageManagerHolder.INSTANCE = new MessageManager();
-        }
-        return MessageManagerHolder.INSTANCE;
+        return managerList.get( Thread.currentThread() );
     }
 
     /**
@@ -57,7 +71,7 @@ public class MessageManager
      * @param pieces List of pieces that the handler can run
      * @param handle The actual handler that gets run when a message is matched
      */
-    public void addHandler( MessageList pieces, MessageHandler handle )
+    public static void addHandler( MessageList pieces, MessageHandler handle )
     {
         int len = pieces.size();
         for( int i = 0; i < len; i++ )
@@ -173,12 +187,9 @@ public class MessageManager
         // Run the handler and return it's result
         try
         {
-            String ret = handler.doHandle( pieces, userid );
-            if( addClear )
-            {
-                ret = "java().html('');" + ret;
-            }
-            addClear = false;
+            handler.doHandle( pieces, userid );
+            String ret = addClear ? "java().html('');" : "";
+            ret += buffer.toString();
 
             return ret;
         }
@@ -234,9 +245,51 @@ public class MessageManager
         return "genericErrorDialog('" + title + "','" + msg +
                 "',function(){ " + func + "});";
     }
-
-    private static class MessageManagerHolder
+    
+    /**
+     * Adds this manager to the list (it is starting).
+     */
+    private void started()
     {
-        private static MessageManager INSTANCE = null;
+        synchronized( managerList )
+        {
+            managerList.put( Thread.currentThread(), this );
+        }
+    }
+
+    /**
+     * Removes this manager from the list (it is done).
+     */
+    public void finished()
+    {
+        synchronized( managerList )
+        {
+            managerList.remove( Thread.currentThread() );
+        }
+    }
+
+    /**
+     * Simply writes a string to the internal buffer.
+     *
+     * @param str String to write
+     */
+    protected void write( String str )
+    {
+        buffer.append( str );
+    }
+
+    /**
+     * Overwrites the string in the internal buffer.
+     *
+     * Useful if text has already been written to the buffer, then an error
+     * occurs.  Then, the error dialog would be shown but none of the prepared
+     * text.
+     *
+     * @param str String to write
+     */
+    protected void writeReplace( String str )
+    {
+        buffer.setLength( 0 );
+        buffer.append( str );
     }
 }

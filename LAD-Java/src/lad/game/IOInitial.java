@@ -135,7 +135,7 @@ public class IOInitial extends MessageHandler
      * @throws IndexOutOfBoundsException Thrown if a sub function throws it
      */
     @Override
-    public String handle( MessageList pieces, int userid )
+    public void handle( MessageList pieces, int userid )
             throws IndexOutOfBoundsException,
                    InterruptedException
     {
@@ -162,7 +162,7 @@ public class IOInitial extends MessageHandler
             if( trainers.size() >= 8 )
             {
                 // abort, user shouldn't be able to get above 8
-                return "";
+                writeReplace( "" );
             }
 
             // Add the trainer and output default view
@@ -253,8 +253,10 @@ public class IOInitial extends MessageHandler
             // Return a generic error if the minions match
             if( minion1ID == minion2ID )
             {
-                return "genericErrorDialog('Error','Cannot battle a minion " +
-                       "with itself.');";
+                writeReplace( "genericErrorDialog('Error'," +
+                              "'Cannot battle a minion " +
+                              "with itself.');" );
+                return;
             }
 
             // Find both of the minions
@@ -362,7 +364,6 @@ public class IOInitial extends MessageHandler
         // An error will instantly return.  It's safe to say all errors were
         // handled so clear the window before outputting more text.
         MessageManager.getInstance().clearJava();
-        return buffer.toString();
     }
 
     /**
