@@ -69,7 +69,6 @@ public class IOModifier extends MessageHandler
                 ListIterator< Modifier > iter = modifiers.listIterator();
                 int index = 1;
 
-                write( "function postSortModifiers(){}" );
                 write( "var headers = [];" );
                 write( "headers[ 'Type' ] = 'true';" );
                 write( "headers[ 'Battles' ] = 'true';" );
@@ -92,7 +91,7 @@ public class IOModifier extends MessageHandler
                         write( "," );
                     }
                 }
-                write( "],'modifiers',postSortModifiers));" );
+                write( "],'modifiers'));" );
             }
         }
 

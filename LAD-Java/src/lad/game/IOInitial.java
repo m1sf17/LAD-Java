@@ -295,7 +295,6 @@ public class IOInitial extends MessageHandler
             List< UserExp > userexp = EXPManager.getExpByUserID( userid );
             ListIterator< UserExp > iter = userexp.listIterator();
             
-            write( "function postSortModifiers(){}" );
             write( "var headers = [];" );
             write( "headers[ 'Type' ] = 'true';" );
             write( "headers[ 'Target' ] = 'true';" );
@@ -318,7 +317,7 @@ public class IOInitial extends MessageHandler
                 }
             }
 
-            write( "],'userexp',postSortModifiers));" );
+            write( "],'userexp'));" );
             outputReturnToMainButton();
         }
         else if( pieces.contains( trainertoarenaPiece ) )
