@@ -296,9 +296,13 @@ public class IOInitial extends MessageHandler
             ListIterator< UserExp > iter = userexp.listIterator();
             
             write( "function postSortModifiers(){}" );
+            write( "var headers = [];" );
+            write( "headers[ 'Type' ] = 'true';" );
+            write( "headers[ 'Target' ] = 'true';" );
+            write( "headers[ 'Level' ] = 'true';" );
+            write( "headers[ 'Exp' ] = 'true';" );
             write( "java().append(" );
-            write( "makeSortableTable([" );
-            write( "'Type','Target','Level','Exp']," );
+            write( "makeSortableTable(headers," );
             write( "[" );
 
             while( iter.hasNext() )

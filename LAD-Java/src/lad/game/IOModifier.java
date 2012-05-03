@@ -70,11 +70,13 @@ public class IOModifier extends MessageHandler
                 int index = 1;
 
                 write( "function postSortModifiers(){}" );
-
+                write( "var headers = [];" );
+                write( "headers[ 'Type' ] = 'true';" );
+                write( "headers[ 'Battles' ] = 'true';" );
+                write( "headers[ 'Action' ] = '';" );
                 write( "java().append(" );
 
-                write( "makeSortableTable([" );
-                write( "'Type','Battles','Action']," );
+                write( "makeSortableTable(headers," );
                 write( "[" );
                 while( iter.hasNext() )
                 {
