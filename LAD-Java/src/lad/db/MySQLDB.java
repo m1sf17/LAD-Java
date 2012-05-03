@@ -353,17 +353,33 @@ public class MySQLDB
                     while( stmts.size() > 0 )
                     {
                         String stmtString = stmts.poll();
-                        stmt.execute( stmtString );
+                        if( stmt != null )
+                        {
+                            stmt.execute( stmtString );
+                        }
+                        else
+                        {
+                            Debug.log( "Not running a stmt because it was " +
+                                       "null", "MySQL" );
+                        }
 
                         Debug.log( "Delay ran a SQL stmt.", "MySQL" );
                     }
                 }
-                synchronized( stmts )
+                synchronized( pstmts )
                 {
                     while( pstmts.size() > 0 )
                     {
                         PreparedStatement pstmt = pstmts.poll();
-                        pstmt.executeUpdate( );
+                        if( pstmt != null )
+                        {
+                            pstmt.executeUpdate( );
+                        }
+                        else
+                        {
+                            Debug.log( "Not running a pstmt because it was " +
+                                       "null", "MySQL" );
+                        }
 
                         Debug.log( "Delay ran a SQL pstmt.", "MySQL" );
                     }
