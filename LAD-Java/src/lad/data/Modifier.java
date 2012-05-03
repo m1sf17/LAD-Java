@@ -293,7 +293,7 @@ public class Modifier
         int battles = Math.round( preMultBattles * multiplier );
 
         Modifier adder = new Modifier( 0, targ, rare, owner,
-                                       battles, battles );
+                                       battles, battleMult );
 
         ResultSet generatedKeys;
         try
