@@ -71,6 +71,7 @@ public abstract class DBManager
 
             try
             {
+                profs[ i ].postinit();
                 if( profs[ i ].loadData() )
                 {
                     Statement stmt = conn.createStatement();
@@ -81,8 +82,6 @@ public abstract class DBManager
                         profs[ i ].loadRow( result );
                     }
                 }
-
-                profs[ i ].postinit();
             }
             catch( SQLException e )
             {

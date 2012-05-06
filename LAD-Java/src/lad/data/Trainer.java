@@ -174,7 +174,7 @@ public class Trainer
         try
         {
             // Set up the statement
-            minionStmt.setLong( 1, owner );
+            minionStmt.setLong( 1, ID );
 
             // Run the statement
             result = minionStmt.executeQuery();
