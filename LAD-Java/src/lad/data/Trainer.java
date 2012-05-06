@@ -50,7 +50,7 @@ public class Trainer
     /**
      * List of minions that this trainer owns
      */
-    private LinkedList< Minion > minionList = new LinkedList<>();
+    private List< Minion > minionList = new LinkedList<>();
 
     /**
      * Prepared statement for pulling all the minions for a trainer
