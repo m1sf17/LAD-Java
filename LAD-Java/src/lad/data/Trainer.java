@@ -55,7 +55,7 @@ public class Trainer
     /**
      * Prepared statement for pulling all the minions for a trainer
      */
-    private PreparedStatement minionStmt = null;
+    private static PreparedStatement minionStmt = null;
 
     /**
      * Statement for inserting a new trainer
@@ -112,6 +112,9 @@ public class Trainer
         deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERS" + post );
         deleteMinionStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE " +
                                                   "OWNER = ?" );
+
+        minionStmt = conn.prepareStatement( "SELECT * FROM MINIONS WHERE " +
+                                            "OWNER = ?" );
         insertStmt = conn.prepareStatement(
                         "INSERT INTO TRAINERS VALUES( NULL, ?, 0, 0 )",
                         Statement.RETURN_GENERATED_KEYS );
@@ -167,17 +170,9 @@ public class Trainer
      */
     public void load()
     {
-        Connection conn = MySQLDB.getConn();
         ResultSet result;
         try
         {
-            // Make sure the statement is prepared
-            if( minionStmt == null )
-            {
-                minionStmt = conn.prepareStatement( "SELECT * FROM MINIONS " +
-                                                    "WHERE owner = ?" );
-            }
-
             // Set up the statement
             minionStmt.setLong( 1, owner );
 
