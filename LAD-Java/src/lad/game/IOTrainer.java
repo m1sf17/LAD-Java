@@ -226,10 +226,8 @@ public class IOTrainer extends MessageHandler
             // Return a generic error if the minions match
             if( minion1ID == minion2ID )
             {
-                writeReplace( "genericErrorDialog('Error'," +
-                              "'Cannot battle a minion " +
-                              "with itself.');" );
-                return;
+                throw new GameException( 2, "Attempting to battle a minion " +
+                                         "with itself." );
             }
 
             // Find both of the minions

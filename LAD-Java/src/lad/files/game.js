@@ -26,6 +26,7 @@ genericDialog: false */
     };
     $.extend( $.lad, {
         minion: {
+            oldBattleValue: -1,
             add: function( index, lvl, exp, trnr, id )
             {
                 ctx().append( "Minion #" + index + " Level: " + lvl +
@@ -41,20 +42,41 @@ genericDialog: false */
             },
             battle: function( opt, trnr )
             {
-                // TODO: Smarter selects
                 function createOptions()
                 {
-                    var select = $("<select></select>");
+                    var select = $("<select></select>").change(function(){
+                        if( $("#minion1").val() === $("#minion2").val() )
+                        {
+                            $(this).val( $.lad.minion.oldBattleValue );
+                        }
+                        else
+                        {
+                            $.lad.minion.oldBattleValue = $(this).val();
+                        }
+                        // TODO: Pretty warning about same
+                    }).focus(function(){
+                        $.lad.minion.oldBattleValue = $(this).val();
+                    });
+                    // Add each option
                     $.each( opt, function(i,v){
                         select.append( "<option value=" + v + ">" + ( i + 1 ) +
                                        "</option>" );
                     });
+                    // Convenience: set readonly if only 2 values
+                    if( opt.length === 2 )
+                    {
+                        select.attr({
+                            "readonly": "readonly",
+                            "disabled": "disabled"
+                        });
+                    }
                     return select;
                 }
                 ctx().append( "<br><br>Battle: " )
                      .append( createOptions().attr( 'id', 'minion1' ) )
                      .append( " with " )
-                     .append( createOptions().attr( 'id', 'minion2' ) );
+                     .append( createOptions().attr( 'id', 'minion2' )
+                         .val( opt[ 1 ] ) );
                 $('<button>Battle</button>').button().click(function(){
                     $.ladAjax( { 'battleminion': trnr,
                                  'minion1': $('#minion1').val(),
