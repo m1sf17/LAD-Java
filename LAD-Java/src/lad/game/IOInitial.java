@@ -46,14 +46,23 @@ public class IOInitial extends MessageHandler
     /**
      * Piece for getting the JS
      */
-    private final static MessagePiece
-            getjsPiece = new MessagePiece( "getJS" );
+    private final static MessagePiece getjsPiece = new MessagePiece( "getJS" );
 
     /**
      * Piece for getting the CSS
      */
     private final static MessagePiece
             getcssPiece = new MessagePiece( "getCSS" );
+
+    /**
+     * Cached version of the JS
+     */
+    private static String cachedJS = null;
+
+    /**
+     * Cached version of the CSS
+     */
+    private static String cachedCSS = null;
 
     /**
      * Handleable pieces.
@@ -115,23 +124,29 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( getjsPiece ) )
         {
-            String js = readPackagedFile( "lad/files/game.js" );
-            StringBuffer buffer = new StringBuffer( 200 );
-
-            // Weapon strings
-            buffer.append( "return [ " );
-            for( Weapon w : Weapon.values() )
+            if( cachedJS == null )
             {
-                buffer.append( "\"" );
-                buffer.append( w.toString() );
-                buffer.append( "\"," );
+                String js = readPackagedFile( "lad/files/game.js" );
+                StringBuffer buffer = new StringBuffer( 200 );
+
+                // Weapon strings
+                buffer.append( "return [ " );
+                for( Weapon w : Weapon.values() )
+                {
+                    buffer.append( "\"" );
+                    buffer.append( w.toString() );
+                    buffer.append( "\"," );
+                }
+                buffer.deleteCharAt( buffer.length() - 1 );
+                buffer.append( "];" );
+                js = magicComment( "WEAPON STRING", js, buffer );
+
+                // Cache it
+                cachedJS = js;
             }
-            buffer.deleteCharAt( buffer.length() - 1 );
-            buffer.append( "];" );
-            js = magicComment( "WEAPON STRING", js, buffer );
 
             // Outputs the js
-            write( js );
+            write( cachedJS );
             
             // Also include this so that the view works
             write( "createWindow('LAD');" +
@@ -140,7 +155,11 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( getcssPiece ) )
         {
-            write( readPackagedFile( "lad/files/game.css" ) );
+            if( cachedCSS == null )
+            {
+                cachedCSS = readPackagedFile( "lad/files/game.css" );
+            }
+            write( cachedCSS );
         }
     }
 
