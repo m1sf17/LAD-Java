@@ -173,6 +173,7 @@ public class IOInitial extends MessageHandler
             {
                 // abort, user shouldn't be able to get above 8
                 writeReplace( "" );
+                return;
             }
 
             // Add the trainer and output default view
