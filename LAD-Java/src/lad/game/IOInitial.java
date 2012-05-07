@@ -291,6 +291,12 @@ public class IOInitial extends MessageHandler
                 throw new IndexOutOfBoundsException( "Minion not owned." );
             }
 
+            // Make sure both minions are at least level 1
+            if( target1.getLevel() < 1 || target2.getLevel() < 1 )
+            {
+                throw new IndexOutOfBoundsException( "Minion not level 1." );
+            }
+
             // Battle them and grant a modifier
             GameLoop.acquire();
             Minion loser = trnr.battle( target1, target2 );
@@ -481,7 +487,7 @@ public class IOInitial extends MessageHandler
         int level = trnr.getLevel();
         int exp = trnr.getExp();
         Trainer.BattleState battleState = trnr.getBattleState();
-        String battleStateStr = "Battle State:" + battleState.toString();
+        String battleStateStr = battleState.toString();
         if( battleState == Trainer.BattleState.InBattle )
         {
             battleStateStr +=
@@ -490,34 +496,31 @@ public class IOInitial extends MessageHandler
 
         // Output the trainer profile
         write( "$.lad.trainer.overview(" + trainer + "," + level + "," + exp +
-               ",'" + battleStateStr + "');" );
+               ",'" + battleStateStr + "'," );
 
         List< Minion > minionList = trnr.getMinions();
         ListIterator< Minion > iter = minionList.listIterator();
         int index = 1;
 
         // Output each of the minions
-        String options = "[";
+        write( "[" );
         while( iter.hasNext() )
         {
             Minion minion = iter.next();
+            /*
             write( "$.lad.minion.add(" + index + "," + minion.getLevel() + "," +
                    minion.getExp() + "," + trainer + "," + minion.getID() +
                    ");" );
-            options += "'" + minion.getID() + "'";
+            */
+            write( "[" + minion.getID() + "," + minion.getLevel() + "," +
+                   minion.getExp() + "," + trainer + "]" );
             if( iter.hasNext() )
             {
-                options += ",";
+                write( "," );
             }
             index++;
         }
-        options += "]";
-
-        // If there's at least 2 minions, let them be able to battle
-        if( minionList.size() >= 2 )
-        {
-            write( "$.lad.minion.battle(" + options + "," + trainer + ");" );
-        }
+        write( "]);" );
 
         // If there is less than 8 minions, allow the trainer to get another
         if( minionList.size() < 8 )

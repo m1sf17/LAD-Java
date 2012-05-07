@@ -60,11 +60,23 @@
             }
         },
         trainer: {
-            overview: function( trnr, lvl, exp, st ){
+            overview: function( trnr, lvl, exp, st, mins ){
+                var minids = [];
                 ctx().append( "Trainer #" + trnr + "<br>" +
                               "Level: " + lvl + "<br>" +
                               "Exp: " + exp + "<br>" +
-                              st + "<br>" );
+                              "Battle State: " + st + "<br>" );
+                $.each( mins, function(i,v){
+                    $.lad.minion.add( ( i + 1 ), v[ 1 ], v[ 2 ], trnr, v[ 0 ] );
+                    if( v[ 1 ] > 0 )
+                    {
+                        minids.push( v[ 0 ] );
+                    }
+                });
+                if( minids.length >= 2 )
+                {
+                    $.lad.minion.battle( minids, trnr );
+                }
             }
         }
     });
