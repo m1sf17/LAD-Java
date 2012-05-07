@@ -1,5 +1,8 @@
 package lad.game;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -97,6 +100,18 @@ public class IOInitial extends MessageHandler
             trainerleavequeuePiece = new MessagePiece( "trainerleavequeue" );
 
     /**
+     * Piece for getting the JS
+     */
+    private final static MessagePiece
+            getjsPiece = new MessagePiece( "getJS" );
+
+    /**
+     * Piece for getting the CSS
+     */
+    private final static MessagePiece
+            getcssPiece = new MessagePiece( "getCSS" );
+
+    /**
      * Handleable pieces.
      *
      * Piece: loginPiece
@@ -109,6 +124,8 @@ public class IOInitial extends MessageHandler
      * Piece: viewexpPiece
      * Piece: trainertoarenaPiece
      * Piece: trainerleavequeuePiece
+     * Piece: getjsPiece
+     * Piece: getcssPiece
      *
      * @return List with all of the above pieces
      */
@@ -126,6 +143,8 @@ public class IOInitial extends MessageHandler
         pieces.add( viewexpPiece );
         pieces.add( trainertoarenaPiece );
         pieces.add( trainerleavequeuePiece );
+        pieces.add( getjsPiece );
+        pieces.add( getcssPiece );
         return pieces;
     }
 
@@ -139,15 +158,6 @@ public class IOInitial extends MessageHandler
             throws IndexOutOfBoundsException,
                    InterruptedException
     {
-        if( pieces.contains( loginPiece ) )
-        {
-            write( "function doJava( params ){" +
-                     "doAjax( 'java_run', params );" +
-                   "}" );
-            write( "function java(){" +
-                     "return getPopupContext('LAD');" +
-                   "}" );
-        }
 
         if( pieces.contains( loginPiece ) ||
             pieces.contains( viewalltrainersPiece ) )
@@ -300,7 +310,7 @@ public class IOInitial extends MessageHandler
             write( "headers[ 'Target' ] = 'true';" );
             write( "headers[ 'Level' ] = 'true';" );
             write( "headers[ 'Exp' ] = 'true';" );
-            write( "java().append(" );
+            write( "$.lad().append(" );
             write( "makeSortableTable(headers," );
             write( "[" );
 
@@ -363,6 +373,34 @@ public class IOInitial extends MessageHandler
             // Output the trainer again
             outputTrainerView( userid, trnrID );
         }
+        else if( pieces.contains( getjsPiece ) )
+        {
+            // Output the Javascript file
+            try
+            {
+                URL file = ClassLoader.getSystemClassLoader().getResource( 
+                  "lad/JS/game.js" );
+                BufferedInputStream stream =
+                        (BufferedInputStream)file.getContent();
+                int avail = stream.available();
+                byte buff[] = new byte[ avail ];
+                stream.read( buff );
+                String output = new String( buff );
+                write( output );
+            }
+            catch( IOException e )
+            {
+                //wait
+            }
+            write( "createWindow('LAD');" +
+                   "addMenuButton('LAD','ui-icon-home',function(){" +
+                   "doAjax('java_run',{login:''});});" );
+            return;
+        }
+        else if( pieces.contains( getcssPiece ) )
+        {
+            // Output the CSS file
+        }
         
         // An error will instantly return.  It's safe to say all errors were
         // handled so clear the window before outputting more text.
@@ -386,14 +424,15 @@ public class IOInitial extends MessageHandler
         while( iter.hasNext() )
         {
             Trainer curr = iter.next();
-            write( "java().append('" );
+            write( "$.lad().append('" );
             write( "Trainer " + index + ": Level " );
             write( curr.getLevel() + " Exp:" + curr.getExp() );
-            write( "<br>');" );
+            write( "');" );
             write( "$('<button>View</button>').button().click(" +
                      "function(){" +
-                     "doJava( { viewtrainer: " + curr.getID() + "});" +
-                     "}).appendTo( java() );" );
+                     "$.ladAjax( { viewtrainer: " + curr.getID() + "});" +
+                     "}).appendTo( $.lad() );" );
+            write( "$.lad().append( '<br>');" );
 
             index++;
         }
@@ -403,20 +442,20 @@ public class IOInitial extends MessageHandler
         {
             write( "$('<button>Add Trainer</button>').button().click(" +
                      "function(){" +
-                     "doJava( { addtrainer: '' });" +
-                   "}).appendTo( java() );" );
+                     "$.ladAjax( { addtrainer: '' });" +
+                   "}).appendTo( $.lad() );" );
         }
 
         // Add the modifiers button
-        write( "java().append( '<br/><br/>' ).append(" +
+        write( "$.lad().append( '<br/><br/>' ).append(" +
                "$('<button>Modifiers</button>').button().click(function(){" +
-                 "doJava( { viewmodifiers: '' } );" +
+                 "$.ladAjax( { viewmodifiers: '' } );" +
                "}));" );
 
         // Add the User EXP button
-        write( "java().append( " +
+        write( "$.lad().append( " +
                "$('<button>User EXP</button>').button().click(function(){" +
-                 "doJava( { viewuserexp: '' } );" +
+                 "$.ladAjax( { viewuserexp: '' } );" +
                "}));" );
     }
 
@@ -442,57 +481,42 @@ public class IOInitial extends MessageHandler
         int level = trnr.getLevel();
         int exp = trnr.getExp();
         Trainer.BattleState battleState = trnr.getBattleState();
-
-        // Output the trainer profile
-        write( "java().append('" );
-        write( "Trainer #" + trainer );
-        write( "<br>Level:" + level );
-        write( "<br>Exp:" + exp );
-        write( "<br>Battle State:" + battleState.toString() );
+        String battleStateStr = "Battle State:" + battleState.toString();
         if( battleState == Trainer.BattleState.InBattle )
         {
-            write( "(" + GameLoop.getTimeLeftInTrainerBattle( trnr ) +
-                   "s left)" );
+            battleStateStr +=
+                "(" + GameLoop.getTimeLeftInTrainerBattle( trnr ) + "s left)";
         }
-        write( "<br><br>');" );
+
+        // Output the trainer profile
+        write( "$.lad.trainer.overview(" + trainer + "," + level + "," + exp +
+               ",'" + battleStateStr + "');" );
 
         List< Minion > minionList = trnr.getMinions();
         ListIterator< Minion > iter = minionList.listIterator();
         int index = 1;
 
         // Output each of the minions
-        String options = "";
+        String options = "[";
         while( iter.hasNext() )
         {
             Minion minion = iter.next();
-            write( "java().append('" +
-                   "Minion #" + index + " " +
-                   "Level: " + minion.getLevel() + " " +
-                   "Exp: " + minion.getExp() + " ');" );
-            write( "$('<button>Train</button>').button().click(" +
-                     "function(){" +
-                     "doJava( { trainminion: " + minion.getID() + "," +
-                               "trainer:" + trainer + "});" +
-                     "}).appendTo( java() );" );
-            write( "java().append('<br/>');" );
-
-            options += "<option value=" + minion.getID() + ">" + index +
-                       "</option>";
+            write( "$.lad.minion.add(" + index + "," + minion.getLevel() + "," +
+                   minion.getExp() + "," + trainer + "," + minion.getID() +
+                   ");" );
+            options += "'" + minion.getID() + "'";
+            if( iter.hasNext() )
+            {
+                options += ",";
+            }
             index++;
         }
+        options += "]";
 
         // If there's at least 2 minions, let them be able to battle
         if( minionList.size() >= 2 )
         {
-            write( "java().append('<br><br>Battle: <select id=\"minion1\">" +
-                   options + "</select> with <select id=\"minion2\">" +
-                   options + "</select>');" );
-            write( "$('<button>Battle</button>').button().click(" +
-                     "function(){" +
-                     "doJava( { battleminion: " + trainer + "," +
-                               "minion1: $('#minion1').val()," +
-                               "minion2: $('#minion2').val()});" +
-                     "}).appendTo( java() );" );
+            write( "$.lad.minion.battle(" + options + "," + trainer + ");" );
         }
 
         // If there is less than 8 minions, allow the trainer to get another
@@ -500,12 +524,13 @@ public class IOInitial extends MessageHandler
         {
             write( "$('<button>Add Minion</button>').button().click(" +
                      "function(){" +
-                     "doJava( { addminion: ''," +
+                     "$.ladAjax( { addminion: ''," +
                                "trainer: '" + trainer + "'});" +
-                   "}).appendTo( java() );" );
+                   "}).appendTo( $.lad() );" );
         }
 
         // If the trainer is not battling, allow it to battle
+        // TODO: Rewrite to use dialog a bit better
         if( trnr.getBattleState() == Trainer.BattleState.NoBattle )
         {
             write( "$('<button>Arena Battle</button>').button().click(" +
@@ -516,7 +541,7 @@ public class IOInitial extends MessageHandler
             for( int i = 0; i < weapons.length; i++ )
             {
                 write( weapons[ i ].toString() + ":function(){" +
-                         "doJava({'trainertoarena':" + trainer + "," +
+                         "$.ladAjax({'trainertoarena':" + trainer + "," +
                            "'weapon':" + i + "});" +
                          "$(this).dialog('close').remove();" +
                        "}" );
@@ -525,7 +550,7 @@ public class IOInitial extends MessageHandler
                     write( "," );
                 }
             }
-            write( "});}).appendTo( java() );" );
+            write( "});}).appendTo( $.lad() );" );
         }
         
         // If the trainer is not battling, but in queue, let it leave
@@ -534,8 +559,8 @@ public class IOInitial extends MessageHandler
         {
             write( "$('<button>Leave Arena</button>').button().click(" +
                      "function(){" +
-                     "doJava({'trainerleavequeue':" + trainer + "});" +
-                   "}).appendTo( java() );" );
+                     "$.ladAjax({'trainerleavequeue':" + trainer + "});" +
+                   "}).appendTo( $.lad() );" );
         }
 
         outputReturnToMainButton();
@@ -546,10 +571,10 @@ public class IOInitial extends MessageHandler
      */
     public void outputReturnToMainButton()
     {
-        write( "java().append(" +
+        write( "$.lad().append(" +
                "$('<button>Return to Overview</button>').button()" +
                ".click(function(){" +
-                 "doJava({ 'viewalltrainers' : ''});" +
+                 "$.ladAjax({ 'viewalltrainers' : ''});" +
                "}));" );
     }
 

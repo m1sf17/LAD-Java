@@ -188,10 +188,8 @@ public class MessageManager
         try
         {
             handler.doHandle( pieces, userid );
-            String ret = addClear ? "java().html('');" : "";
-            ret += buffer.toString();
-
-            return ret;
+            return ( addClear ? "$.lad().html('');" : "" ) +
+                   buffer.toString();
         }
         catch( IndexOutOfBoundsException i )
         {

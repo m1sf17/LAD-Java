@@ -73,7 +73,7 @@ public class IOModifier extends MessageHandler
                 write( "headers[ 'Type' ] = 'true';" );
                 write( "headers[ 'Battles' ] = 'true';" );
                 write( "headers[ 'Action' ] = '';" );
-                write( "java().append(" );
+                write( "$.lad().append(" );
 
                 write( "makeSortableTable(headers," );
                 write( "[" );
@@ -81,8 +81,8 @@ public class IOModifier extends MessageHandler
                 {
                     Modifier curr = iter.next();
 
-                    write( "['" + curr.toString() +
-                           "'," + curr.getBattles() + "," +
+                    write( "[\"" + curr.toString() +
+                           "\"," + curr.getBattles() + "," +
                            "'']" );
                     index++;
 
