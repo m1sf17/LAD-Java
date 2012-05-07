@@ -190,7 +190,6 @@ public class MessageManager
         catch( GameException ge )
         {
             // A generic game error (most common)
-            // TODO: More handling
             return debugInfo( "Game error", ge, pairs );
         }
         catch( Exception e )
@@ -227,6 +226,14 @@ public class MessageManager
         String title = "Server Error";
         String msg = "An error occurred.  Please try again later.";
         String func = "$('div#LAD').dialog( \"close\" );";
+        if( e instanceof GameException )
+        {
+            // If it's a low severity simply go back to main page
+            if( 1 == ((GameException)e).getSeverity())
+            {
+                func = "$.ladAjax({'viewalltrainers':''});";
+            }
+        }
         return "genericErrorDialog('" + title + "','" + msg +
                 "',function(){ " + func + "});";
     }

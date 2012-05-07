@@ -15,6 +15,11 @@ package lad.data;
 public class GameException extends RuntimeException
 {
     private static final long serialVersionUID = 2030111L;
+
+    /**
+     * Holds the severity of this exception
+     */
+    private int severity;
     
     /**
      * Basic constructor taking the severity and the reason of the exception
@@ -29,5 +34,17 @@ public class GameException extends RuntimeException
                  severity == 2 ? "ACCESS ERROR: " :
                  severity == 3 ? "CRITICAL ERROR: " :
                                  "ENUM ERROR: ") + reason );
+
+        this.severity = severity;
+    }
+
+    /**
+     * Gets the severity
+     *
+     * @return Severity of the exception
+     */
+    public int getSeverity()
+    {
+        return this.severity;
     }
 }
