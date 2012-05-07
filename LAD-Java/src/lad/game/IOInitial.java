@@ -1,6 +1,7 @@
 package lad.game;
 
 import java.io.BufferedInputStream;
+import java.io.IOException;
 import java.net.URL;
 import java.util.List;
 import java.util.ListIterator;
@@ -130,9 +131,10 @@ public class IOInitial extends MessageHandler
                 String output = new String( buff );
                 write( output );
             }
-            catch( Exception e )
+            catch( IOException e )
             {
-                throw new GameException( 3, "Internal JS file not found." );
+                throw new GameException( 3, "Internal JS file not parsing:" +
+                                         e.getMessage() );
             }
             write( "createWindow('LAD');" +
                    "addMenuButton('LAD','ui-icon-home',function(){" +
