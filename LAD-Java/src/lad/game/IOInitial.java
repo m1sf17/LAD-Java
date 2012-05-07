@@ -508,11 +508,6 @@ public class IOInitial extends MessageHandler
         while( iter.hasNext() )
         {
             Minion minion = iter.next();
-            /*
-            write( "$.lad.minion.add(" + index + "," + minion.getLevel() + "," +
-                   minion.getExp() + "," + trainer + "," + minion.getID() +
-                   ");" );
-            */
             write( "[" + minion.getID() + "," + minion.getLevel() + "," +
                    minion.getExp() + "," + trainer + "]" );
             if( iter.hasNext() )
@@ -521,53 +516,23 @@ public class IOInitial extends MessageHandler
             }
             index++;
         }
-        write( "]);" );
-
-        // If there is less than 8 minions, allow the trainer to get another
-        if( minionList.size() < 8 )
-        {
-            write( "$('<button>Add Minion</button>').button().click(" +
-                     "function(){" +
-                     "$.ladAjax( { addminion: ''," +
-                               "trainer: '" + trainer + "'});" +
-                   "}).appendTo( $.lad() );" );
-        }
+        write( "]," );
 
         // If the trainer is not battling, allow it to battle
-        // TODO: Rewrite to use dialog a bit better
+        // 1 == Can Battle, 2 == Can Leave Battle, 0 == Neither
         if( trnr.getBattleState() == Trainer.BattleState.NoBattle )
         {
-            write( "$('<button>Arena Battle</button>').button().click(" +
-                     "function(){" +
-                     "genericDialog('Weapon Selection','Select a weapon " +
-                     "for your trainer to battle with.',{" );
-            Weapon weapons[] = Weapon.values();
-            for( int i = 0; i < weapons.length; i++ )
-            {
-                write( weapons[ i ].toString() + ":function(){" +
-                         "$.ladAjax({'trainertoarena':" + trainer + "," +
-                           "'weapon':" + i + "});" +
-                         "$(this).dialog('close').remove();" +
-                       "}" );
-                if( i != weapons.length - 1 )
-                {
-                    write( "," );
-                }
-            }
-            write( "});}).appendTo( $.lad() );" );
+            write( "1);" );
         }
-        
-        // If the trainer is not battling, but in queue, let it leave
-        if( trnr.getBattleState() == Trainer.BattleState.InBattleQueue ||
-            trnr.getBattleState() == Trainer.BattleState.LookingForBattle )
+        else if( trnr.getBattleState() == Trainer.BattleState.InBattleQueue ||
+                 trnr.getBattleState() == Trainer.BattleState.LookingForBattle )
         {
-            write( "$('<button>Leave Arena</button>').button().click(" +
-                     "function(){" +
-                     "$.ladAjax({'trainerleavequeue':" + trainer + "});" +
-                   "}).appendTo( $.lad() );" );
+            write( "2);" );
         }
-
-        outputReturnToMainButton();
+        else
+        {
+            write( "0);" );
+        }
     }
 
     /**
