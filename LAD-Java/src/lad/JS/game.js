@@ -130,9 +130,11 @@ genericDialog: false */
         },
         weapons: {
             allStrings: function(){
+                //# WEAPON STRINGS
                 return [ "Generator", "Amplifier", "Launcher", "Bombarder",
                          "Lancer", "Pistol", "Propeller", "Projector",
                          "Catapulter" ];
+                //# END WEAPON STRINGS
             }
         },
         main: {
