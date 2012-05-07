@@ -69,14 +69,7 @@ public class IOModifier extends MessageHandler
                 ListIterator< Modifier > iter = modifiers.listIterator();
                 int index = 1;
 
-                write( "var headers = [];" );
-                write( "headers[ 'Type' ] = 'true';" );
-                write( "headers[ 'Battles' ] = 'true';" );
-                write( "headers[ 'Action' ] = '';" );
-                write( "$.lad().append(" );
-
-                write( "makeSortableTable(headers," );
-                write( "[" );
+                write( "$.lad.modifiers.overview([" );
                 while( iter.hasNext() )
                 {
                     Modifier curr = iter.next();
@@ -91,12 +84,9 @@ public class IOModifier extends MessageHandler
                         write( "," );
                     }
                 }
-                write( "],'modifiers'));" );
+                write( "]);" );
             }
         }
-
-        // And include the button to return to trainer
-        IOInitial.getInstance().outputReturnToMainButton();
 
         MessageManager.getInstance().clearJava();
     }

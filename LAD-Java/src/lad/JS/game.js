@@ -1,4 +1,8 @@
-/*global window: false, jQuery: false, console: false, define: false, doAjax: false, getPopupContext: false */
+/*global window: false, jQuery: false, console: false, define: false,
+doAjax: false, getPopupContext: false, makeSortableTable: false,
+genericDialog: false */
+
+// TODO: Migrate external functions inside
 (function(factory) {
 	if(typeof define === 'function' && define.amd) {
 		define(['jquery'], factory);
@@ -137,6 +141,62 @@
                   function(){
                       $.ladAjax({ 'viewalltrainers': '' });
                 }).appendTo( ctx() );
+            },
+            overview: function( trnrs ){
+                // Output each
+                $.each( trnrs, function(i,v){
+                    var num = i + 1;
+                    ctx().append( "Trainer " + num + ": Level " + v[ 1 ] +
+                                  " Exp:" + v[ 2 ] );
+                    $("<button>View</button>").button().click(function(){
+                        $.ladAjax({'viewtrainer': v[ 0 ] });
+                    }).appendTo( ctx() );
+                    ctx().append( "<br>" );
+                });
+
+                // "Add trainer" button if less than 8
+                if( trnrs.length < 8 )
+                {
+                    $("<button>Add Trainer</button>").button().click(function(){
+                        $.ladAjax({'addtrainer':''});
+                    }).appendTo( ctx() );
+                }
+
+                // Add the modifiers button
+                ctx().append( "<br><br>" );
+                $("<button>Modifiers</button>").button().click(function(){
+                    $.ladAjax({'viewmodifiers':''});
+                }).appendTo( ctx() );
+
+                // Add the User EXP button
+                $("<button>User EXP</button>").button().click(function(){
+                    $.ladAjax({'viewuserexp': ''});
+                }).appendTo( ctx() );
+            }
+        },
+        userexp: {
+            overview: function( exps ){
+                var headers = {
+                    Type: "true",
+                    Target: "true",
+                    Level: "true",
+                    Exp: "true"
+                };
+
+                ctx().append( makeSortableTable( headers, exps, 'userexp' ) );
+                $.lad.main.returnButton();
+            }
+        },
+        modifiers: {
+            overview: function( mods ){
+                var headers = {
+                    Type: "true",
+                    Battles: "true",
+                    Action: ""
+                };
+
+                ctx().append( makeSortableTable( headers, mods, 'mods' ) );
+                $.lad.main.returnButton();
             }
         }
     });

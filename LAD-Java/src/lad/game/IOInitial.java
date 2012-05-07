@@ -312,14 +312,7 @@ public class IOInitial extends MessageHandler
             List< UserExp > userexp = EXPManager.getExpByUserID( userid );
             ListIterator< UserExp > iter = userexp.listIterator();
             
-            write( "var headers = [];" );
-            write( "headers[ 'Type' ] = 'true';" );
-            write( "headers[ 'Target' ] = 'true';" );
-            write( "headers[ 'Level' ] = 'true';" );
-            write( "headers[ 'Exp' ] = 'true';" );
-            write( "$.lad().append(" );
-            write( "makeSortableTable(headers," );
-            write( "[" );
+            write( "$.lad.userexp.overview([" );
 
             while( iter.hasNext() )
             {
@@ -334,8 +327,7 @@ public class IOInitial extends MessageHandler
                 }
             }
 
-            write( "],'userexp'));" );
-            outputReturnToMainButton();
+            write( "],'userexp');" );
         }
         else if( pieces.contains( trainertoarenaPiece ) )
         {
@@ -425,45 +417,20 @@ public class IOInitial extends MessageHandler
             TrainerManager.getInstance().getTrainersByUser( userid );
         ListIterator< Trainer > iter = trainers.listIterator();
 
-        int index = 1;
-
         // Output each trainer
+        write( "$.lad.main.overview([" );
         while( iter.hasNext() )
         {
             Trainer curr = iter.next();
-            write( "$.lad().append('" );
-            write( "Trainer " + index + ": Level " );
-            write( curr.getLevel() + " Exp:" + curr.getExp() );
-            write( "');" );
-            write( "$('<button>View</button>').button().click(" +
-                     "function(){" +
-                     "$.ladAjax( { viewtrainer: " + curr.getID() + "});" +
-                     "}).appendTo( $.lad() );" );
-            write( "$.lad().append( '<br>');" );
+            write( "[" + curr.getID() + "," + curr.getLevel() + "," +
+                   curr.getExp() +"]" );
 
-            index++;
+            if( iter.hasNext() )
+            {
+                write( "," );
+            }
         }
-
-        // Add the "Add Trainer" button
-        if( trainers.size() < 8 )
-        {
-            write( "$('<button>Add Trainer</button>').button().click(" +
-                     "function(){" +
-                     "$.ladAjax( { addtrainer: '' });" +
-                   "}).appendTo( $.lad() );" );
-        }
-
-        // Add the modifiers button
-        write( "$.lad().append( '<br/><br/>' ).append(" +
-               "$('<button>Modifiers</button>').button().click(function(){" +
-                 "$.ladAjax( { viewmodifiers: '' } );" +
-               "}));" );
-
-        // Add the User EXP button
-        write( "$.lad().append( " +
-               "$('<button>User EXP</button>').button().click(function(){" +
-                 "$.ladAjax( { viewuserexp: '' } );" +
-               "}));" );
+        write( "]);" );
     }
 
     /**
@@ -533,18 +500,6 @@ public class IOInitial extends MessageHandler
         {
             write( "0);" );
         }
-    }
-
-    /**
-     * Outputs a button for returning to the trainer view.
-     */
-    public void outputReturnToMainButton()
-    {
-        write( "$.lad().append(" +
-               "$('<button>Return to Overview</button>').button()" +
-               ".click(function(){" +
-                 "$.ladAjax({ 'viewalltrainers' : ''});" +
-               "}));" );
     }
 
     private static class IOInitialHolder
