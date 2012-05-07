@@ -41,6 +41,7 @@ genericDialog: false */
             },
             battle: function( opt, trnr )
             {
+                // TODO: Smarter selects
                 function createOptions()
                 {
                     var select = $("<select></select>");
@@ -100,15 +101,16 @@ genericDialog: false */
                 {
                     $("<button>Arena Battle</button>").button().click(
                       function(){
-                        var weaponButtons = {};
-                        $.each( $.lad.weapons.allStrings(), function(i,v){
-                            weaponButtons[ v ] = function(){
-                                $.ladAjax({
-                                    'trainertoarena':trnr,
-                                    'weapon':i
-                                });
-                                $(this).dialog('close').remove();
-                            };
+                          // TODO: Better Dialog
+                          var weaponButtons = {};
+                          $.each( $.lad.weapons.allStrings(), function(i,v){
+                              weaponButtons[ v ] = function(){
+                                  $.ladAjax({
+                                      'trainertoarena':trnr,
+                                      'weapon':i
+                                  });
+                                  $(this).dialog('close').remove();
+                              };
                         });
                         genericDialog( "Weapon Selection", "Select a weapon" +
                         "for your trainer to battle with.", weaponButtons );
@@ -130,6 +132,7 @@ genericDialog: false */
         },
         weapons: {
             allStrings: function(){
+                // TODO: Use IOInitial to replace with dynamic results
                 //# WEAPON STRINGS
                 return [ "Generator", "Amplifier", "Launcher", "Bombarder",
                          "Lancer", "Pistol", "Propeller", "Projector",

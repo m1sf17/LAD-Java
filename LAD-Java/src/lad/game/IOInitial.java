@@ -137,9 +137,9 @@ public class IOInitial extends MessageHandler
                 String output = new String( buff );
                 write( output );
             }
-            catch( IOException e )
+            catch( Exception e )
             {
-                //wait
+                // Ignore
             }
             write( "createWindow('LAD');" +
                    "addMenuButton('LAD','ui-icon-home',function(){" +
@@ -147,7 +147,7 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( getcssPiece ) )
         {
-            // Output the CSS file
+            // TODO: Output the CSS file
         }
     }
 
