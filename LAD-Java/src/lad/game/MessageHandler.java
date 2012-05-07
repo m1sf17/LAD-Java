@@ -47,7 +47,7 @@ public abstract class MessageHandler
      * Placeholder in case handler needs specific pre/post processing later on.
      *
      * @param pieces List of pieces sent by the user.
-     * @param userid ID of the user issuing the request.return Output to be sent to the user
+     * @param userid ID of the user issuing the request.
      * @throws InterruptedException Possibly thrown if a data accessor gets
      *                              interrupted while trying to acquire the lock
      *                              on the game loop's data.
