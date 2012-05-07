@@ -311,10 +311,6 @@ public class IOTrainer extends MessageHandler
             // Output the trainer again
             outputTrainerView( userid, trnrID );
         }
-
-        // An error will instantly return.  It's safe to say all errors were
-        // handled so clear the window before outputting more text.
-        MessageManager.getInstance().clearJava();
     }
 
     /**
@@ -367,10 +363,23 @@ public class IOTrainer extends MessageHandler
         int exp = trnr.getExp();
         Trainer.BattleState battleState = trnr.getBattleState();
         String battleStateStr = battleState.toString();
+        String stateNumber;
+
+        // If the trainer is not battling, allow it to battle
+        // 1 == Can Battle, 2 == Can Leave Battle, 0 == Neither
         if( battleState == Trainer.BattleState.InBattle )
         {
             battleStateStr +=
                 "(" + GameLoop.getTimeLeftInTrainerBattle( trnr ) + "s left)";
+            stateNumber = "0";
+        }
+        else if( trnr.getBattleState() == Trainer.BattleState.NoBattle )
+        {
+            stateNumber = "1";
+        }
+        else
+        {
+            stateNumber = "2";
         }
 
         // Output the trainer profile
@@ -394,23 +403,7 @@ public class IOTrainer extends MessageHandler
             }
             index++;
         }
-        write( "]," );
-
-        // If the trainer is not battling, allow it to battle
-        // 1 == Can Battle, 2 == Can Leave Battle, 0 == Neither
-        if( trnr.getBattleState() == Trainer.BattleState.NoBattle )
-        {
-            write( "1);" );
-        }
-        else if( trnr.getBattleState() == Trainer.BattleState.InBattleQueue ||
-                 trnr.getBattleState() == Trainer.BattleState.LookingForBattle )
-        {
-            write( "2);" );
-        }
-        else
-        {
-            write( "0);" );
-        }
+        write( "]," + stateNumber + ");" );
     }
 
     private static class IOTrainerHolder

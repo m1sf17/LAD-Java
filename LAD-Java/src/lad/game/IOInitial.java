@@ -144,16 +144,11 @@ public class IOInitial extends MessageHandler
             write( "createWindow('LAD');" +
                    "addMenuButton('LAD','ui-icon-home',function(){" +
                    "doAjax('java_run',{login:''});});" );
-            return;
         }
         else if( pieces.contains( getcssPiece ) )
         {
             // Output the CSS file
         }
-        
-        // An error will instantly return.  It's safe to say all errors were
-        // handled so clear the window before outputting more text.
-        MessageManager.getInstance().clearJava();
     }
 
     private static class IOInitialHolder

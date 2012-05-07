@@ -27,12 +27,6 @@ public class MessageManager
     protected final StringBuffer buffer = new StringBuffer( 1024 );
 
     /**
-     * Set to true if the window should clear it's text before the output
-     * is printed.
-     */
-    private boolean addClear = false;
-
-    /**
      * Holds the mapping of all message pieces to their corresponding
      * handler.
      */
@@ -78,14 +72,6 @@ public class MessageManager
         {
             handlerMap.put( pieces.get( i ), handle );
         }
-    }
-
-    /**
-     * Should be called by the handle func to set addClear to true.
-     */
-    public void clearJava()
-    {
-        addClear = true;
     }
 
     /**
@@ -188,8 +174,7 @@ public class MessageManager
         try
         {
             handler.doHandle( pieces, userid );
-            return ( addClear ? "$.lad().html('');" : "" ) +
-                   buffer.toString();
+            return buffer.toString();
         }
         catch( IndexOutOfBoundsException i )
         {

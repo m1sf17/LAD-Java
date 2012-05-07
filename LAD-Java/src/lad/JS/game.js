@@ -65,10 +65,10 @@ genericDialog: false */
         trainer: {
             overview: function( trnr, lvl, exp, st, mins, tb ){
                 var minids = [];
-                ctx().append( "Trainer #" + trnr + "<br>" +
-                              "Level: " + lvl + "<br>" +
-                              "Exp: " + exp + "<br>" +
-                              "Battle State: " + st + "<br>" );
+
+                ctx().html( "" ).append( "Trainer #" + trnr + "<br>" +
+                    "Level: " + lvl + "<br>Exp: " + exp + "<br>" +
+                    "Battle State: " + st + "<br>" );
                 $.each( mins, function(i,v){
                     $.lad.minion.add( ( i + 1 ), v[ 1 ], v[ 2 ], trnr, v[ 0 ] );
                     if( v[ 1 ] > 0 )
@@ -146,6 +146,7 @@ genericDialog: false */
             },
             overview: function( trnrs ){
                 // Output each
+                ctx().html( "" );
                 $.each( trnrs, function(i,v){
                     var num = i + 1;
                     ctx().append( "Trainer " + num + ": Level " + v[ 1 ] +
@@ -185,7 +186,8 @@ genericDialog: false */
                     Exp: "true"
                 };
 
-                ctx().append( makeSortableTable( headers, exps, 'userexp' ) );
+                ctx().html( "" )
+                    .append( makeSortableTable( headers, exps, 'userexp' ) );
                 $.lad.main.returnButton();
             }
         },
@@ -197,7 +199,8 @@ genericDialog: false */
                     Action: ""
                 };
 
-                ctx().append( makeSortableTable( headers, mods, 'mods' ) );
+                ctx().html( "" )
+                    .append( makeSortableTable( headers, mods, 'mods' ) );
                 $.lad.main.returnButton();
             }
         }

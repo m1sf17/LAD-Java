@@ -87,8 +87,6 @@ public class IOModifier extends MessageHandler
                 write( "]);" );
             }
         }
-
-        MessageManager.getInstance().clearJava();
     }
 
     private static class IOModifierHolder
