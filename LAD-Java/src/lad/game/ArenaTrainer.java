@@ -35,38 +35,39 @@ public class ArenaTrainer
     /**
      * Whether this trainer is currently running
      */
-    public boolean running = false;
+    private boolean running = false;
 
     /**
      * A count of how many times this trainer has ran away
      */
-    public int timesRan = 0;
+    private int timesRan = 0;
 
     /**
      * The total damage that has been inflicted upon this trainer
      */
-    public double totalDamage = 0.0;
+    private double totalDamage = 0.0;
 
     /**
      * Amount of time remaining to reload
      */
-    public double reloadTimeRemain = 0.0;
+    private double reloadTimeRemain = 0.0;
 
     /**
      * Left over attack speed for attacking the next round.
      *
      * If this value is negative then something else cut it off.
      */
-    public double leftOverAtkSpd = 0.0;
+    private double leftOverAtkSpd = 0.0;
+
     /**
      * Next action the trainer will take in the battle
      */
-    public NextAction nextAction;
+    private NextAction nextAction;
 
     /**
      * Time left before this unit has to reload
      */
-    public double timeToReload;
+    private double timeToReload;
 
     /**
      * Modifiers this trainer has equipped
@@ -145,6 +146,140 @@ public class ArenaTrainer
     public Weapon getWeapon()
     {
         return weapon;
+    }
+
+    /**
+     * @return the running
+     */
+    public boolean isRunning()
+    {
+        return running;
+    }
+
+    /**
+     * @param running the running to set
+     */
+    public void setRunning( boolean running )
+    {
+        this.running = running;
+    }
+
+    /**
+     * @return the timesRan
+     */
+    public int getTimesRan()
+    {
+        return timesRan;
+    }
+
+    /**
+     * Increments the number of times ran
+     */
+    public void incrementTimesRan()
+    {
+        timesRan++;
+    }
+
+    /**
+     * @return the totalDamage
+     */
+    public double getTotalDamage()
+    {
+        return totalDamage;
+    }
+
+    /**
+     * Adds to the amount of total damage taken
+     *
+     * @param damage Amount to add to the total damage
+     */
+    public void addTotalDamage( double damage )
+    {
+        totalDamage += damage;
+    }
+
+    /**
+     * @return the reloadTimeRemain
+     */
+    public double getReloadTimeRemain()
+    {
+        return reloadTimeRemain;
+    }
+
+    /**
+     * Subtracts from the amount of reload time remaining
+     *
+     * @param time Amount to subtract from the time remaining
+     */
+    public void reduceReloadTimeRemain( double time )
+    {
+        reloadTimeRemain -= time;
+    }
+
+    /**
+     * @param reloadTimeRemain the reloadTimeRemain to set
+     */
+    public void setReloadTimeRemain( double reloadTimeRemain )
+    {
+        this.reloadTimeRemain = reloadTimeRemain;
+    }
+
+    /**
+     * @return the leftOverAtkSpd
+     */
+    public double getLeftOverAtkSpd()
+    {
+        return leftOverAtkSpd;
+    }
+
+    /**
+     * @return the nextAction
+     */
+    public NextAction getNextAction()
+    {
+        return nextAction;
+    }
+
+    /**
+     * @param nextAction the nextAction to set
+     */
+    public void setNextAction( NextAction nextAction )
+    {
+        this.nextAction = nextAction;
+    }
+
+    /**
+     * @return the timeToReload
+     */
+    public double getTimeToReload()
+    {
+        return timeToReload;
+    }
+
+    /**
+     * Subtracts the time to reload by the given amount
+     *
+     * @param amount Amount to subtract the time to reload by
+     */
+    public void reduceTimeToReload( double amount )
+    {
+        timeToReload -= amount;
+    }
+
+    /**
+     * "Reload"s by increasing the time to reload by the reload time.
+     */
+    public void reload()
+    {
+        timeToReload += getAttribute( ModifierTarget.ReloadRate );
+    }
+
+    /**
+     * @param leftOverAtkSpd the leftOverAtkSpd to set
+     */
+    public void setLeftOverAtkSpd( double leftOverAtkSpd )
+    {
+        this.leftOverAtkSpd = leftOverAtkSpd;
     }
 
     /**

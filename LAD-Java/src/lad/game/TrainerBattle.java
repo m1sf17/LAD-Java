@@ -168,34 +168,34 @@ public class TrainerBattle
         {
             ArenaTrainer thisTrnr = trainer[ i ];
             ArenaTrainer otherTrnr = trainer[ i == 0 ? 1 : 0 ];
-            if( thisTrnr.running &&
+            if( thisTrnr.isRunning() &&
                 otherTrnr.getAttribute( ModifierTarget.Range ) >= distance )
             {
                 Debug.log( "Trainer " + i + " next action: run." );
-                thisTrnr.nextAction = ArenaTrainer.NextAction.RunAway;
+                thisTrnr.setNextAction( ArenaTrainer.NextAction.RunAway );
             }
-            else if( thisTrnr.reloadTimeRemain > 0.0 )
+            else if( thisTrnr.getReloadTimeRemain() > 0.0 )
             {
                 Debug.log( "Trainer " + i + " next action: reload." );
-                thisTrnr.nextAction = ArenaTrainer.NextAction.Reload;
+                thisTrnr.setNextAction( ArenaTrainer.NextAction.Reload );
             }
             else if( distance > thisTrnr.getAttribute( ModifierTarget.Range ) )
             {
                 Debug.log( "Trainer " + i + " next action: close." );
-                thisTrnr.nextAction = ArenaTrainer.NextAction.CloseDistance;
+                thisTrnr.setNextAction( ArenaTrainer.NextAction.CloseDistance );
             }
             else
             {
                 Debug.log( "Trainer " + i + " next action: fire." );
-                thisTrnr.nextAction = ArenaTrainer.NextAction.FireWeapon;
+                thisTrnr.setNextAction( ArenaTrainer.NextAction.FireWeapon );
             }
         }
 
         // Update running
         for( int i = 0; i < trainerlen; i++ )
         {
-            trainer[ i ].running =
-                    trainer[ i ].nextAction == ArenaTrainer.NextAction.RunAway;
+            trainer[ i ].setRunning( trainer[ i ].getNextAction() ==
+                                     ArenaTrainer.NextAction.RunAway );
         }
 
         // Do actions
@@ -206,37 +206,39 @@ public class TrainerBattle
 
             // If running, then run!
             // Also, break out since all other actions will not be running
-            if( thisTrnr.nextAction == ArenaTrainer.NextAction.RunAway )
+            if( thisTrnr.getNextAction() == ArenaTrainer.NextAction.RunAway )
             {
                 distance += thisTrnr.getAttribute( ModifierTarget.Mobility );
-                thisTrnr.running = true;
+                thisTrnr.setRunning( true );
                 continue;
             }
 
             // Not running, so don't run
-            thisTrnr.running = false;
-            if( thisTrnr.nextAction == ArenaTrainer.NextAction.CloseDistance )
+            thisTrnr.setRunning( false );
+            if( thisTrnr.getNextAction() ==
+                ArenaTrainer.NextAction.CloseDistance )
             {
                 distance -= thisTrnr.getAttribute( ModifierTarget.Mobility );
                 continue;
             }
-            else if( thisTrnr.nextAction == ArenaTrainer.NextAction.Reload )
+            else if( thisTrnr.getNextAction() ==
+                     ArenaTrainer.NextAction.Reload )
             {
-                thisTrnr.reloadTimeRemain -= 1.0;
-                if( thisTrnr.reloadTimeRemain <= 0.0 )
+                thisTrnr.setReloadTimeRemain( thisTrnr.getReloadTimeRemain() -
+                                              1.0 );
+                if( thisTrnr.getReloadTimeRemain() <= 0.0 )
                 {
-                    thisTrnr.timeToReload +=
-                            thisTrnr.getAttribute( ModifierTarget.ReloadRate );
+                    thisTrnr.reload();
                 }
                 continue;
             }
 
             // Trainer is attacking!!!
             // Update reload times
-            thisTrnr.timeToReload -= 1.0;
-            if( thisTrnr.timeToReload < 0.0f )
+            thisTrnr.reduceTimeToReload( 1.0 );
+            if( thisTrnr.getTimeToReload() < 0.0f )
             {
-                thisTrnr.reloadTimeRemain = Weapon.getReloadTime();
+                thisTrnr.setReloadTimeRemain( Weapon.getReloadTime() );
             }
 
             // Because there are only so many shots per second, we use a
@@ -247,14 +249,14 @@ public class TrainerBattle
             // Time per shot = 1.0 / user atk speed
             Double timePerShot = 1.0 / atkSpd;
             // Total time to shoot = 1.0 + left over
-            Double timeToShoot = 1.0 + thisTrnr.leftOverAtkSpd;
+            Double timeToShoot = 1.0 + thisTrnr.getLeftOverAtkSpd();
             // # of shots = Atk Speed * Total Time
             Double maxShots = Math.floor( atkSpd * timeToShoot );
             // Total time shot = Time per shot * shots
             Double totalTime = timePerShot * maxShots;
             // Next turn's left over = Total time to shoot - total
             //                         time shooting
-            thisTrnr.leftOverAtkSpd = timeToShoot - totalTime;
+            thisTrnr.setLeftOverAtkSpd( timeToShoot - totalTime );
 
             Integer shots = maxShots.intValue();
 
@@ -286,13 +288,13 @@ public class TrainerBattle
 
                 Debug.log( "Trainer " + i + " hit for: " + damage );
                 // Inflict the damage
-                otherTrnr.totalDamage += damage;
-                if( otherTrnr.totalDamage > (double)otherTrnr.timesRan *
+                otherTrnr.addTotalDamage( damage );
+                if( otherTrnr.getTotalDamage() > (double)otherTrnr.getTimesRan() *
                                             Weapon.getRunawayDamage() )
                 {
                     // Morale broke, run away!
-                    otherTrnr.running = true;
-                    otherTrnr.timesRan++;
+                    otherTrnr.setRunning( true );
+                    otherTrnr.incrementTimesRan();
                 }
             }
         }
@@ -300,8 +302,8 @@ public class TrainerBattle
         // If the battle is over
         if( ticksRemaining == 0 )
         {
-            winningIndex = trainer[ 0 ].totalDamage >
-                           trainer[ 1 ].totalDamage ? 1 : 0;
+            winningIndex = trainer[ 0 ].getTotalDamage() >
+                           trainer[ 1 ].getTotalDamage() ? 1 : 0;
         }
     }
     
