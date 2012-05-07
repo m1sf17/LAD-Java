@@ -118,31 +118,16 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( getjsPiece ) )
         {
-            // Output the Javascript file
-            try
-            {
-                URL file = ClassLoader.getSystemClassLoader().getResource( 
-                  "lad/files/game.js" );
-                BufferedInputStream stream =
-                        (BufferedInputStream)file.getContent();
-                int avail = stream.available();
-                byte buff[] = new byte[ avail ];
-                stream.read( buff );
-                String output = new String( buff );
-                write( output );
-            }
-            catch( IOException e )
-            {
-                throw new GameException( 3, "Internal JS file not parsing:" +
-                                         e.getMessage() );
-            }
+            writePackagedFile( "lad/files/game.js" );
+
+            // Also include this so that the view works
             write( "createWindow('LAD');" +
                    "addMenuButton('LAD','ui-icon-home',function(){" +
                    "doAjax('java_run',{login:''});});" );
         }
         else if( pieces.contains( getcssPiece ) )
         {
-            // TODO: Output the CSS file
+            writePackagedFile( "lad/files/game.css" );
         }
     }
 

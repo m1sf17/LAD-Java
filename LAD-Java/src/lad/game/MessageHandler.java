@@ -1,5 +1,10 @@
 package lad.game;
 
+import java.io.BufferedInputStream;
+import java.io.IOException;
+import java.net.URL;
+import lad.data.GameException;
+
 /**
  * Interface for handling messages with the PHP server.
  *
@@ -29,6 +34,42 @@ public abstract class MessageHandler
     protected void writeReplace( String str )
     {
         MessageManager.getInstance().writeReplace( str );
+    }
+
+    /**
+     * Read a packaged file and output it.
+     *
+     * Reads the given location inside this JAR package and outputs its contents
+     * to the stream.
+     *
+     * @param location Location the file is inside the JAR package
+     * @throws GameException Thrown if an error occurs while reading the file
+     */
+    protected void writePackagedFile( String location )
+    {
+        try
+        {
+            // Find the file and get its stream
+            URL file = ClassLoader.getSystemClassLoader().
+                    getResource( location );
+            BufferedInputStream stream = (BufferedInputStream)file.getContent();
+
+            // Get the number of bytes available
+            int avail = stream.available();
+
+            // Create/fill the buffer
+            byte buff[] = new byte[ avail ];
+            stream.read( buff );
+
+            // Write out the buffer
+            String output = new String( buff );
+            write( output );
+        }
+        catch( IOException e )
+        {
+            throw new GameException( 3, "Internal file not parsing:" +
+                                        e.getMessage() );
+        }
     }
     
     /**
