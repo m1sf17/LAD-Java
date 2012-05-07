@@ -33,7 +33,7 @@ public class MinionTest
     {
         System.out.println( "Level" );
         int l = 4;
-        Minion instance = new Minion();
+        Minion instance = new Minion( 0, 0, 0, 0 );
         instance.setLevel( l );
         int c = instance.getLevel();
         assertEquals( "Level fails to set", l, c );
@@ -47,7 +47,7 @@ public class MinionTest
     {
         System.out.println( "Exp" );
         int e = 3;
-        Minion instance = new Minion();
+        Minion instance = new Minion( 0, 0, 0, 0 );
         instance.setExp( e );
         int c = instance.getExp();
         assertEquals( "Exp fails to set", e, c );
@@ -61,7 +61,7 @@ public class MinionTest
     {
         System.out.println( "Owner" );
         int o = 2;
-        Minion instance = new Minion();
+        Minion instance = new Minion( 0, 0, 0, 0 );
         instance.setOwner( o );
         int c = instance.getOwner();
         assertEquals( "Exp fails to set", o, c );
