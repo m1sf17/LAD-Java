@@ -122,7 +122,7 @@ public class IOInitial extends MessageHandler
             try
             {
                 URL file = ClassLoader.getSystemClassLoader().getResource( 
-                  "lad/JS/game.js" );
+                  "lad/files/game.js" );
                 BufferedInputStream stream =
                         (BufferedInputStream)file.getContent();
                 int avail = stream.available();
