@@ -3,6 +3,7 @@ package lad.game;
 import java.util.List;
 import java.util.ListIterator;
 import lad.data.UserExp;
+import lad.data.Weapon;
 import lad.db.EXPManager;
 
 /**
@@ -114,8 +115,24 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( getjsPiece ) )
         {
-            writePackagedFile( "lad/files/game.js" );
+            String js = readPackagedFile( "lad/files/game.js" );
+            StringBuffer buffer = new StringBuffer( 200 );
 
+            // Weapon strings
+            buffer.append( "return [ " );
+            for( Weapon w : Weapon.values() )
+            {
+                buffer.append( "\"" );
+                buffer.append( w.toString() );
+                buffer.append( "\"," );
+            }
+            buffer.deleteCharAt( buffer.length() - 1 );
+            buffer.append( "];" );
+            js = magicComment( "WEAPON STRING", js, buffer );
+
+            // Outputs the js
+            write( js );
+            
             // Also include this so that the view works
             write( "createWindow('LAD');" +
                    "addMenuButton('LAD','ui-icon-home',function(){" +
@@ -123,8 +140,32 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( getcssPiece ) )
         {
-            writePackagedFile( "lad/files/game.css" );
+            write( readPackagedFile( "lad/files/game.css" ) );
         }
+    }
+
+    /**
+     * Finds the location of a pair of matching magic comments.
+     *
+     * Searches the given string for a comment matching //# and the given
+     * string.  The second string searched for is one matching //# END and the
+     * given string.  The final parameter is replaced into the string. Returns
+     * the resulting string.
+     *
+     * @param needle      String to search for
+     * @param haystack    String to search in
+     * @param replacement String to replace into
+     * @return Resulting string
+     */
+    private String magicComment( CharSequence needle, String haystack,
+                                 CharSequence replacement )
+    {
+        int startIndex = haystack.indexOf( "//# " + needle );
+        String endString = "//# END " + needle;
+        int endIndex = haystack.indexOf( endString ) + endString.length();
+        CharSequence region = haystack.subSequence( startIndex, endIndex + 1 );
+
+        return haystack.replace( region, replacement );
     }
 
     private static class IOInitialHolder

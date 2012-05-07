@@ -37,15 +37,15 @@ public abstract class MessageHandler
     }
 
     /**
-     * Read a packaged file and output it.
+     * Read a packaged file and return it.
      *
-     * Reads the given location inside this JAR package and outputs its contents
-     * to the stream.
+     * Reads the given location inside this JAR package and return its contents.
      *
      * @param location Location the file is inside the JAR package
+     * @return String containing the file's text
      * @throws GameException Thrown if an error occurs while reading the file
      */
-    protected void writePackagedFile( String location )
+    protected String readPackagedFile( String location )
     {
         try
         {
@@ -62,8 +62,7 @@ public abstract class MessageHandler
             stream.read( buff );
 
             // Write out the buffer
-            String output = new String( buff );
-            write( output );
+            return new String( buff );
         }
         catch( IOException e )
         {

@@ -132,11 +132,8 @@ genericDialog: false */
         },
         weapons: {
             allStrings: function(){
-                // TODO: Use IOInitial to replace with dynamic results
                 //# WEAPON STRINGS
-                return [ "Generator", "Amplifier", "Launcher", "Bombarder",
-                         "Lancer", "Pistol", "Propeller", "Projector",
-                         "Catapulter" ];
+                return [ "Bombarder", "..." ];
                 //# END WEAPON STRINGS
             }
         },
