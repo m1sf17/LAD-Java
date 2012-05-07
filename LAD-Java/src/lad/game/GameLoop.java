@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.concurrent.Semaphore;
+import lad.data.GameException;
 import lad.data.Modifier;
 import lad.data.ModifierTarget;
 import lad.data.Trainer;
@@ -25,7 +26,6 @@ import lad.db.TrainerManager;
  * allowed to run.
  *
  * @author msflowers
- * @todo Replace all occurrences of IndexOutOfBounds with a custom exception
  */
 public class GameLoop implements Runnable
 {
@@ -176,8 +176,7 @@ public class GameLoop implements Runnable
      *
      * @param trainer Trainer to look up
      * @return Time(ticks) remaining in the battle
-     * @throws IndexOutOfBoundsException Thrown if the trainer is not in a
-     *                                   battle.
+     * @throws GameException Thrown if the trainer is not in a battle.
      */
     public static int getTimeLeftInTrainerBattle( Trainer trainer )
     {
@@ -191,7 +190,7 @@ public class GameLoop implements Runnable
                 return battle.getTicksRemaining();
             }
         }
-        throw new IndexOutOfBoundsException( "Trainer is not in a battle." );
+        throw new GameException( 1, "Trainer is not in a battle." );
     }
 
     /**

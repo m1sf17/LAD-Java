@@ -8,10 +8,6 @@ package lad.data;
 public enum ModifierTarget
 {
     /**
-     * Invalid target...
-     */
-    InvalidTarget( -1 ),
-    /**
      * Modifies proficiency attribute
      */
     Proficiency( 0 ),
@@ -61,14 +57,10 @@ public enum ModifierTarget
      * Ctor from int
      *
      * @param targ The target ( in range -1 - 9 )
+     * @throws GameException Thrown if the update fails
      */
     ModifierTarget( int targ )
     {
-        if( targ < -1 || targ > 9 )
-        {
-            throw new IndexOutOfBoundsException( "Target out of bounds." );
-        }
-
         target = targ;
     }
 
@@ -85,7 +77,7 @@ public enum ModifierTarget
      *
      * @param target The desired target
      * @return The created target
-     * @throws IndexOutOfBoundsException Thrown if not in the valid range
+     * @throws GameException Thrown if the parameter is out of range
      */
     public static ModifierTarget fromInt( int target )
     {
@@ -112,13 +104,14 @@ public enum ModifierTarget
             case 9:
                 return Range;
         }
-        throw new IndexOutOfBoundsException( "Invalid target: " + target );
+        throw new GameException( 4, "Invalid target: " + target );
     }
 
     /**
      * String representation
      *
      * @return Name of the modifier, plus a space in two cases
+     * @throws GameException Thrown if this is out of range
      */
     @Override
     public String toString()
@@ -147,7 +140,7 @@ public enum ModifierTarget
                 return "Range";
         }
 
-        throw new IndexOutOfBoundsException( "Invalid modifier to string." );
+        throw new GameException( 4, "Invalid modifier to string." );
     }
 
     /**
@@ -168,6 +161,7 @@ public enum ModifierTarget
      *
      * @param incProf Set to true to allow proficiency as a possible return
      * @return Random target
+     * @throws GameException Thrown if the calculated random is out of range
      */
     public static ModifierTarget getRandom( boolean incProf )
     {

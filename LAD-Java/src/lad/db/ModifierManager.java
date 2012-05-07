@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.GameException;
 import lad.data.Modifier;
 import lad.data.ModifierTarget;
 
@@ -198,7 +199,7 @@ public class ModifierManager extends DBManager
      * Gets a specific modifier
      *
      * @param id ID of the modifier to get
-     * @throws IndexOutOfBoundsException Thrown if modifier is not found
+     * @throws GameException Thrown if modifier is not found
      * @return Found modifier
      */
     public Modifier getByID( int id )
@@ -215,7 +216,7 @@ public class ModifierManager extends DBManager
             }
         }
 
-        throw new IndexOutOfBoundsException( "Modifier not found: " + id );
+        throw new GameException( 1, "Modifier not found: " + id );
     }
 
     /**

@@ -4,6 +4,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.ListIterator;
+import lad.data.GameException;
 import lad.data.Minion;
 import lad.data.Trainer;
 
@@ -151,9 +152,9 @@ public class TrainerManager extends DBManager
      *
      * @param id The ID of the trainer to search for
      * @return Either the trainer if it is found
-     * @throws IndexOutOfBoundsException Thrown if the given ID is not found
+     * @throws GameException Thrown if the given ID is not found
      */
-    public Trainer getTrainerByID( int id ) throws IndexOutOfBoundsException
+    public Trainer getTrainerByID( int id )
     {
         ListIterator< Trainer > iter = trainers.listIterator();
         while( iter.hasNext() )
@@ -164,7 +165,7 @@ public class TrainerManager extends DBManager
                 return current;
             }
         }
-        throw new IndexOutOfBoundsException( "Trainer not found." );
+        throw new GameException( 1, "Trainer not found:" + id );
     }
 
     /**

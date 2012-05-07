@@ -74,16 +74,17 @@ public class Modifier
      * @param n_owner    Owner of the modifier
      * @param n_battles  Number of battles left
      * @param n_initial  Initial multiplier for battles
+     * @throws GameException Thrown if the target is out of range
      */
     public Modifier( int n_ID, int n_target, int n_rarity, int n_owner,
                      int n_battles, int n_initial )
     {
         ID = n_ID;
-        target = ModifierTarget.fromInt( n_target );
         rarity = n_rarity;
         owner = n_owner;
         battles = n_battles;
         initialMultiplier = n_initial;
+        target = ModifierTarget.fromInt( n_target );
     }
 
     /**
@@ -119,6 +120,7 @@ public class Modifier
      * Sets the target of this modifier
      *
      * @param target Target to set
+     * @throws GameException Thrown if the update fails
      */
     public void setTarget( ModifierTarget target )
     {
@@ -140,6 +142,7 @@ public class Modifier
      * Sets the rarity of this modifier
      *
      * @param rarity Rarity to set
+     * @throws GameException Thrown if the update fails
      */
     public void setRarity( int rarity )
     {
@@ -161,6 +164,7 @@ public class Modifier
      * Sets the owner of this modifier
      *
      * @param owner Owner to set
+     * @throws GameException Thrown if the update fails
      */
     public void setOwner( int owner )
     {
@@ -207,6 +211,7 @@ public class Modifier
      * If the parameter is below 0 it is automatically set to 0.
      *
      * @param battles Remaining battles to set
+     * @throws GameException Thrown if the update fails
      */
     public void setBattles( int battles )
     {
@@ -255,6 +260,7 @@ public class Modifier
      * to commit the changes to the DB.
      *
      * @see lad.java.Modifier#reduceBattles()
+     * @throws GameException Thrown if the update fails
      */
     public void commit()
     {
@@ -270,9 +276,8 @@ public class Modifier
         }
         catch( SQLException x )
         {
-            System.err.println( "Error while setting minion level." +
-                                x.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while updating modifier." +
+                                     x.getMessage() );
         }
     }
 
@@ -284,6 +289,7 @@ public class Modifier
      * @param owner Owner of the modifier
      * @param battleMult Multiplier for the number of battles
      * @return The created modifier
+     * @throws GameException Thrown if the update fails
      */
     public static Modifier create( int targ, int rare, int owner,
                                    int battleMult )
@@ -327,14 +333,16 @@ public class Modifier
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while creating minion: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while creating modifier: " +
+                                     e.getMessage() );
         }
         return adder;
     }
 
     /**
      * Destroys the trainer in the database
+     *
+     * @throws GameException Thrown if the update fails
      */
     void destroy()
     {
@@ -353,13 +361,11 @@ public class Modifier
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while deleting modifier: " +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while deleting modifier: " +
+                                     e.getMessage() );
         }
 
         owner = ID = initialMultiplier = battles = rarity = 0;
-        target = ModifierTarget.InvalidTarget;
     }
 
     /**
@@ -367,6 +373,7 @@ public class Modifier
      *
      * @param rare The rarity to calculate for
      * @return # of battles the modifier will survive for.
+     * @throws GameException Thrown if a bad rarity is passed as the parameter
      */
     public static float calculateSurvival( int rare )
     {
@@ -392,7 +399,7 @@ public class Modifier
                 return 10000;
         }
 
-        throw new IndexOutOfBoundsException( "Invalid rarity: " + rare );
+        throw new GameException( 4, "Invalid rarity: " + rare );
     }
 
     /**
@@ -400,6 +407,7 @@ public class Modifier
      *
      * @param rare The rarity to calculate for
      * @return Human readable string of the given rarity.
+     * @throws GameException Thrown if a bad rarity is passed as the parameter
      */
     public static String rarityString( int rare )
     {
@@ -425,7 +433,7 @@ public class Modifier
                 return "Master's ";
         }
 
-        throw new IndexOutOfBoundsException( "Invalid rarity: " + rare );
+        throw new GameException( 4, "Invalid rarity: " + rare );
     }
     
     /**
@@ -433,6 +441,8 @@ public class Modifier
      * 
      * @param mult Multiplier to convert ( 0 - 12 )
      * @return A float multiplier from 1.0 to 10.0
+     * @throws GameException Thrown if a bad multiplier is passed as the
+     *                       parameter
      */
     public static float multiplierFromInt( int mult )
     {
@@ -465,7 +475,7 @@ public class Modifier
             case 12:
                 return 10.0f;
         }
-        throw new IndexOutOfBoundsException( "Invalid multiplier: " + mult );
+        throw new GameException( 4, "Invalid multiplier: " + mult );
     }
 
     /**
@@ -473,6 +483,8 @@ public class Modifier
      *
      * @param mult The multiplier to calculate for
      * @return Human readable string of the given rarity.
+     * @throws GameException Thrown if a bad multiplier is passed as the
+     *                       parameter
      */
     public static String multiplierString( int mult )
     {
@@ -505,7 +517,7 @@ public class Modifier
             case 12:
                 return "Neverending ";
         }
-        throw new IndexOutOfBoundsException( "Invalid multiplier: " + mult );
+        throw new GameException( 4, "Invalid multiplier: " + mult );
     }
 
     /**
@@ -525,9 +537,10 @@ public class Modifier
      * @param mult Multiplier the modifier initially had
      * @param rare Rarity of the modifier
      * @return Generated string
+     * @throws GameException Thrown if a bad parameter is passed
      */
     public static String generateString( ModifierTarget target, int mult,
-                                                                int rare )
+                                         int rare )
     {
         String ret = target == ModifierTarget.Proficiency ?
                                "" : rarityString( rare );
@@ -542,6 +555,7 @@ public class Modifier
      *
      * @see lad.java.Modifier#generateString(lad.java.ModifierTarget, int, int)
      * @return Generated string
+     * @throws GameException Thrown if a bad value is present
      */
     @Override
     public String toString()
@@ -602,6 +616,7 @@ public class Modifier
      *
      * @param won Set to true if the owner won the battle
      * @param weapon Weapon that equipped this modifier
+     * @throws GameException Thrown if the update fails
      */
     public void battled( boolean won, Weapon weapon )
     {

@@ -78,8 +78,7 @@ public class IOThread implements Runnable
         }
         catch( IOException e )
         {
-            System.out.println( "IO Exception" );
-            System.exit( -1 );
+            Debug.log( "IO Exception" + e.getMessage(), "THREAD" );
         }
 
         // Calculate elapsed time

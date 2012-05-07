@@ -3,6 +3,7 @@ package lad.game;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.GameException;
 import lad.data.Minion;
 import lad.data.Trainer;
 import lad.data.Weapon;
@@ -114,12 +115,11 @@ public class IOTrainer extends MessageHandler
     /**
      * Handles pieces based on their pieces
      *
-     * @throws IndexOutOfBoundsException Thrown if a sub function throws it
+     * @throws InterruptedException Thrown if a sub function throws it
      */
     @Override
     public void handle( MessageList pieces, int userid )
-            throws IndexOutOfBoundsException,
-                   InterruptedException
+            throws InterruptedException
     {
 
         if( pieces.contains( viewalltrainersPiece ) )
@@ -159,7 +159,7 @@ public class IOTrainer extends MessageHandler
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID mismatch." );
+                throw new GameException( 2, "User ID mismatch." );
             }
 
             // Find the current minion data from the list
@@ -178,7 +178,7 @@ public class IOTrainer extends MessageHandler
             // Make sure the minion belongs to the trainer
             if( target == null )
             {
-                throw new IndexOutOfBoundsException( "Minion not owned." );
+                throw new GameException( 1, "Minion not owned." );
             }
 
             GameLoop.acquire();
@@ -194,13 +194,13 @@ public class IOTrainer extends MessageHandler
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID mismatch." );
+                throw new GameException( 2, "User ID mismatch." );
             }
 
             // Make sure the trainer doesn't already have 8 minions
-            if( trnr.getMinions().size() >=8 )
+            if( trnr.getMinions().size() >= 8 )
             {
-                throw new IndexOutOfBoundsException( "8 minions max." );
+                throw new GameException( 1, "8 minions max." );
             }
 
             GameLoop.acquire();
@@ -220,7 +220,7 @@ public class IOTrainer extends MessageHandler
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID mismatch." );
+                throw new GameException( 2, "User ID mismatch." );
             }
 
             // Return a generic error if the minions match
@@ -251,13 +251,13 @@ public class IOTrainer extends MessageHandler
             // Make sure both minions belong to the trainer
             if( target1 == null || target2 == null )
             {
-                throw new IndexOutOfBoundsException( "Minion not owned." );
+                throw new GameException( 1, "Minion not owned." );
             }
 
             // Make sure both minions are at least level 1
             if( target1.getLevel() < 1 || target2.getLevel() < 1 )
             {
-                throw new IndexOutOfBoundsException( "Minion not level 1." );
+                throw new GameException( 1, "Minion not level 1." );
             }
 
             // Battle them and grant a modifier
@@ -279,7 +279,7 @@ public class IOTrainer extends MessageHandler
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID does not match." );
+                throw new GameException( 2, "User ID does not match." );
             }
 
             // Err...send the trainer to the queue
@@ -298,7 +298,7 @@ public class IOTrainer extends MessageHandler
 
             if( trnr.getOwner() != userid )
             {
-                throw new IndexOutOfBoundsException( "User ID does not match." );
+                throw new GameException( 2, "User ID does not match." );
             }
 
             // Check if the trainer is actually in a queue
@@ -345,18 +345,15 @@ public class IOTrainer extends MessageHandler
      *
      * @param userid ID of the requesting user
      * @param trainer ID of the trainer to view
-     *
-     * @throws IndexOutOfBoundsException Thrown when the trainer isn't found
      */
     protected void outputTrainerView( int userid, int trainer )
-            throws IndexOutOfBoundsException
     {
         // Ensure the trainer belongs to the user
         Trainer trnr = TrainerManager.getInstance().getTrainerByID( trainer );
 
         if( trnr.getOwner() != userid )
         {
-            throw new IndexOutOfBoundsException( "User ID does not match." );
+            throw new GameException( 2, "User ID does not match." );
         }
 
         int level = trnr.getLevel();

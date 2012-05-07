@@ -152,13 +152,13 @@ public class Trainer
      * Ctor (for NPCs)
      *
      * @param npc Throws an exception if this is not true
-     * @throws IndexOutOfBoundsException Thrown if npc is not true
+     * @throws GameException Thrown if npc is not true
      */
-    public Trainer( boolean npc ) throws IndexOutOfBoundsException
+    public Trainer( boolean npc )
     {
         if( !npc )
         {
-            throw new IndexOutOfBoundsException( "Making NPC trainer false." );
+            throw new GameException( 3, "Making NPC trainer false." );
         }
 
         isNPC = true;
@@ -167,6 +167,8 @@ public class Trainer
 
     /**
      * Loads minions from DB
+     *
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void load()
     {
@@ -193,9 +195,8 @@ public class Trainer
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while getting trainer minions:" +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while getting trainer minions:" +
+                                        e.getMessage() );
         }
     }
 
@@ -273,6 +274,7 @@ public class Trainer
      * Set exp
      *
      * @param value New value of the exp
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void setExp( int value )
     {
@@ -287,9 +289,8 @@ public class Trainer
         }
         catch( SQLException x )
         {
-            System.err.println( "Error while setting minion level." +
-                                x.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion exp." +
+                                     x.getMessage() );
         }
     }
 
@@ -297,6 +298,7 @@ public class Trainer
      * Set level
      *
      * @param value New value of the level
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void setLevel( int value )
     {
@@ -311,9 +313,8 @@ public class Trainer
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while setting minion level." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion level." +
+                                        e.getMessage() );
         }
     }
 
@@ -321,6 +322,7 @@ public class Trainer
      * Set owner
      *
      * @param value New value of the owner
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void setOwner( int value )
     {
@@ -335,9 +337,8 @@ public class Trainer
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while setting minion level." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion owner." +
+                                     e.getMessage() );
         }
     }
 
@@ -365,6 +366,7 @@ public class Trainer
      * Adds exp and updates the level accordingly
      *
      * @param xp The exp to add
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void adjustExp( int xp )
     {
@@ -390,9 +392,8 @@ public class Trainer
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while setting minion level." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion level " +
+                                     "and exp." + e.getMessage() );
         }
     }
 
@@ -423,8 +424,6 @@ public class Trainer
         }
 
         // The amount of exp gained
-        int loserXp = loser.getExp();
-        int loserLvl = loser.getLevel();
         int totalLoserXp = loser.getTotalEXP();
         int gainedExp = (int)( totalLoserXp * 0.2 );
 
@@ -460,6 +459,7 @@ public class Trainer
      *
      * @param n_owner Owner of the trainer
      * @return The created trainer
+     * @throws GameException Thrown if a failure occurs while creating
      */
     public static Trainer create( int n_owner )
     {
@@ -492,14 +492,16 @@ public class Trainer
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while creating minion: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while creating minion: " +
+                                     e.getMessage() );
         }
         return trainer;
     }
 
     /**
      * Destroys the trainer in the database
+     *
+     * @throws GameException Thrown if a failure occurs while deleting
      */
     void destroy()
     {
@@ -522,8 +524,8 @@ public class Trainer
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while deleting trainer: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while deleting trainer: " +
+                                     e.getMessage() );
         }
 
         owner = ID = exp = level = 0;
@@ -578,7 +580,7 @@ public class Trainer
                 return "In battle";
             }
 
-            throw new IndexOutOfBoundsException( "Battle state out of range." );
+            throw new GameException( 4, "Battle state out of range." );
         }
     };
 }

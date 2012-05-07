@@ -2,6 +2,7 @@ package lad.game;
 
 import java.util.LinkedList;
 import java.util.ListIterator;
+import lad.data.GameException;
 
 /**
  * Utility class for a linked list of message pieces
@@ -20,10 +21,9 @@ public class MessageList extends LinkedList< MessagePiece >
      *
      * @param variable The variable of the piece to get
      * @return The message piece with the variable
-     * @throws IndexOutOfBoundsException Thrown if the variable is not found
+     * @throws GameException Thrown if the variable is not found
      */
     public MessagePiece get( String variable )
-            throws IndexOutOfBoundsException
     {
         ListIterator< MessagePiece > iter = listIterator();
         while( iter.hasNext() )
@@ -34,8 +34,7 @@ public class MessageList extends LinkedList< MessagePiece >
                 return piece;
             }
         }
-        throw new IndexOutOfBoundsException( "Message piece not found: " +
-                                             variable );
+        throw new GameException( 3, "Message piece not found: " + variable );
     }
 
     /**
@@ -43,10 +42,9 @@ public class MessageList extends LinkedList< MessagePiece >
      *
      * @param variable The variable of the piece to get
      * @return The message piece with the variable
-     * @throws IndexOutOfBoundsException Thrown if the variable is not found
+     * @throws GameException Thrown if the variable is not found
      */
     public String getValue( String variable )
-            throws IndexOutOfBoundsException
     {
         return get( variable ).getValue();
     }

@@ -204,6 +204,7 @@ public class UserExp
 
     /**
      * @param level the level to set
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void setLevel( int level )
     {
@@ -214,6 +215,7 @@ public class UserExp
 
     /**
      * @param exp the exp to set
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void setExp( int exp )
     {
@@ -226,6 +228,7 @@ public class UserExp
     /**
      * @param level The new level to set
      * @param exp The new exp to set
+     * @throws GameException Thrown if a failure occurs while updating
      */
     public void setValues( int level, int exp )
     {
@@ -237,6 +240,8 @@ public class UserExp
 
     /**
      * Simply calls SQL update with appropriate values
+     *
+     * @throws GameException Thrown if a failure occurs while updating
      */
     private void runUpdate()
     {
@@ -253,9 +258,8 @@ public class UserExp
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while updating user EXP." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while updating user EXP." +
+                                     e.getMessage() );
         }
     }
 
@@ -266,6 +270,7 @@ public class UserExp
      * @param target Target of the EXP
      * @param type Type of the EXP
      * @return The created EXP block
+     * @throws GameException Thrown if a failure occurs while creating
      */
     public static UserExp create( int owner, int target, int type )
     {
@@ -284,8 +289,8 @@ public class UserExp
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while creating exp: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while creating exp: " +
+                                     e.getMessage() );
         }
 
         ret.refreshBonuses();
@@ -296,6 +301,7 @@ public class UserExp
      * Deletes all of the experience belonging to a specific user.
      *
      * @param owner Owner of the EXP
+     * @throws GameException Thrown if a failure occurs while deleting
      */
     public static void deleteByUser( int owner )
     {
@@ -308,8 +314,8 @@ public class UserExp
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while deleting exp: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while deleting exp: " +
+                                     e.getMessage() );
         }
     }
     /**

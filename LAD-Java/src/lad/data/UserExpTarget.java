@@ -125,6 +125,7 @@ public enum UserExpTarget
      *
      * @param val Value to lookup the target for
      * @return Appropriate target for the given integer
+     * @throws GameException Thrown if the parameter is out of range
      */
     public static UserExpTarget fromInt( int val )
     {
@@ -157,13 +158,14 @@ public enum UserExpTarget
             case 13:
                 return Catapulter;
         }
-        throw new IndexOutOfBoundsException( "Invalid target: " + val );
+        throw new GameException( 4, "Invalid target: " + val );
     }
 
     /**
      * Returns a string representation of the target
      *
      * @returns Target with an additional space in a couple of cases
+     * @throws GameException Thrown if this is invalid
      */
     @Override
     public String toString()
@@ -197,7 +199,7 @@ public enum UserExpTarget
             case 13:
                 return "Catapulter";
         }
-        throw new IndexOutOfBoundsException( "Invalid target: " + this.value );
+        throw new GameException( 4, "Invalid target: " + this.value );
     }
 
     /**
@@ -205,6 +207,7 @@ public enum UserExpTarget
      *
      * @param weapon Weapon to lookup the target for
      * @return Appropriate general target
+     * @throws GameException Thrown if the parameter is invalid
      */
     public static UserExpTarget generalFromWeapon( Weapon weapon )
     {
@@ -244,7 +247,7 @@ public enum UserExpTarget
         {
             return EitherHand;
         }
-        throw new IndexOutOfBoundsException( "Invalid weapon: " + weapon );
+        throw new GameException( 4, "Invalid weapon: " + weapon );
     }
 
     /**
@@ -252,6 +255,7 @@ public enum UserExpTarget
      *
      * @param weapon Weapon to lookup the target for
      * @return Appropriate specific target
+     * @throws GameException Thrown if the parameter is invalid
      */
     public static UserExpTarget specificFromWeapon( Weapon weapon )
     {
@@ -291,6 +295,6 @@ public enum UserExpTarget
         {
             return Propeller;
         }
-        throw new IndexOutOfBoundsException( "Invalid weapon: " + weapon );
+        throw new GameException( 4, "Invalid weapon: " + weapon );
     }
 }

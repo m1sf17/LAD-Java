@@ -5,6 +5,7 @@ import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.GameException;
 import lad.data.ModifierTarget;
 import lad.data.UserExp;
 import lad.data.UserExpTarget;
@@ -193,7 +194,7 @@ public class EXPManager extends DBManager
      * @param target Target of the exp to level
      * @param type   Type of exp to level
      * @param amount Number of levels to advance the exp
-     * @throws IndexOutOfBoundsException Thrown if the EXP was not found
+     * @throws GameException Thrown if the EXP was not found or not enough EXP
      */
     public static void advanceUserEXP( int user, UserExpTarget target,
                                        ModifierTarget type, int amount )
@@ -204,10 +205,9 @@ public class EXPManager extends DBManager
         // Abort if it wasn't found
         if( userExp == null )
         {
-            throw new IndexOutOfBoundsException( "Can not advance exp: not " +
-                                                 "found: " + user + ", " +
-                                                 target.toString() + ", " +
-                                                 type.toString() );
+            throw new GameException( 1, "Can not advance exp: not found: " +
+                                     user + ", " + target.toString() + ", " +
+                                     type.toString() );
         }
 
         final int currentLevel = userExp.getLevel();
@@ -223,10 +223,10 @@ public class EXPManager extends DBManager
         }
         else
         {
-            throw new IndexOutOfBoundsException(
-                    "Can not advance exp: not enough exp: " + user + ", " +
-                    target.toString() + ", " + type.toString() + ", Req'd: " +
-                    expRequired + ", Has: " + currentExp );
+            throw new GameException( 1, "Can not advance exp: not enough: " +
+                                     user + ", " + target.toString() + ", " +
+                                     type.toString() + ", Req'd: " +
+                                     expRequired + ", Has: " + currentExp );
         }
     }
 
@@ -252,16 +252,15 @@ public class EXPManager extends DBManager
      * @param from Lower value to calculate from
      * @param to   Higher value to calculate to
      * @return Total EXP required to advance the levels
-     * @throws IndexOutOfBoundsException Thrown if from >= to
+     * @throws GameException Thrown if from >= to
      */
     public static int expRequiredFromLevelToLevel( int from, int to )
-            throws IndexOutOfBoundsException
     {
         // From must be less than to
         if( from >= to )
         {
-            throw new IndexOutOfBoundsException( "From exp >= to exp:" + from +
-                                                 ", " + to );
+            throw new GameException( 3, "From exp >= to exp:" + from + ", " +
+                                     to );
         }
 
         // Set up initial values

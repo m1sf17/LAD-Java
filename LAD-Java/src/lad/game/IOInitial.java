@@ -1,18 +1,12 @@
 package lad.game;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.net.URL;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import lad.data.Minion;
-import lad.data.Trainer;
+import lad.data.GameException;
 import lad.data.UserExp;
-import lad.data.Weapon;
 import lad.db.EXPManager;
-import lad.db.ModifierManager;
-import lad.db.TrainerManager;
 
 /**
  * Handles initial connection with users to the java module.
@@ -87,12 +81,11 @@ public class IOInitial extends MessageHandler
     /**
      * Handles pieces based on their pieces
      *
-     * @throws IndexOutOfBoundsException Thrown if a sub function throws it
+     * @throws InterruptedException Thrown if a sub function throws it
      */
     @Override
     public void handle( MessageList pieces, int userid )
-            throws IndexOutOfBoundsException,
-                   InterruptedException
+                   throws InterruptedException
     {
 
         if( pieces.contains( loginPiece ) )
@@ -139,7 +132,7 @@ public class IOInitial extends MessageHandler
             }
             catch( Exception e )
             {
-                // Ignore
+                throw new GameException( 3, "Internal JS file not found." );
             }
             write( "createWindow('LAD');" +
                    "addMenuButton('LAD','ui-icon-home',function(){" +

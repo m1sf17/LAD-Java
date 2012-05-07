@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.ListIterator;
 import java.util.Map;
 import java.util.Set;
+import lad.data.GameException;
 
 /**
  * Manages all incoming messages and dispatches them to the appropriate handler.
@@ -176,11 +177,6 @@ public class MessageManager
             handler.doHandle( pieces, userid );
             return buffer.toString();
         }
-        catch( IndexOutOfBoundsException i )
-        {
-            // abort, user tried viewing something they shouldn't
-            return debugInfo( "Index out of bounds", i, pairs );
-        }
         catch( NumberFormatException n )
         {
             // Parse error (typically with a number)
@@ -190,6 +186,12 @@ public class MessageManager
         {
             // Interrupted (system abort?)
             return debugInfo( "System interrupted", ie, pairs );
+        }
+        catch( GameException ge )
+        {
+            // A generic game error (most common)
+            // TODO: More handling
+            return debugInfo( "Game error", ge, pairs );
         }
         catch( Exception e )
         {

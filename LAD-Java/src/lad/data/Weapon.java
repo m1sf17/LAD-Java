@@ -315,6 +315,7 @@ public enum Weapon
      * @param target Attribute to look up
      * @param value  Multiplier to multiply in
      * @return Resulting value
+     * @throws GameException Thrown if the target is invalid
      */
     public double getAttributeWithMult( ModifierTarget target, Double value )
     {
@@ -358,7 +359,7 @@ public enum Weapon
         {
             return getShielding() + ( shieldingMult * mult );
         }
-        throw new IndexOutOfBoundsException( "Invalid target: " + target );
+        throw new GameException( 4, "Invalid target: " + target );
     }
 
     /**
@@ -370,7 +371,6 @@ public enum Weapon
     {
         Weapon values[] = Weapon.values();
         int index = (int)(Math.floor( Math.random() * values.length ));
-
         return values[ index ];
     }
 }

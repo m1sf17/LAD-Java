@@ -91,7 +91,7 @@ public class Minion
     /**
      * Ctor (Adding to DB)
      */
-    public Minion()
+    private Minion()
     {
     }
 
@@ -128,6 +128,7 @@ public class Minion
      * Sets the level
      *
      * @param value Value to set the level to
+     * @throws GameException Thrown if the update fails
      */
     public void setLevel( int value )
     {
@@ -142,9 +143,8 @@ public class Minion
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while setting minion level." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion level." +
+                                        e.getMessage() );
         }
     }
 
@@ -152,6 +152,7 @@ public class Minion
      * Sets the experience
      *
      * @param value Value to set the experience to
+     * @throws GameException Thrown if the update fails
      */
     public void setExp( int value )
     {
@@ -166,9 +167,8 @@ public class Minion
         }
         catch( SQLException x )
         {
-            System.err.println( "Error while setting minion level." +
-                                x.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion exp." +
+                                        x.getMessage() );
         }
     }
 
@@ -176,6 +176,7 @@ public class Minion
      * Sets the owner
      *
      * @param value Value to set the owner to
+     * @throws GameException Thrown if the update fails
      */
     public void setOwner( int value )
     {
@@ -190,9 +191,8 @@ public class Minion
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while setting minion level." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion owner." +
+                                        e.getMessage() );
         }
     }
     
@@ -252,6 +252,7 @@ public class Minion
      *  Levels the minion if the appropriate amount of experience has been met.
      *
      * @param xp Experience to add
+     * @throws GameException Thrown if the update fails
      */
     public void adjustExp( int xp )
     {
@@ -277,9 +278,8 @@ public class Minion
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while setting minion level." +
-                                e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, "Error while setting minion level." +
+                                        e.getMessage() );
         }
     }
     /**
@@ -287,6 +287,7 @@ public class Minion
      *
      * @param owner The owner of the minion
      * @return The created minion
+     * @throws GameException Thrown if the creation fails
      */
     public static Minion create( int owner )
     {
@@ -301,7 +302,8 @@ public class Minion
             int affectedRows = insertStmt.executeUpdate();
             if( affectedRows == 0 )
             {
-                throw new SQLException( "Creating minion failed, no rows affected." );
+                throw new SQLException( "Creating minion failed, " +
+                                        "no rows affected." );
             }
 
             // Get the ID
@@ -312,19 +314,21 @@ public class Minion
             }
             else
             {
-                throw new SQLException( "Creating minion failed, no key returned." );
+                throw new SQLException( "Creating minion failed, " +
+                                        "no key returned." );
             }
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while creating minion: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, e.getMessage() );
         }
         return ret;
     }
 
     /**
      * Destroys the minion in the database
+     *
+     * @throws GameException Thrown if the destruction fails
      */
     void destroy()
     {
@@ -342,8 +346,7 @@ public class Minion
         }
         catch( SQLException e )
         {
-            System.err.println( "Error while deleting minion: " + e.toString() );
-            System.exit( -1 );
+            throw new GameException( 3, e.getMessage());
         }
 
         owner = ID = exp = level = 0;
