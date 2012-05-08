@@ -27,7 +27,8 @@
             function create(){
                 var ladbkgd,
                     ladheader = $("<div id='ladheader'></div>"),
-                    closeLADButton = $("<button id='closelad'></button>");
+                    closeLADButton = $("<button id='closelad'></button>"),
+                    notifier = $("<div id='notifier'></div>");
                 ladbkgd = $("<div id='ladbkgd'></div>").appendTo( $("body") );
 
                 // Close Button
@@ -42,6 +43,9 @@
                 ladheader.append( closeLADButton );
                 ladbkgd.append( ladheader );
                 ladbkgd.append( $("<div id='ladcontent'></div>") );
+
+                // Add notifier
+                ladbkgd.append( notifier );
             }
             
             // Find/fill the background
@@ -85,7 +89,8 @@
                         {
                             $.lad.minion.oldBattleValue = $(this).val();
                         }
-                        // TODO: Pretty warning about same
+                        $.lad.blockedAction( "Cannot battle a minion with " +
+                                             "itself." );
                     }).focus(function(){
                         $.lad.minion.oldBattleValue = $(this).val();
                     });
@@ -104,7 +109,7 @@
                     }
                     return select;
                 }
-                ctx().append( "<br><br>Battle: " )
+                ctx().append( "<br>Battle: " )
                      .append( createOptions().attr( 'id', 'minion1' ) )
                      .append( " with " )
                      .append( createOptions().attr( 'id', 'minion2' )
@@ -115,6 +120,7 @@
                                  'minion2': $('#minion2').val()
                     });
                 }).appendTo( ctx() );
+                ctx().append( "<br><br>" );
             }
         },
         trainer: {
@@ -339,6 +345,18 @@
                     .append( makeSortableTable( headers, mods, 'mods' ) );
                 $.lad.main.returnButton();
             }
+        },
+        blockedAction: function(txt){
+            var popup = $("<span class='ui-state-error ui-corner-all' " +
+                          "style='padding: 0.2em;font-size:smaller'></span>");
+            popup.append( "<a>" + txt + "</a>" ).prependTo( $("#notifier") );
+            popup.show( "slide", {direction: 'right'}, 1000, function(){
+                setTimeout(function(){
+                    popup.fadeOut( "slow", function(){
+                        popup.remove();
+                    });
+                }, 5000 );
+            });
         }
     });
 }));

@@ -73,3 +73,13 @@ p.weaponSelector button {
 #ladcontent {
     margin: 4px;
 }
+
+#notifier {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+
+#notifier span {
+    display: block;
+}
