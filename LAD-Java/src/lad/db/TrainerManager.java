@@ -151,7 +151,7 @@ public class TrainerManager extends DBManager
      * Returns a specific trainer by its ID
      *
      * @param id The ID of the trainer to search for
-     * @return Either the trainer if it is found
+     * @return Corresponding trainer with the given ID
      * @throws GameException Thrown if the given ID is not found
      */
     public Trainer getTrainerByID( int id )
