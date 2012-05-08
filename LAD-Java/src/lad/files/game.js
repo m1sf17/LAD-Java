@@ -1,7 +1,6 @@
-/*global window: false, jQuery: false, console: false, define: false,
-doAjax: false, makeSortableTable: false */
+/*global jQuery: false, define: false, doAjax: false,
+  makeSortableTable: false */
 
-// TODO: Migrate external functions inside
 (function(factory) {
 	if(typeof define === 'function' && define.amd) {
 		define(['jquery'], factory);
