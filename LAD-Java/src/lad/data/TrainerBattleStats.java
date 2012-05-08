@@ -110,10 +110,10 @@ public class TrainerBattleStats
         Connection conn = MySQLDB.getConn();
 
         updateStmt = conn.prepareStatement( "UPDATE TRAINERBATTLESTATS SET " +
-            "shotsFired = ?, damageDealt = ?, reloads = ?, shotsHit = ?, " +
-            "distanceMoved = ?, shotsEvaded = ?, damageReduced = ?, " +
-            "criticalsHit = ?, safelyShot = ?, battles = ?, battlesWon = ? " +
-            "WHERE type = ? AND id = ?" );
+            "shotsFired = ?, damageDealt = ?, damageTaken = ?, reloads = ?, " +
+            "shotsHit = ?, distanceMoved = ?, shotsEvaded = ?, " +
+            "damageReduced = ?, criticalsHit = ?, safelyShot = ?, " +
+            "battles = ?, battlesWon = ? WHERE type = ? AND id = ?" );
         deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERBATTLESTATS " +
                                             "WHERE type = ? AND id = ?" );
         insertStmt = conn.prepareStatement( "INSERT INTO TRAINERBATTLESTATS " +
@@ -211,17 +211,18 @@ public class TrainerBattleStats
         {
             updateStmt.setInt( 1, this.shotsFired );
             updateStmt.setDouble( 2, this.damageDealt );
-            updateStmt.setInt( 3, this.reloads );
-            updateStmt.setInt( 4, this.shotsHit );
-            updateStmt.setDouble( 5, this.distanceMoved );
-            updateStmt.setInt( 6, this.shotsEvaded );
-            updateStmt.setDouble( 7, this.damageReduced );
-            updateStmt.setInt( 8, this.criticalsHit );
-            updateStmt.setInt( 9, this.safelyShot );
-            updateStmt.setInt( 10, this.battles );
-            updateStmt.setInt( 11, this.battlesWon );
-            updateStmt.setInt( 12, this.type );
-            updateStmt.setInt( 13, this.id );
+            updateStmt.setDouble( 3, this.damageTaken );
+            updateStmt.setInt( 4, this.reloads );
+            updateStmt.setInt( 5, this.shotsHit );
+            updateStmt.setDouble( 6, this.distanceMoved );
+            updateStmt.setInt( 7, this.shotsEvaded );
+            updateStmt.setDouble( 8, this.damageReduced );
+            updateStmt.setInt( 9, this.criticalsHit );
+            updateStmt.setInt( 10, this.safelyShot );
+            updateStmt.setInt( 11, this.battles );
+            updateStmt.setInt( 12, this.battlesWon );
+            updateStmt.setInt( 13, this.type );
+            updateStmt.setInt( 14, this.id );
 
             MySQLDB.delaySQL( updateStmt );
         }
@@ -230,6 +231,55 @@ public class TrainerBattleStats
             throw new GameException( 3, "Error while updating statistic " +
                                         "block." + e.getMessage() );
         }
+    }
+
+    /**
+     * Gets the ID of this statistic block
+     *
+     * @return ID of the target of this statistic block
+     */
+    public int getID()
+    {
+        return this.id;
+    }
+
+    /**
+     * Gets the type of this statistic block
+     *
+     * @return Type of the target of this statistic block
+     */
+    public int getType()
+    {
+        return this.type;
+    }
+
+    /**
+     * Gets the integers in this statistic block.
+     *
+     * Does not include the ID or the type.  Includes the following fields:
+     * Shots Fired, Reloads, Shots Hit, Shots Evaded, Criticals Hit,
+     * Times Safely Shot, Battles, Battles Won
+     *
+     * @return Array of integers in this statistic block
+     */
+    public int[] getInts()
+    {
+        return new int[]{ this.shotsFired, this.reloads, this.shotsHit,
+                          this.shotsEvaded, this.criticalsHit, this.safelyShot,
+                          this.battles, this.battlesWon };
+    }
+
+    /**
+     * Gets the doubles in this statistic block.
+     *
+     * @return Array of doubles in this statistic block
+     */
+    public double[] getDoubles()
+    {
+        return new double[]{
+            this.damageDealt, this.damageTaken, this.distanceMoved,
+            this.damageReduced
+        };
     }
 
     /**

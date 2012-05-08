@@ -235,7 +235,7 @@ public class EXPManager extends DBManager
      * @param target Target of the exp
      * @return EXP that was found, or null if it does not exist
      */
-    public static UserExp getExp( int user, UserExpTarget target,
+    private static UserExp getExp( int user, UserExpTarget target,
                                   ModifierTarget type )
     {
         ListIterator< UserExp > iter = getInstance().exps.listIterator();
@@ -371,6 +371,62 @@ public class EXPManager extends DBManager
         }
 
         return totalExp;
+    }
+
+    /**
+     * Gets a specific statistic block.
+     *
+     * @param type Type of the target of the statistic block
+     * @param id   ID of the target of the statistic block
+     * @return Statistics that match the type and ID
+     * @throws GameException Thrown if the statistic was not found
+     */
+    public static TrainerBattleStats getBattleStats( int type, int id )
+    {
+        ListIterator< TrainerBattleStats > iter =
+                getInstance().trainerBattleStats.listIterator();
+        while( iter.hasNext() )
+        {
+            TrainerBattleStats current = iter.next();
+
+            if( current.getType() == type && current.getID() == id )
+            {
+                return current;
+            }
+        }
+
+        throw new GameException( 1, "Trainer Battle Statistics not found." );
+    }
+
+    /**
+     * Grants some values to a given statistic.
+     *
+     * The integer array must contain 8 values and the integer array must
+     * contain 4 values.
+     *
+     * @param type Type of the target of the statistic block
+     * @param id   ID of the target of the statistic block
+     * @param ints Integer values to grant the statistic block
+     * @param doubles Double values to grant the statistic block
+     */
+    public static void addBattleStats( int type, int id, int ints[],
+                                       double doubles[] )
+    {
+        // Try to get the battle stats if they already exist
+        TrainerBattleStats stats;
+        try
+        {
+            stats = getBattleStats( type, id );
+        }
+        catch( GameException ge )
+        {
+            // They don't exist so create them
+            stats = TrainerBattleStats.create( type, id );
+            getInstance().trainerBattleStats.add( stats );
+        }
+
+        // Add in the values
+        stats.addValues( ints, doubles );
     }
 
     /**
