@@ -1,6 +1,5 @@
 /*global window: false, jQuery: false, console: false, define: false,
-doAjax: false, getPopupContext: false, makeSortableTable: false,
-genericDialog: false */
+doAjax: false, makeSortableTable: false */
 
 // TODO: Migrate external functions inside
 (function(factory) {
@@ -14,7 +13,7 @@ genericDialog: false */
 
 (function($) {
     function ctx(){
-        return getPopupContext( 'LAD' );
+        return $("#ladcontent");
     }
     $.ladAjax = function( params )
     {
@@ -25,6 +24,40 @@ genericDialog: false */
         return ctx();
     };
     $.extend( $.lad, {
+        window: function(){
+            function create(){
+                var ladbkgd,
+                    ladheader = $("<div id='ladheader'></div>"),
+                    closeLADButton = $("<button id='closelad'></button>");
+                ladbkgd = $("<div id='ladbkgd'></div>").appendTo( $("body") );
+
+                // Close Button
+                closeLADButton.button({
+                    icons: {primary: "ui-icon-closethick"},
+                    text: false
+                }).attr( "title", "Leave LAD" ).click(function(){
+                    ladbkgd.fadeOut( "slow" );
+                });
+
+                // Add header/body
+                ladheader.append( closeLADButton );
+                ladbkgd.append( ladheader );
+                ladbkgd.append( $("<div id='ladcontent'></div>") );
+            }
+            
+            // Find/fill the background
+            var ladbkgd = $("#ladbkgd");
+            if( ladbkgd.length === 0 )
+            {
+                create();
+                ladbkgd = $("#ladbkgd");
+            }
+
+            // Fade in and run login
+            ladbkgd.hide();
+            ladbkgd.fadeIn( "slow" );
+            $.ladAjax({ 'login': '' });
+        },
         minion: {
             oldBattleValue: -1,
             add: function( index, lvl, exp, trnr, id )

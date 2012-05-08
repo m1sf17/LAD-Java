@@ -169,9 +169,8 @@ public class IOInitial extends MessageHandler
             write( cachedJS );
             
             // Also include this so that the view works
-            write( "createWindow('LAD');" +
-                   "addMenuButton('LAD','ui-icon-home',function(){" +
-                   "doAjax('java_run',{login:''});});" );
+            write( "addMenuButton('LAD','ui-icon-home',function(){" +
+                   "$.lad.window();});" );
         }
         else if( pieces.contains( getcssPiece ) )
         {
