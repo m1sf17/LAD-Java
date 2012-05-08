@@ -3,6 +3,7 @@ package lad.game;
 import java.util.List;
 import java.util.ListIterator;
 import lad.data.UserExp;
+import lad.data.UserExpTarget;
 import lad.data.Weapon;
 import lad.db.EXPManager;
 
@@ -141,6 +142,25 @@ public class IOInitial extends MessageHandler
                 buffer.append( "];" );
                 js = magicComment( "WEAPON STRING", js, buffer );
 
+                // Weapon objects
+                buffer.setLength( 0 );
+                buffer.append( "return [ " );
+                for( Weapon w : Weapon.values() )
+                {
+                    // Type
+                    UserExpTarget gen = UserExpTarget.generalFromWeapon( w );
+
+                    buffer.append( "this.weapon( \"" );
+                    buffer.append( w.toString() );
+                    buffer.append( "\"," );
+
+                    buffer.append( gen.getValue() );
+                    buffer.append( ")," );
+                }
+                buffer.deleteCharAt( buffer.length() -1 );
+                buffer.append( "];" );
+                js = magicComment( "WEAPON OBJECTS", js, buffer );
+                
                 // Cache it
                 cachedJS = js;
             }

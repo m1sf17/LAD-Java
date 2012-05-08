@@ -122,7 +122,7 @@ genericDialog: false */
                 if( tb === 1 )
                 {
                     $("<button>Arena Battle</button>").button().click(
-                      function(){
+                        function(){
                           // TODO: Better Dialog
                           var weaponButtons = {};
                           $.each( $.lad.weapons.allStrings(), function(i,v){
@@ -130,13 +130,13 @@ genericDialog: false */
                                   $.ladAjax({
                                       'trainertoarena':trnr,
                                       'weapon':i
-                                  });
+                              });
                                   $(this).dialog('close').remove();
                               };
-                        });
+                          });
                         genericDialog( "Weapon Selection", "Select a weapon" +
                         "for your trainer to battle with.", weaponButtons );
-                    }).appendTo( ctx() );
+                  }).appendTo( ctx() );
                 }
                 // Trainer battle state 2 == Can Leave Battle
                 else if( tb === 2 )
@@ -157,6 +157,18 @@ genericDialog: false */
                 //# WEAPON STRINGS
                 return [ "Bombarder", "..." ];
                 //# END WEAPON STRINGS
+            },
+            all: function(){
+                //# WEAPON OBJECTS
+                return [ this.weapon( "Bombarder", 2 ) ];
+                //# END WEAPON OBJECTS
+            },
+            weapon: function( name, type ){
+                // Type: 1 = Off, 2 = Two, 3 = Either, 4 = Main
+                return {
+                    'name': name,
+                    'type': type
+                };
             }
         },
         main: {
