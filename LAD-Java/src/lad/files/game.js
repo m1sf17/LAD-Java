@@ -191,7 +191,6 @@
                     eitherRow = createRow( "Either Hand" ),
                     topContainer = $("<p></p>"),
                     rowContainer = $("<div></div>"),
-              //      rightContainer = $("<div></div>"),
                     dialog = $("<div></div>"),
                     okButton = $("<button>Ok</button>"),
                     cancelButton = $("<button>Cancel</button>");
