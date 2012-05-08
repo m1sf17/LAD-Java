@@ -282,6 +282,7 @@ public class Minion
                                         e.getMessage() );
         }
     }
+
     /**
      * Creates a new minion and adds it to the DB in the process
      *

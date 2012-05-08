@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.ListIterator;
 import lad.data.GameException;
 import lad.data.ModifierTarget;
+import lad.data.TrainerBattleStats;
 import lad.data.UserExp;
 import lad.data.UserExpTarget;
 
@@ -20,7 +21,12 @@ public class EXPManager extends DBManager
     /**
      * Internal list of exp
      */
-    private LinkedList< UserExp > exps = new LinkedList<>();
+    private List< UserExp > exps = new LinkedList<>();
+
+    /**
+     * Internal list of trainer battle statistics
+     */
+    private List< TrainerBattleStats > trainerBattleStats = new LinkedList<>();
 
     /**
      * List of values for the amount of experience required to grow a level
@@ -101,6 +107,91 @@ public class EXPManager extends DBManager
                 {
                     UserExp.prepareStatements();
                 }
+                @Override
+                public boolean loadData()
+                {
+                    return true;
+                }
+            },
+            new TableProfile(){
+                @Override
+                public String tableName()
+                {
+                    return "TRAINERBATTLESTATS";
+                }
+
+                @Override
+                public String createString()
+                {
+                    return
+                        "CREATE TABLE `TRAINERBATTLESTATS` (" +
+                        "`type` int(10) unsigned NOT NULL," +
+                        "`id` int(10) unsigned NOT NULL," +
+                        "`shotsFired` int(10) unsigned NOT NULL," +
+                        "`damageDealt` double unsigned NOT NULL," +
+                        "`damageTaken` double unsigned NOT NULL," +
+                        "`reloads` int(10) unsigned NOT NULL," +
+                        "`shotsHit` int(10) unsigned NOT NULL," +
+                        "`distanceMoved` double unsigned NOT NULL," +
+                        "`shotsEvaded` int(10) unsigned NOT NULL," +
+                        "`damageReduced` double unsigned NOT NULL," +
+                        "`criticalsHit` int(10) unsigned NOT NULL," +
+                        "`safelyShot` int(10) unsigned NOT NULL," +
+                        "`battles` int(10) unsigned NOT NULL," +
+                        "`battlesWon` int(10) unsigned NOT NULL," +
+                        "PRIMARY KEY (`type`,`id`)" +
+                        ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
+                }
+
+                @Override
+                public String[] tableHeaders()
+                {
+                    return new String[]{ "type", "id",
+                        "shotsFired", "damageDealt", "damageTaken", "reloads",
+                        "shotsHit", "distanceMoved", "shotsEvaded",
+                        "damageReduced", "criticalsHit", "safelyShot",
+                        "battles", "battlesWon" };
+                }
+
+                @Override
+                public void loadRow( ResultSet rs ) throws SQLException
+                {
+                    int type = rs.getInt( 1 );
+                    int id = rs.getInt( 2 );
+                    int shotsFired = rs.getInt( 3 );
+                    int reloads = rs.getInt( 6 );
+                    int shotsHit = rs.getInt( 7 );
+                    int shotsEvaded = rs.getInt( 9 );
+                    int criticalsHit = rs.getInt( 11 );
+                    int safelyShot = rs.getInt( 12 );
+                    int battles = rs.getInt( 13 );
+                    int battlesWon = rs.getInt( 14 );
+
+                    double damageDealt = rs.getDouble( 4 );
+                    double damageTaken = rs.getDouble( 5 );
+                    double distanceMoved = rs.getDouble( 8 );
+                    double damageReduced = rs.getDouble( 10 );
+
+                    int ints[] = new int[]{ shotsFired, reloads, shotsHit,
+                        shotsEvaded, criticalsHit, safelyShot, battles,
+                        battlesWon
+                    };
+                    double doubles[] = new double[]{ damageDealt, damageTaken,
+                        distanceMoved, damageReduced
+                    };
+
+                    TrainerBattleStats stats =
+                            new TrainerBattleStats( type, id, ints, doubles );
+
+                    trainerBattleStats.add( stats );
+                }
+
+                @Override
+                public void postinit() throws SQLException
+                {
+                    TrainerBattleStats.prepareStatements();
+                }
+
                 @Override
                 public boolean loadData()
                 {
