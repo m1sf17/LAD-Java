@@ -181,6 +181,7 @@ public class EXPManager extends DBManager
         {
             userExp = UserExp.create( user, target.getValue(),
                                       type.getValue() );
+            getInstance().exps.add( userExp );
         }
 
         // Increment it!
