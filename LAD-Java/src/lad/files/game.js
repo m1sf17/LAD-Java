@@ -121,22 +121,10 @@ genericDialog: false */
                 // Trainer battle state 1 == Can Battle
                 if( tb === 1 )
                 {
-                    $("<button>Arena Battle</button>").button().click(
-                        function(){
-                          // TODO: Better Dialog
-                          var weaponButtons = {};
-                          $.each( $.lad.weapons.allStrings(), function(i,v){
-                              weaponButtons[ v ] = function(){
-                                  $.ladAjax({
-                                      'trainertoarena':trnr,
-                                      'weapon':i
-                              });
-                                  $(this).dialog('close').remove();
-                              };
-                          });
-                        genericDialog( "Weapon Selection", "Select a weapon" +
-                        "for your trainer to battle with.", weaponButtons );
-                  }).appendTo( ctx() );
+                    $("<button>Arena Battle</button>").button()
+                    .click(function(){
+                        $.lad.trainer.arenabattledialog( trnr );
+                    }).appendTo( ctx() );
                 }
                 // Trainer battle state 2 == Can Leave Battle
                 else if( tb === 2 )
@@ -150,6 +138,88 @@ genericDialog: false */
 
                 // Return to main button
                 $.lad.main.returnButton();
+            },
+            arenabattledialog: function(trnr){
+                function createRow( hand ){
+                    return $("<div></div>").addClass( "row" ).append(
+                        $("<div></div>").append( hand ).addClass( "rowHeader")
+                    );
+                }
+                var weaponButtons = {},
+                    weaponData = $.lad.weapons.all(),
+                    twoRow = createRow( "Two-Handed" ),
+                    mainRow = createRow( "Main Hand" ),
+                    offRow = createRow( "Off Hand" ),
+                    eitherRow = createRow( "Either Hand" ),
+                    topContainer = $("<p></p>"),
+                    rowContainer = $("<div></div>"),
+              //      rightContainer = $("<div></div>"),
+                    dialog = $("<div></div>"),
+                    okButton = $("<button>Ok</button>"),
+                    cancelButton = $("<button>Cancel</button>");
+                $.each( weaponData, function(i,v){
+                    var div = $("<div></div>").append( v.name )
+                        .addClass( "weapon" ).mouseover(function(){
+                            $(this).toggleClass( "weapon-hover" );
+                        }).mouseout(function(){
+                            $(this).toggleClass( "weapon-hover" );
+                        }).click(function(){
+                            $.each( weaponButtons, function(w,b){
+                                b.removeClass( "weapon-selected" );
+                            });
+                            $(this).addClass( "weapon-selected" );
+                            okButton.button( "enable" );
+                            okButton.data( "selectedWeapon", i + 1 );
+                        });
+                    switch( v.type )
+                    {
+                        case 1:
+                            offRow.append( div );
+                            break;
+                        case 2:
+                            twoRow.append( div );
+                            break;
+                        case 3:
+                            eitherRow.append( div );
+                            break;
+                        case 4:
+                            mainRow.append( div );
+                            break;
+                    }
+                    weaponButtons[ i ] = div;
+                });
+
+                // Setup top container
+                topContainer.addClass( "weaponSelector" )
+                    .append( rowContainer );
+
+                // Setup Buttons
+                cancelButton.button().click(function(){
+                    dialog.dialog( "close" ).remove();
+                }).appendTo( topContainer );
+                okButton.button().click(function(){
+                    $.ladAjax({
+                        'trainertoarena': trnr,
+                        'weapon': okButton.data( "selectedWeapon" )
+                    });
+                    dialog.dialog( "close" ).remove();
+                }).button( "disable" ).appendTo( topContainer );
+
+                // Setup row container
+                rowContainer.addClass( "rows" )
+                    .append( twoRow ).append( mainRow )
+                    .append( offRow ).append( eitherRow );
+
+                dialog.attr({
+                    "title": "Weapon Selection",
+                    "id": "dialog-weapon"
+                }).append( topContainer ).appendTo( $("body") )
+                .dialog({
+                    resizable: false,
+                    height: 400,
+                    width: 525,
+                    modal: true
+                });
             }
         },
         weapons: {
