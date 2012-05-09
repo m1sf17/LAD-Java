@@ -1,7 +1,5 @@
 package lad.db;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -38,52 +36,7 @@ public class TrainerManager extends DBManager
     {
         return new TableProfile[]{
             Minion.getProfile(),
-            new TableProfile(){
-                @Override
-                public String tableName()
-                {
-                    return "TRAINERS";
-                }
-                @Override
-                public String createString()
-                {
-                    return
-                        "CREATE TABLE `TRAINERS` (" +
-                        "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," +
-                        "`owner` int(10) unsigned NOT NULL," +
-                        "`exp` int(10) unsigned NOT NULL," +
-                        "`level` int(10) unsigned NOT NULL," +
-                        "PRIMARY KEY (`ID`)" +
-                        ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
-                }
-                @Override
-                public String[] tableHeaders()
-                {
-                    return new String[] { "ID", "owner", "exp", "level" };
-                }
-                @Override
-                public void loadRow( ResultSet rs ) throws SQLException
-                {
-                    int ID = rs.getInt( 1 );
-                    int owner = rs.getInt( 2 );
-                    int exp = rs.getInt( 3 );
-                    int level = rs.getInt( 4 );
-
-                    Trainer trainer = new Trainer( ID, owner, exp, level );
-                    trainers.add( trainer );
-                    trainer.load();
-                }
-                @Override
-                public void postinit() throws SQLException
-                {
-                    Trainer.prepareStatements();
-                }
-                @Override
-                public boolean loadData()
-                {
-                    return true;
-                }
-            }
+            Trainer.getProfile()
         };
     }
 
@@ -139,7 +92,17 @@ public class TrainerManager extends DBManager
     public void addTrainer( int userid )
     {
         Trainer creation = Trainer.create( userid );
-        trainers.add( creation );
+        addTrainer( creation );
+    }
+
+    /**
+     * Adds a trainer to the internal list of trainers
+     *
+     * @param trainer Trainer that has been created/loaded
+     */
+    public void addTrainer( Trainer trainer )
+    {
+        trainers.add( trainer );
     }
 
     /**

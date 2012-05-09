@@ -10,11 +10,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import lad.db.MySQLDB;
+import lad.db.TableProfile;
+import lad.db.TrainerManager;
 
 /**
  * Data handler for trainers
  */
-public class Trainer
+public class Trainer implements TableProfile
 {
     /**
      * Current amount of experience the trainer has
@@ -91,34 +93,6 @@ public class Trainer
      * Statement for adjusting Exp
      */
     private static PreparedStatement adjustExpStmt = null;
-
-    /**
-     * Prepares all of the prepared statements
-     *
-     * @throws SQLException If an error occurs when preparing the statements
-     */
-    public static void prepareStatements() throws SQLException
-    {
-        Connection conn = MySQLDB.getConn();
-
-        final String pre = "UPDATE TRAINERS SET ";
-        final String post = " WHERE ID = ?";
-
-        updateLevelStmt = conn.prepareStatement( pre + "LEVEL = ?" + post );
-        updateExpStmt = conn.prepareStatement( pre + "EXP = ?" + post );
-        updateOwnerStmt = conn.prepareStatement( pre + "OWNER = ?" + post );
-        adjustExpStmt = conn.prepareStatement( pre + "LEVEL = ?, EXP = ?" +
-                                               post );
-        deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERS" + post );
-        deleteMinionStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE " +
-                                                  "OWNER = ?" );
-
-        minionStmt = conn.prepareStatement( "SELECT * FROM MINIONS WHERE " +
-                                            "OWNER = ?" );
-        insertStmt = conn.prepareStatement(
-                        "INSERT INTO TRAINERS VALUES( NULL, ?, 0, 0 )",
-                        Statement.RETURN_GENERATED_KEYS );
-    }
 
     /**
      * Ctor (from DB)
@@ -583,4 +557,113 @@ public class Trainer
             throw new GameException( 4, "Battle state out of range." );
         }
     };
+
+    /**
+     * Returns a dummy object for pulling table profile information
+     *
+     * @return Dummy object
+     */
+    public static TableProfile getProfile()
+    {
+        return new Trainer( -1 );
+    }
+
+    /**
+     * Returns the name of the SQL table
+     *
+     * @return TRAINERS
+     */
+    @Override
+    public String tableName()
+    {
+        return "TRAINERS";
+    }
+
+    /**
+     * Returns the string used to create the SQL table
+     *
+     * @return Creation string
+     */
+    @Override
+    public String createString()
+    {
+        return
+            "CREATE TABLE `TRAINERS` (" +
+            "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," +
+            "`owner` int(10) unsigned NOT NULL," +
+            "`exp` int(10) unsigned NOT NULL," +
+            "`level` int(10) unsigned NOT NULL," +
+            "PRIMARY KEY (`ID`)" +
+            ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
+    }
+
+    /**
+     * Returns an array containing the SQL table headers
+     *
+     * @return [ID,owner,exp,level]
+     */
+    @Override
+    public String[] tableHeaders()
+    {
+        return new String[] { "ID", "owner", "exp", "level" };
+    }
+
+    /**
+     * Loads a row from the database and adds it to the manager
+     *
+     * @param rs Result row from SQL database
+     * @throws SQLException Thrown if there is an error reading the SQL
+     */
+    @Override
+    public void loadRow( ResultSet rs ) throws SQLException
+    {
+        int n_ID = rs.getInt( 1 );
+        int n_owner = rs.getInt( 2 );
+        int n_exp = rs.getInt( 3 );
+        int n_level = rs.getInt( 4 );
+
+        Trainer trainer = new Trainer( n_ID, n_owner, n_exp, n_level );
+        TrainerManager.getInstance().addTrainer( trainer );
+        trainer.load();
+    }
+
+    /**
+     * Prepares all of the prepared statements
+     *
+     * @throws SQLException If an error occurs when preparing the statements
+     */
+    @Override
+    public void postinit() throws SQLException
+    {
+        Connection conn = MySQLDB.getConn();
+
+        final String pre = "UPDATE TRAINERS SET ";
+        final String post = " WHERE ID = ?";
+
+        updateLevelStmt = conn.prepareStatement( pre + "LEVEL = ?" + post );
+        updateExpStmt = conn.prepareStatement( pre + "EXP = ?" + post );
+        updateOwnerStmt = conn.prepareStatement( pre + "OWNER = ?" + post );
+        adjustExpStmt = conn.prepareStatement( pre + "LEVEL = ?, EXP = ?" +
+                                               post );
+        deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERS" + post );
+        deleteMinionStmt = conn.prepareStatement( "DELETE FROM MINIONS WHERE " +
+                                                  "OWNER = ?" );
+
+        minionStmt = conn.prepareStatement( "SELECT * FROM MINIONS WHERE " +
+                                            "OWNER = ?" );
+        insertStmt = conn.prepareStatement(
+                        "INSERT INTO TRAINERS VALUES( NULL, ?, 0, 0 )",
+                        Statement.RETURN_GENERATED_KEYS );
+    }
+
+    /**
+     * Tells the table manager to load this data from the database.
+     *
+     * @return true
+     */
+    @Override
+    public boolean loadData()
+    {
+        return true;
+    }
 }
