@@ -348,6 +348,13 @@
                 ctx().html( "" )
                     .append( makeSortableTable( headers, mods, 'mods' ) );
                 $.lad.main.returnButton();
+                $.lad.tutorial( "Modifiers are the core of advancing a " +
+                    "trainer in battle.  Each trainer may bring up to 3 " +
+                    "modifier into battle.  Every modifier must apply to " +
+                    "a different area.  Furthermore, not all modifiers are " +
+                    "the same.  Some will grant bonuses more often, whereas " +
+                    "others will last longer in battle.", $("#modstbl"),
+                    "Here is the table of all the modifiers you own." );
             }
         },
         blockedAction: function(txt){
@@ -361,6 +368,56 @@
                     });
                 }, 5000 );
             });
+        },
+        tutorial: function( txt, block, tiptxt ){
+            // First parameter is actually added to the tutorial bar.
+            // Second is a jQuery block which will be highlighted when
+            // the given text is mouseover'd, Third is the qtip content to show
+            // over the jQuery block
+            if( $("#tutorial").length === 0 )
+            {
+                $( "<div id='tutorial'></div>" )
+                    .addClass( "ui-corner-tl ui-corner-bl" )
+                    .prependTo( ctx() );
+            }
+
+            var tutorial = $("#tutorial"),
+                current = $("<div></div>");
+            current.mouseover(function(){
+                $(".highlight-tutorial").remove();
+                var highlight = $("<div></div>")
+                    .addClass( "highlight-tutorial ui-corner-all" )
+                    .append( $("<div></div>").addClass( "inner" ) )
+                    .insertBefore( block ).css({
+                        'width': block.width(),
+                        'height': block.height()
+                    }),
+                repeatFunction = function(){
+                    var obj = $(".highlight-tutorial .inner");
+                    if( obj.length === 0 )
+                    {
+                        return;
+                    }
+                    obj.animate({ opacity: 0.2 }, 500, function(){
+                        obj.animate({ opacity: 0.6 }, 500, function(){
+                            obj.queue(function(){
+                                repeatFunction();
+                                $(this).dequeue();
+                            });
+                        });
+                    });
+                };
+                repeatFunction();
+            }).mouseout(function(){
+                $(".highlight-tutorial").remove();
+            }).append( txt ).qtip({
+                content: tiptxt,
+                position: {
+                    my: 'top left',
+                    at: 'bottom right',
+                    target: block
+                }
+            }).appendTo( tutorial );
         }
     });
 }));
