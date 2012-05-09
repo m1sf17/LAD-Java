@@ -10,6 +10,14 @@ import lad.db.EXPManager;
 /**
  * Handles initial connection with users to the java module.
  *
+ * TODO: Create view for user battle statistics
+ * TODO: Create view for trainer battle statistics
+ * TODO: Create view for granting user exp levels
+ * TODO: Integrate TableProfile into data types
+ * TODO: Add more data to weapon selector dialog
+ * TODO: Make GUI more readable
+ * TODO: Tests
+ *
  * @author msflowers
  */
 public class IOInitial extends MessageHandler
