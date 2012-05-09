@@ -273,7 +273,7 @@ public class IOTrainer extends MessageHandler
             Trainer trnr = TrainerManager.getInstance().
                     getTrainerByID( trnrID );
             Weapon weapon = Weapon.values()[ Integer.valueOf(
-                    pieces.getValue( "weapon" ))];
+                    pieces.getValue( "weapon" ) ) - 1 ];
 
             if( trnr.getOwner() != userid )
             {
