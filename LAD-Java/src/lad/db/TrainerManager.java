@@ -37,45 +37,7 @@ public class TrainerManager extends DBManager
     public TableProfile[] profiles()
     {
         return new TableProfile[]{
-            new TableProfile(){
-                @Override
-                public String tableName()
-                {
-                    return "MINIONS";
-                }
-                @Override
-                public String createString()
-                {
-                    return
-                        "CREATE TABLE `MINIONS` (" +
-                        "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," +
-                        "`owner` int(10) unsigned NOT NULL," +
-                        "`exp` int(10) unsigned NOT NULL," +
-                        "`level` int(10) unsigned NOT NULL," +
-                        "PRIMARY KEY (`ID`)" +
-                        ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
-                }
-                @Override
-                public String[] tableHeaders()
-                {
-                    return new String[] { "ID", "owner", "exp", "level" };
-                }
-                @Override
-                public void loadRow( ResultSet rs ) throws SQLException
-                {
-                    // Not run because loadData is false
-                }
-                @Override
-                public void postinit() throws SQLException
-                {
-                    Minion.prepareStatements();
-                }
-                @Override
-                public boolean loadData()
-                {
-                    return false;
-                }
-            },
+            Minion.getProfile(),
             new TableProfile(){
                 @Override
                 public String tableName()

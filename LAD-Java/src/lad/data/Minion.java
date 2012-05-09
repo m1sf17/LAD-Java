@@ -6,6 +6,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import lad.db.MySQLDB;
+import lad.db.TableProfile;
 
 /**
  * Data handler for minions
@@ -13,7 +14,7 @@ import lad.db.MySQLDB;
  * @author msflowers
  * @author Kevin
  */
-public class Minion
+public class Minion implements TableProfile
 {
     /**
      * Current experience of the minion
@@ -351,5 +352,91 @@ public class Minion
         }
 
         owner = ID = exp = level = 0;
+    }
+
+    /**
+     * Returns a dummy object
+     *
+     * @return Dummy Object
+     */
+    public static TableProfile getProfile()
+    {
+        return new Minion();
+    }
+
+    /**
+     * Gets the name of the table
+     *
+     * @return MINIONS
+     */
+    @Override
+    public String tableName()
+    {
+        return "MINIONS";
+    }
+
+    /**
+     * Gets the string used to create the table
+     *
+     * @return Creation string
+     */
+    @Override
+    public String createString()
+    {
+        return
+            "CREATE TABLE `MINIONS` (" +
+            "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," +
+            "`owner` int(10) unsigned NOT NULL," +
+            "`exp` int(10) unsigned NOT NULL," +
+            "`level` int(10) unsigned NOT NULL," +
+            "PRIMARY KEY (`ID`)" +
+            ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
+    }
+
+    /**
+     * Gets the headers of the SQL table
+     *
+     * @return [ID,owner,exp,level]
+     */
+    @Override
+    public String[] tableHeaders()
+    {
+        return new String[] { "ID", "owner", "exp", "level" };
+    }
+
+    /**
+     * Empty because loadData is false.
+     *
+     * Data is loaded from trainer class.
+     *
+     * @param rs Unused parameter
+     */
+    @Override
+    public void loadRow( ResultSet rs )
+    {
+        // Not run because loadData is false
+    }
+
+    /**
+     * Prepares all of the SQL statements.
+     *
+     * @throws SQLException Thrown if an error occurs while preparing
+     */
+    @Override
+    public void postinit() throws SQLException
+    {
+        Minion.prepareStatements();
+    }
+
+    /**
+     * Tells the TableManager not to load data from this table because it is
+     * handled elsewhere.
+     *
+     * @return false
+     */
+    @Override
+    public boolean loadData()
+    {
+        return false;
     }
 }
