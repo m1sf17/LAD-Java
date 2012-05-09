@@ -13,7 +13,6 @@ import lad.db.EXPManager;
  * TODO: Create view for user battle statistics
  * TODO: Create view for trainer battle statistics
  * TODO: Create view for granting user exp levels
- * TODO: Integrate TableProfile into data types
  * TODO: Add more data to weapon selector dialog
  * TODO: Make GUI more readable
  * TODO: Tests
