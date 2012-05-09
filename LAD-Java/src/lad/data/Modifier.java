@@ -6,14 +6,16 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import lad.db.EXPManager;
+import lad.db.ModifierManager;
 import lad.db.MySQLDB;
+import lad.db.TableProfile;
 
 /**
  * Data handler for modifiers
  *
  * @author msflowers
  */
-public class Modifier
+public class Modifier implements TableProfile
 {
     /**
      * Target for this modifier
@@ -66,6 +68,14 @@ public class Modifier
     private static PreparedStatement commitStmt = null;
 
     /**
+     * Ctor (dummy)
+     */
+    private Modifier()
+    {
+        ID = -1;
+    }
+
+    /**
      * Ctor (from db)
      *
      * @param n_ID       ID of the modifier
@@ -85,25 +95,6 @@ public class Modifier
         battles = n_battles;
         initialMultiplier = n_initial;
         target = ModifierTarget.fromInt( n_target );
-    }
-
-    /**
-     * Prepares all of the prepared statements
-     *
-     * @throws SQLException If an error occurs when preparing the statements
-     */
-    public static void prepareStatements() throws SQLException
-    {
-        Connection conn = MySQLDB.getConn();
-
-        deleteStmt = conn.prepareStatement( "DELETE FROM MODIFIERS WHERE ID " +
-                                            "= ?" );
-        insertStmt = conn.prepareStatement(
-                        "INSERT INTO MODIFIERS VALUES( NULL, ?, ?, ?, ?, ? )",
-                        Statement.RETURN_GENERATED_KEYS );
-        commitStmt = conn.prepareStatement( "UPDATE MODIFIERS SET BATTLES = " +
-                                            "?, TARGET = ?, RARITY = ?, " +
-                                            "OWNER = ? WHERE ID = ?" );
     }
 
     /**
@@ -644,5 +635,110 @@ public class Modifier
         EXPManager.grantUserEXP( user, generalTarget, target, exp );
         EXPManager.grantUserEXP( user, specificTarget, target, exp * 2 );
 
+    }
+
+    /**
+     * Returns a dummy object for pulling table profile information
+     *
+     * @return Dummy object
+     */
+    public static TableProfile getProfile()
+    {
+        return new Modifier();
+    }
+
+    /**
+     * Returns the name of the SQL table
+     *
+     * @return MODIFIERS
+     */
+    @Override
+    public String tableName()
+    {
+        return "MODIFIERS";
+    }
+
+    /**
+     * Returns the string used to create the SQL table
+     *
+     * @return Creation string
+     */
+    @Override
+    public String createString()
+    {
+        return
+            "CREATE TABLE `MODIFIERS` (" +
+            "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," +
+            "`owner` int(10) unsigned NOT NULL," +
+            "`target` int(10) unsigned NOT NULL," +
+            "`rarity` int(10) unsigned NOT NULL," +
+            "`battles` int(10) unsigned NOT NULL," +
+            "`multiplier` int(10) unsigned NOT NULL," +
+            "PRIMARY KEY (`ID`)" +
+            ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
+    }
+
+    /**
+     * Returns an array containing the SQL table headers
+     *
+     * @return [ID,owner,target,rarity,battles,multiplier]
+     */
+    @Override
+    public String[] tableHeaders()
+    {
+        return new String[]{ "ID", "owner", "target", "rarity",
+                            "battles", "multiplier" };
+    }
+
+    /**
+     * Loads a row from the database and adds it to the manager
+     *
+     * @param rs Result row from SQL database
+     * @throws SQLException Thrown if there is an error reading the SQL
+     */
+    @Override
+    public void loadRow( ResultSet rs ) throws SQLException
+    {
+        int n_ID = rs.getInt( 1 );
+        int n_owner = rs.getInt( 2 );
+        int n_target = rs.getInt( 3 );
+        int n_rarity = rs.getInt( 4 );
+        int n_battles = rs.getInt( 5 );
+        int n_mult = rs.getInt( 6 );
+
+        Modifier modifier = new Modifier( n_ID, n_target, n_rarity, n_owner,
+                                          n_battles, n_mult );
+        ModifierManager.getInstance().addModifier( modifier );
+    }
+
+    /**
+     * Prepares all of the prepared statements
+     *
+     * @throws SQLException If an error occurs when preparing the statements
+     */
+    @Override
+    public void postinit() throws SQLException
+    {
+        Connection conn = MySQLDB.getConn();
+
+        deleteStmt = conn.prepareStatement( "DELETE FROM MODIFIERS WHERE ID " +
+                                            "= ?" );
+        insertStmt = conn.prepareStatement(
+                        "INSERT INTO MODIFIERS VALUES( NULL, ?, ?, ?, ?, ? )",
+                        Statement.RETURN_GENERATED_KEYS );
+        commitStmt = conn.prepareStatement( "UPDATE MODIFIERS SET BATTLES = " +
+                                            "?, TARGET = ?, RARITY = ?, " +
+                                            "OWNER = ? WHERE ID = ?" );
+    }
+
+    /**
+     * Tells the table manager to load this data from the database.
+     *
+     * @return true
+     */
+    @Override
+    public boolean loadData()
+    {
+        return true;
     }
 }

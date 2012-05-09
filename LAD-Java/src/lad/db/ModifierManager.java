@@ -1,7 +1,5 @@
 package lad.db;
 
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -37,58 +35,7 @@ public class ModifierManager extends DBManager
     public TableProfile[] profiles()
     {
         return new TableProfile[]{
-            new TableProfile(){
-                @Override
-                public String tableName()
-                {
-                    return "MODIFIERS";
-                }
-                @Override
-                public String createString()
-                {
-                    return
-                        "CREATE TABLE `MODIFIERS` (" +
-                        "`ID` int(10) unsigned NOT NULL AUTO_INCREMENT," +
-                        "`owner` int(10) unsigned NOT NULL," +
-                        "`target` int(10) unsigned NOT NULL," +
-                        "`rarity` int(10) unsigned NOT NULL," +
-                        "`battles` int(10) unsigned NOT NULL," +
-                        "`multiplier` int(10) unsigned NOT NULL," +
-                        "PRIMARY KEY (`ID`)" +
-                        ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
-                }
-                @Override
-                public String[] tableHeaders()
-                {
-                    return new String[]{ "ID", "owner", "target", "rarity",
-                                        "battles", "multiplier" };
-                }
-                @Override
-                public void loadRow( ResultSet rs ) throws SQLException
-                {
-                    int ID = rs.getInt( 1 );
-                    int owner = rs.getInt( 2 );
-                    int target = rs.getInt( 3 );
-                    int rarity = rs.getInt( 4 );
-                    int battles = rs.getInt( 5 );
-                    int mult = rs.getInt( 6 );
-
-                    Modifier modifier = new Modifier( ID, target, rarity, owner,
-                                                    battles, mult );
-                    modifiers.add( modifier );
-
-                }
-                @Override
-                public void postinit() throws SQLException
-                {
-                    Modifier.prepareStatements();
-                }
-                @Override
-                public boolean loadData()
-                {
-                    return true;
-                }
-            }
+            Modifier.getProfile()
         };
     }
 
@@ -243,8 +190,17 @@ public class ModifierManager extends DBManager
 
         int mult = (int)Math.round( Math.random() * 12 );
 
-        Modifier creation = Modifier.create( targ, rare, userid, mult );
-        modifiers.add( creation );
+        addModifier( Modifier.create( targ, rare, userid, mult ) );
+    }
+
+    /**
+     * Adds a modifier to the internal list of modifiers.
+     *
+     * @param modifier Modifier to add
+     */
+    public void addModifier( Modifier modifier )
+    {
+        modifiers.add( modifier );
     }
 
     /**
