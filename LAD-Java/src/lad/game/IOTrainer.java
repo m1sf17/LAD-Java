@@ -130,7 +130,7 @@ public class IOTrainer extends MessageHandler
         {
             TrainerManager tm = TrainerManager.getInstance();
             // Validation: User has less than 8 trainers
-            LinkedList< Trainer > trainers = tm.getTrainersByUser( userid );
+            List< Trainer > trainers = tm.getTrainersByUser( userid );
             if( trainers.size() >= 8 )
             {
                 // abort, user shouldn't be able to get above 8
@@ -318,7 +318,7 @@ public class IOTrainer extends MessageHandler
      */
     protected void outputMainView( int userid )
     {
-        LinkedList< Trainer > trainers =
+        List< Trainer > trainers =
             TrainerManager.getInstance().getTrainersByUser( userid );
         ListIterator< Trainer > iter = trainers.listIterator();
 

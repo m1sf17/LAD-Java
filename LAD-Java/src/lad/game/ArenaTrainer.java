@@ -123,7 +123,7 @@ public class ArenaTrainer
     /**
      * All of the calculated attributes of the trainer
      */
-    private HashMap< ModifierTarget, Double > attributes = new HashMap<>( 10 );
+    private Map< ModifierTarget, Double > attributes = new HashMap<>( 10 );
 
     /**
      * Basic ctor

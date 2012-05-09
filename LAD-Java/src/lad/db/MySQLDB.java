@@ -7,6 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
 import lad.game.Debug;
@@ -36,7 +37,7 @@ public class MySQLDB
     /**
      * A list of all the tables currently loaded into the database.
      */
-    private LinkedList< String > loadedTables = new LinkedList<>();
+    private List< String > loadedTables = new LinkedList<>();
 
     /**
      * Private ctor.

@@ -3,6 +3,7 @@ package lad.db;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.ListIterator;
 import lad.data.GameException;
 import lad.data.Minion;
@@ -18,7 +19,7 @@ public class TrainerManager extends DBManager
     /**
      * The internal list of trainers.
      */
-    private LinkedList< Trainer > trainers = new LinkedList<>();
+    private List< Trainer > trainers = new LinkedList<>();
 
     /**
      * Private ctor
@@ -130,9 +131,9 @@ public class TrainerManager extends DBManager
      * @param userid The ID of the user to get trainers for
      * @return List of trainers (whether empty or populated)
      */
-    public LinkedList< Trainer > getTrainersByUser( int userid )
+    public List< Trainer > getTrainersByUser( int userid )
     {
-        LinkedList< Trainer > ret = new LinkedList<>();
+        List< Trainer > ret = new LinkedList<>();
         ListIterator< Trainer > iter = trainers.listIterator();
 
         while( iter.hasNext() )

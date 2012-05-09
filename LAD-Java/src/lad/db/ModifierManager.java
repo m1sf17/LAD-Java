@@ -102,7 +102,7 @@ public class ModifierManager extends DBManager
      */
     public List< Modifier > getByUserID( int userid )
     {
-        LinkedList< Modifier > ret = new LinkedList<>();
+        List< Modifier > ret = new LinkedList<>();
         ListIterator< Modifier > iter = modifiers.listIterator();
 
         while( iter.hasNext() )
@@ -129,7 +129,7 @@ public class ModifierManager extends DBManager
      */
     public List< Modifier > getAvailableByUserID( int userid )
     {
-        LinkedList< Modifier > ret = new LinkedList<>();
+        List< Modifier > ret = new LinkedList<>();
         ListIterator< Modifier > iter = modifiers.listIterator();
 
         while( iter.hasNext() )
@@ -174,9 +174,9 @@ public class ModifierManager extends DBManager
      */
     public List< Modifier > getAvailableSetByUserID( int userid, int max )
     {
-        LinkedList< Modifier > ret = new LinkedList<>();
-        ListIterator< Modifier > iter = modifiers.listIterator();
+        List< Modifier > ret = new LinkedList<>();
         List< ModifierTarget > found = new LinkedList<>();
+        ListIterator< Modifier > iter = modifiers.listIterator();
 
         while( iter.hasNext() )
         {
@@ -262,7 +262,7 @@ public class ModifierManager extends DBManager
     private int generateLuck( int luck, boolean proficient )
     {
         // Setup an array with a list of number that get...bigger
-        LinkedList< Double > powers = new LinkedList<>();
+        List< Double > powers = new LinkedList<>();
         powers.add( 0.6 );
         powers.add( 1.2 );
         powers.add( 2.0 );

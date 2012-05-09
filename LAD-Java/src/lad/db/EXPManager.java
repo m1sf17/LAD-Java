@@ -211,7 +211,7 @@ public class EXPManager extends DBManager
      */
     public static List< UserExp > getExpByUserID( int owner )
     {
-        LinkedList< UserExp > ret = new LinkedList<>();
+        List< UserExp > ret = new LinkedList<>();
         ListIterator< UserExp > iter = getInstance().exps.listIterator();
 
         while( iter.hasNext() )
