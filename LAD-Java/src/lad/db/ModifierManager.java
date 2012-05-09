@@ -19,14 +19,13 @@ public class ModifierManager extends DBManager
     /**
      * Internal list of modifiers
      */
-    private LinkedList< Modifier > modifiers = new LinkedList<>();
+    private List< Modifier > modifiers = new LinkedList<>();
 
     /**
      * Private ctor
      */
     private ModifierManager()
     {
-
     }
 
     /**
@@ -185,7 +184,7 @@ public class ModifierManager extends DBManager
             ModifierTarget target = current.getTarget();
 
             if( current.getOwner() == userid && current.getEquipped() == null &&
-                !found.contains( target ) )
+                !found.contains( target ) && current.getBattles() > 0 )
             {
                 ret.add( current );
                 found.add( target );
