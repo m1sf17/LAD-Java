@@ -2,15 +2,18 @@ package lad.data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import lad.db.EXPManager;
 import lad.db.MySQLDB;
+import lad.db.TableProfile;
 
 /**
  * Data handler for trainer battle statistics
  *
  * @author msflowers
  */
-public class TrainerBattleStats
+public class TrainerBattleStats implements TableProfile
 {
     // Fields
     /**
@@ -99,26 +102,6 @@ public class TrainerBattleStats
      * Statement for updating
      */
     private static PreparedStatement updateStmt = null;
-
-    /**
-     * Prepares all of the prepared statements
-     *
-     * @throws SQLException If an error occurs when preparing the statements
-     */
-    public static void prepareStatements() throws SQLException
-    {
-        Connection conn = MySQLDB.getConn();
-
-        updateStmt = conn.prepareStatement( "UPDATE TRAINERBATTLESTATS SET " +
-            "shotsFired = ?, damageDealt = ?, damageTaken = ?, reloads = ?, " +
-            "shotsHit = ?, distanceMoved = ?, shotsEvaded = ?, " +
-            "damageReduced = ?, criticalsHit = ?, safelyShot = ?, " +
-            "battles = ?, battlesWon = ? WHERE type = ? AND id = ?" );
-        deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERBATTLESTATS " +
-                                            "WHERE type = ? AND id = ?" );
-        insertStmt = conn.prepareStatement( "INSERT INTO TRAINERBATTLESTATS " +
-            "VALUES( ?, ?, 0, 0.0, 0.0, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0 )" );
-    }
 
     /**
      * Ctor (Adding to DB)
@@ -344,5 +327,142 @@ public class TrainerBattleStats
         battles = battlesWon = criticalsHit = id = reloads = safelyShot =
                   shotsEvaded = shotsFired = shotsHit = type = 0;
         damageDealt = damageReduced = damageTaken = distanceMoved = 0.0;
+    }
+    
+    /**
+     * Returns a dummy object for pulling table profile information
+     *
+     * @return Dummy object
+     */
+    public static TableProfile getProfile()
+    {
+        return new TrainerBattleStats( -1, -1 );
+    }
+
+    /**
+     * Returns the name of the SQL table
+     *
+     * @return TRAINERBATTLESTATS
+     */
+    @Override
+    public String tableName()
+    {
+        return "TRAINERBATTLESTATS";
+    }
+
+    /**
+     * Returns the string used to create the SQL table
+     *
+     * @return Creation string
+     */
+    @Override
+    public String createString()
+    {
+        return
+            "CREATE TABLE `TRAINERBATTLESTATS` (" +
+            "`type` int(10) unsigned NOT NULL," +
+            "`id` int(10) unsigned NOT NULL," +
+            "`shotsFired` int(10) unsigned NOT NULL," +
+            "`damageDealt` double unsigned NOT NULL," +
+            "`damageTaken` double unsigned NOT NULL," +
+            "`reloads` int(10) unsigned NOT NULL," +
+            "`shotsHit` int(10) unsigned NOT NULL," +
+            "`distanceMoved` double unsigned NOT NULL," +
+            "`shotsEvaded` int(10) unsigned NOT NULL," +
+            "`damageReduced` double unsigned NOT NULL," +
+            "`criticalsHit` int(10) unsigned NOT NULL," +
+            "`safelyShot` int(10) unsigned NOT NULL," +
+            "`battles` int(10) unsigned NOT NULL," +
+            "`battlesWon` int(10) unsigned NOT NULL," +
+            "PRIMARY KEY (`type`,`id`)" +
+            ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
+    }
+
+    /**
+     * Returns an array containing the SQL table headers
+     *
+     * @return [type,id,shotsFired,damageDealt,damageTaken,reloads,shotsHit,
+     *         distanceMoved,shotsEvaded,damageReduced,criticalsHit,safelyShot,
+     *         battles,battlesWon]
+     */
+    @Override
+    public String[] tableHeaders()
+    {
+        return new String[]{ "type", "id",
+            "shotsFired", "damageDealt", "damageTaken", "reloads",
+            "shotsHit", "distanceMoved", "shotsEvaded",
+            "damageReduced", "criticalsHit", "safelyShot",
+            "battles", "battlesWon" };
+    }
+
+    /**
+     * Loads a row from the database and adds it to the manager
+     *
+     * @param rs Result row from SQL database
+     * @throws SQLException Thrown if there is an error reading the SQL
+     */
+    @Override
+    public void loadRow( ResultSet rs ) throws SQLException
+    {
+        int n_type = rs.getInt( 1 );
+        int n_id = rs.getInt( 2 );
+        int n_shotsFired = rs.getInt( 3 );
+        int n_reloads = rs.getInt( 6 );
+        int n_shotsHit = rs.getInt( 7 );
+        int n_shotsEvaded = rs.getInt( 9 );
+        int n_criticalsHit = rs.getInt( 11 );
+        int n_safelyShot = rs.getInt( 12 );
+        int n_battles = rs.getInt( 13 );
+        int n_battlesWon = rs.getInt( 14 );
+
+        double n_damageDealt = rs.getDouble( 4 );
+        double n_damageTaken = rs.getDouble( 5 );
+        double n_distanceMoved = rs.getDouble( 8 );
+        double n_damageReduced = rs.getDouble( 10 );
+
+        int ints[] = new int[]{ n_shotsFired, n_reloads, n_shotsHit,
+            n_shotsEvaded, n_criticalsHit, n_safelyShot, n_battles,
+            n_battlesWon
+        };
+        double doubles[] = new double[]{ n_damageDealt, n_damageTaken,
+            n_distanceMoved, n_damageReduced
+        };
+
+        TrainerBattleStats stats =
+                new TrainerBattleStats( n_type, n_id, ints, doubles );
+
+        EXPManager.getInstance().addBattleStats( stats );
+    }
+
+    /**
+     * Prepares all of the prepared statements
+     *
+     * @throws SQLException If an error occurs when preparing the statements
+     */
+    @Override
+    public void postinit() throws SQLException
+    {
+        Connection conn = MySQLDB.getConn();
+
+        updateStmt = conn.prepareStatement( "UPDATE TRAINERBATTLESTATS SET " +
+            "shotsFired = ?, damageDealt = ?, damageTaken = ?, reloads = ?, " +
+            "shotsHit = ?, distanceMoved = ?, shotsEvaded = ?, " +
+            "damageReduced = ?, criticalsHit = ?, safelyShot = ?, " +
+            "battles = ?, battlesWon = ? WHERE type = ? AND id = ?" );
+        deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERBATTLESTATS " +
+                                            "WHERE type = ? AND id = ?" );
+        insertStmt = conn.prepareStatement( "INSERT INTO TRAINERBATTLESTATS " +
+            "VALUES( ?, ?, 0, 0.0, 0.0, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0 )" );
+    }
+
+    /**
+     * Tells the table manager to load this data from the database.
+     *
+     * @return true
+     */
+    @Override
+    public boolean loadData()
+    {
+        return true;
     }
 }

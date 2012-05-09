@@ -63,91 +63,7 @@ public class EXPManager extends DBManager
     {
         return new TableProfile[]{
             UserExp.getProfile(),
-            new TableProfile(){
-                @Override
-                public String tableName()
-                {
-                    return "TRAINERBATTLESTATS";
-                }
-
-                @Override
-                public String createString()
-                {
-                    return
-                        "CREATE TABLE `TRAINERBATTLESTATS` (" +
-                        "`type` int(10) unsigned NOT NULL," +
-                        "`id` int(10) unsigned NOT NULL," +
-                        "`shotsFired` int(10) unsigned NOT NULL," +
-                        "`damageDealt` double unsigned NOT NULL," +
-                        "`damageTaken` double unsigned NOT NULL," +
-                        "`reloads` int(10) unsigned NOT NULL," +
-                        "`shotsHit` int(10) unsigned NOT NULL," +
-                        "`distanceMoved` double unsigned NOT NULL," +
-                        "`shotsEvaded` int(10) unsigned NOT NULL," +
-                        "`damageReduced` double unsigned NOT NULL," +
-                        "`criticalsHit` int(10) unsigned NOT NULL," +
-                        "`safelyShot` int(10) unsigned NOT NULL," +
-                        "`battles` int(10) unsigned NOT NULL," +
-                        "`battlesWon` int(10) unsigned NOT NULL," +
-                        "PRIMARY KEY (`type`,`id`)" +
-                        ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
-                }
-
-                @Override
-                public String[] tableHeaders()
-                {
-                    return new String[]{ "type", "id",
-                        "shotsFired", "damageDealt", "damageTaken", "reloads",
-                        "shotsHit", "distanceMoved", "shotsEvaded",
-                        "damageReduced", "criticalsHit", "safelyShot",
-                        "battles", "battlesWon" };
-                }
-
-                @Override
-                public void loadRow( ResultSet rs ) throws SQLException
-                {
-                    int type = rs.getInt( 1 );
-                    int id = rs.getInt( 2 );
-                    int shotsFired = rs.getInt( 3 );
-                    int reloads = rs.getInt( 6 );
-                    int shotsHit = rs.getInt( 7 );
-                    int shotsEvaded = rs.getInt( 9 );
-                    int criticalsHit = rs.getInt( 11 );
-                    int safelyShot = rs.getInt( 12 );
-                    int battles = rs.getInt( 13 );
-                    int battlesWon = rs.getInt( 14 );
-
-                    double damageDealt = rs.getDouble( 4 );
-                    double damageTaken = rs.getDouble( 5 );
-                    double distanceMoved = rs.getDouble( 8 );
-                    double damageReduced = rs.getDouble( 10 );
-
-                    int ints[] = new int[]{ shotsFired, reloads, shotsHit,
-                        shotsEvaded, criticalsHit, safelyShot, battles,
-                        battlesWon
-                    };
-                    double doubles[] = new double[]{ damageDealt, damageTaken,
-                        distanceMoved, damageReduced
-                    };
-
-                    TrainerBattleStats stats =
-                            new TrainerBattleStats( type, id, ints, doubles );
-
-                    trainerBattleStats.add( stats );
-                }
-
-                @Override
-                public void postinit() throws SQLException
-                {
-                    TrainerBattleStats.prepareStatements();
-                }
-
-                @Override
-                public boolean loadData()
-                {
-                    return true;
-                }
-            }
+            TrainerBattleStats.getProfile()
         };
     }
 
@@ -382,11 +298,21 @@ public class EXPManager extends DBManager
         {
             // They don't exist so create them
             stats = TrainerBattleStats.create( type, id );
-            getInstance().trainerBattleStats.add( stats );
+            getInstance().addBattleStats( stats );
         }
 
         // Add in the values
         stats.addValues( ints, doubles );
+    }
+
+    /**
+     * Adds a battle statistic to the internal list.
+     *
+     * @param stats Battle statistics to add
+     */
+    public void addBattleStats( TrainerBattleStats stats )
+    {
+        trainerBattleStats.add( stats );
     }
 
     /**
