@@ -1,6 +1,5 @@
 package lad.data;
 
-import lad.data.Minion;
 import java.sql.SQLException;
 import static org.junit.Assert.*;
 import org.junit.BeforeClass;
@@ -22,7 +21,7 @@ public class MinionTest
     public static void setUpClass() throws SQLException
     {
         System.out.println( "===Minion===" );
-        Minion.prepareStatements();
+        Minion.getProfile().postinit();
     }
 
     /**
