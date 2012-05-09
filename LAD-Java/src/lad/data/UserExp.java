@@ -2,17 +2,19 @@ package lad.data;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import lad.db.EXPManager;
 import lad.db.MySQLDB;
+import lad.db.TableProfile;
 
 /**
  * Data class for the user's experience
  *
  * @author msflowers
  */
-public class UserExp
+public class UserExp implements TableProfile
 {
     /**
      * ID of the User that the EXP belongs to
@@ -73,26 +75,6 @@ public class UserExp
      * Statement for deleting a trainer
      */
     private static PreparedStatement deleteStmt = null;
-
-    /**
-     * Prepares all of the prepared statements
-     *
-     * @throws SQLException If an error occurs when preparing the statements
-     */
-    public static void prepareStatements() throws SQLException
-    {
-        Connection conn = MySQLDB.getConn();
-
-        updateStmt = conn.prepareStatement( "UPDATE USEREXP SET LEVEL = ?, " +
-                                            "EXP = ?, TOTALEXP = ? WHERE " +
-                                            "OWNER = ? AND TARGET = ? AND " +
-                                            "TYPE = ?" );
-        deleteStmt = conn.prepareStatement( "DELETE FROM USEREXP WHERE OWNER " +
-                                            "= ?");
-        insertStmt = conn.prepareStatement(
-                        "INSERT INTO USEREXP VALUES( ?, ?, ?, 0, 0, 0 )",
-                        Statement.RETURN_GENERATED_KEYS );
-    }
 
     /**
      * Ctor (from DB)
@@ -383,5 +365,110 @@ public class UserExp
             expRequired = EXPManager.expRequiredAtLevel( this.level +
                                                          this.getBonusLevel() );
         }
+    }
+
+    /**
+     * Returns a dummy object
+     *
+     * @return Dummy Object
+     */
+    public static TableProfile getProfile()
+    {
+        return new UserExp( -1, -1, -1 );
+    }
+
+    /**
+     * Gets the name of the table
+     *
+     * @return USEREXP
+     */
+    @Override
+    public String tableName()
+    {
+        return "USEREXP";
+    }
+
+    /**
+     * Gets the string used to create the table
+     *
+     * @return Creation string
+     */
+    @Override
+    public String createString()
+    {
+        return
+            "CREATE TABLE `USEREXP` (" +
+            "`owner` int(10) unsigned NOT NULL," +
+            "`target` int(10) unsigned NOT NULL," +
+            "`type` int(10) unsigned NOT NULL," +
+            "`level` int(10) unsigned NOT NULL," +
+            "`exp` int(10) unsigned NOT NULL," +
+            "`totalexp` int(10) unsigned NOT NULL," +
+            "PRIMARY KEY (`owner`,`target`,`type`)" +
+            ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
+    }
+
+    /**
+     * Gets the headers of the SQL table
+     *
+     * @return [owner,target,type,level,exp,totalexp]
+     */
+    @Override
+    public String[] tableHeaders()
+    {
+        return new String[]{ "owner", "target", "type",
+                                "level", "exp", "totalexp" };
+    }
+
+    /**
+     * Loads a row from the database and adds it to the manager
+     *
+     * @param rs Result row from SQL database
+     * @throws SQLException Thrown if there is an error reading the SQL
+     */
+    @Override
+    public void loadRow( ResultSet rs ) throws SQLException
+    {
+        int n_owner = rs.getInt( 1 );
+        int n_target = rs.getInt( 2 );
+        int n_type = rs.getInt( 3 );
+        int n_level = rs.getInt( 4 );
+        int n_exp = rs.getInt( 5 );
+        int n_totalexp = rs.getInt( 6 );
+
+        UserExp userexp = new UserExp( n_owner, n_target, n_type,
+                                        n_level, n_exp, n_totalexp );
+        EXPManager.getInstance().addEXP( userexp );
+    }
+
+    /**
+     * Prepares all of the prepared statements
+     *
+     * @throws SQLException If an error occurs when preparing the statements
+     */
+    @Override
+    public void postinit() throws SQLException
+    {
+        Connection conn = MySQLDB.getConn();
+
+        updateStmt = conn.prepareStatement( "UPDATE USEREXP SET LEVEL = ?, " +
+                                            "EXP = ?, TOTALEXP = ? WHERE " +
+                                            "OWNER = ? AND TARGET = ? AND " +
+                                            "TYPE = ?" );
+        deleteStmt = conn.prepareStatement( "DELETE FROM USEREXP WHERE OWNER " +
+                                            "= ?");
+        insertStmt = conn.prepareStatement(
+                        "INSERT INTO USEREXP VALUES( ?, ?, ?, 0, 0, 0 )" );
+    }
+
+    /**
+     * Tells the table manager to load this data from the database.
+     *
+     * @return true
+     */
+    @Override
+    public boolean loadData()
+    {
+        return true;
     }
 }

@@ -62,57 +62,7 @@ public class EXPManager extends DBManager
     public TableProfile[] profiles()
     {
         return new TableProfile[]{
-            new TableProfile(){
-                @Override
-                public String tableName()
-                {
-                    return "USEREXP";
-                }
-                @Override
-                public String createString()
-                {
-                    return
-                        "CREATE TABLE `USEREXP` (" +
-                        "`owner` int(10) unsigned NOT NULL," +
-                        "`target` int(10) unsigned NOT NULL," +
-                        "`type` int(10) unsigned NOT NULL," +
-                        "`level` int(10) unsigned NOT NULL," +
-                        "`exp` int(10) unsigned NOT NULL," +
-                        "`totalexp` int(10) unsigned NOT NULL," +
-                        "PRIMARY KEY (`owner`,`target`,`type`)" +
-                        ") ENGINE = MyISAM DEFAULT CHARSET=latin1";
-                }
-                @Override
-                public String[] tableHeaders()
-                {
-                    return new String[]{ "owner", "target", "type",
-                                         "level", "exp", "totalexp" };
-                }
-                @Override
-                public void loadRow( ResultSet rs ) throws SQLException
-                {
-                    int owner = rs.getInt( 1 );
-                    int target = rs.getInt( 2 );
-                    int type = rs.getInt( 3 );
-                    int level = rs.getInt( 4 );
-                    int exp = rs.getInt( 5 );
-                    int totalexp = rs.getInt( 6 );
-
-                    UserExp userexp = new UserExp( owner, target, type,
-                                                   level, exp, totalexp );
-                    exps.add( userexp );
-                }
-                @Override
-                public void postinit() throws SQLException
-                {
-                    UserExp.prepareStatements();
-                }
-                @Override
-                public boolean loadData()
-                {
-                    return true;
-                }
-            },
+            UserExp.getProfile(),
             new TableProfile(){
                 @Override
                 public String tableName()
@@ -277,6 +227,16 @@ public class EXPManager extends DBManager
 
         // Increment it!
         userExp.setExp( userExp.getExp() + amount );
+    }
+
+    /**
+     * Adds a user EXP block to the internal list.
+     *
+     * @param exp EXP block to add
+     */
+    public void addEXP( UserExp exp )
+    {
+        exps.add( exp );
     }
 
     /**
