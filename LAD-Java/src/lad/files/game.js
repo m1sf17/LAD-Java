@@ -65,11 +65,13 @@
             oldBattleValue: -1,
             add: function( index, lvl, exp, trnr, id )
             {
-                ctx().append( "Minion #" + index + " Level: " + lvl +
-                              " Exp: " + exp );
+                var div = $("<div></div>");
+                ctx().append( div );
+                div.append( "Minion #" + index + " Level: " + lvl + " Exp: " +
+                            exp ).addClass( "minionItem ui-corner-all");
                 $("<button>Train</button>").button().click(function(){
                     $.lad.minion.doTrain( id, trnr );
-                }).appendTo( ctx() );
+                }).appendTo( div );
                 ctx().append( '<br>' );
             },
             doTrain: function( id, trnr )
@@ -113,7 +115,8 @@
                      .append( createOptions().attr( 'id', 'minion1' ) )
                      .append( " with " )
                      .append( createOptions().attr( 'id', 'minion2' )
-                         .val( opt[ 1 ] ) );
+                         .val( opt[ 1 ] ) )
+                     .append( "  " );
                 $('<button>Battle</button>').button().click(function(){
                     $.ladAjax( { 'battleminion': trnr,
                                  'minion1': $('#minion1').val(),
@@ -153,7 +156,7 @@
                             'addminion': '',
                             'trainer': trnr
                         });
-                    }).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() );
                 }
 
                 // Trainer battle state 1 == Can Battle
@@ -162,7 +165,7 @@
                     $("<button>Arena Battle</button>").button()
                     .click(function(){
                         $.lad.trainer.arenabattledialog( trnr );
-                    }).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() );
                 }
                 // Trainer battle state 2 == Can Leave Battle
                 else if( tb === 2 )
@@ -171,7 +174,7 @@
                         $.ladAjax({
                             'trainerleavequeue':trnr
                         });
-                    }).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() );
                 }
 
                 // Return to main button
@@ -283,18 +286,21 @@
                 $("<button>Return to Overview</button>").button().click(
                   function(){
                       $.ladAjax({ 'viewalltrainers': '' });
-                }).appendTo( ctx() );
+                }).css( "margin-right", "10px" ).appendTo( ctx() );
             },
             overview: function( trnrs ){
                 // Output each
                 ctx().html( "" );
                 $.each( trnrs, function(i,v){
-                    var num = i + 1;
-                    ctx().append( "Trainer " + num + ": Level " + v[ 1 ] +
-                                  " Exp:" + v[ 2 ] );
+                    var num = i + 1,
+                        trnrDiv = $("<div></div>");
+                    trnrDiv.append( "Trainer " + num + ": Level " + v[ 1 ] +
+                                    " Exp:" + v[ 2 ]+ "  " )
+                        .appendTo( ctx() )
+                        .addClass( "trainerItem ui-corner-all" );
                     $("<button>View</button>").button().click(function(){
                         $.ladAjax({'viewtrainer': v[ 0 ] });
-                    }).appendTo( ctx() );
+                    }).appendTo( trnrDiv );
                     ctx().append( "<br>" );
                 });
 
@@ -303,19 +309,18 @@
                 {
                     $("<button>Add Trainer</button>").button().click(function(){
                         $.ladAjax({'addtrainer':''});
-                    }).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() );
                 }
 
                 // Add the modifiers button
-                ctx().append( "<br><br>" );
                 $("<button>Modifiers</button>").button().click(function(){
                     $.ladAjax({'viewmodifiers':''});
-                }).appendTo( ctx() );
+                }).css( "margin-right", "10px" ).appendTo( ctx() );
 
                 // Add the User EXP button
                 $("<button>User EXP</button>").button().click(function(){
                     $.ladAjax({'viewuserexp': ''});
-                }).appendTo( ctx() );
+                }).css( "margin-right", "10px" ).appendTo( ctx() );
             }
         },
         userexp: {

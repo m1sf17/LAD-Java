@@ -85,3 +85,19 @@ p.weaponSelector button {
 #notifier span {
     display: block;
 }
+
+.trainerItem {
+    background-color: #232323;
+    font-size: 120%;
+    padding: 4px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
+
+.minionItem {
+    background-color: #232323;
+    font-size: 120%;
+    padding: 4px;
+    margin-bottom: 5px;
+    display: inline-block;
+}
