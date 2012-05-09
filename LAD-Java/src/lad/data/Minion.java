@@ -67,29 +67,6 @@ public class Minion implements TableProfile
     private static PreparedStatement adjustExpStmt = null;
 
     /**
-     * Prepares all of the prepared statements
-     *
-     * @throws SQLException If an error occurs when preparing the statements
-     */
-    public static void prepareStatements() throws SQLException
-    {
-        Connection conn = MySQLDB.getConn();
-
-        final String pre = "UPDATE MINIONS SET ";
-        final String post = " WHERE ID = ?";
-
-        updateLevelStmt = conn.prepareStatement( pre + "LEVEL = ?" + post );
-        updateExpStmt = conn.prepareStatement( pre + "EXP = ?" + post );
-        updateOwnerStmt = conn.prepareStatement( pre + "OWNER = ?" + post );
-        adjustExpStmt = conn.prepareStatement( pre + "LEVEL = ?, EXP = ?" +
-                                               post );
-        deleteStmt = conn.prepareStatement( "DELETE FROM MINIONS" + post );
-        insertStmt = conn.prepareStatement(
-            "INSERT INTO MINIONS VALUES( NULL, ?, 0, 0 )",
-            Statement.RETURN_GENERATED_KEYS );
-    }
-
-    /**
      * Ctor (Adding to DB)
      */
     private Minion()
@@ -425,7 +402,20 @@ public class Minion implements TableProfile
     @Override
     public void postinit() throws SQLException
     {
-        Minion.prepareStatements();
+        Connection conn = MySQLDB.getConn();
+
+        final String pre = "UPDATE MINIONS SET ";
+        final String post = " WHERE ID = ?";
+
+        updateLevelStmt = conn.prepareStatement( pre + "LEVEL = ?" + post );
+        updateExpStmt = conn.prepareStatement( pre + "EXP = ?" + post );
+        updateOwnerStmt = conn.prepareStatement( pre + "OWNER = ?" + post );
+        adjustExpStmt = conn.prepareStatement( pre + "LEVEL = ?, EXP = ?" +
+                                               post );
+        deleteStmt = conn.prepareStatement( "DELETE FROM MINIONS" + post );
+        insertStmt = conn.prepareStatement(
+            "INSERT INTO MINIONS VALUES( NULL, ?, 0, 0 )",
+            Statement.RETURN_GENERATED_KEYS );
     }
 
     /**
