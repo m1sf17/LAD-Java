@@ -62,6 +62,7 @@ p.weaponSelector button {
     z-index: 200;
     color: #EFEFEF;
     overflow: auto;
+    font-size: 14pt;
 }
 
 #closelad {
