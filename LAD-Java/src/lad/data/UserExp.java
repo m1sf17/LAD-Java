@@ -112,6 +112,14 @@ public class UserExp implements TableProfile
     }
 
     /**
+     * Ctor (dummy)
+     */
+    private UserExp()
+    {
+        this.owner = -1;
+    }
+
+    /**
      * @return the owner
      */
     public int getOwner()
@@ -373,7 +381,7 @@ public class UserExp implements TableProfile
      */
     public static TableProfile getProfile()
     {
-        return new UserExp( -1, -1, -1 );
+        return new UserExp();
     }
 
     /**
