@@ -31,6 +31,7 @@ public class LADJava
     {
         // Set debug state
         Debug.enableLog( "Thread" );
+        Debug.enableLog( "BATTLEMATCHES" );
         // Variables
         ServerSocket socket = null;
 

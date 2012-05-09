@@ -71,7 +71,7 @@ public class TrainerBattle
 
         t1.setBattleState( Trainer.BattleState.InBattle );
         t2.setBattleState( Trainer.BattleState.InBattle );
-        Debug.log( w1.toString() + " VS " + w2.toString() );
+        Debug.log( w1.toString() + " VS " + w2.toString(), "BATTLEMATCHES" );
     }
 
     /**
