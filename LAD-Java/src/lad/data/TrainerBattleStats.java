@@ -14,7 +14,7 @@ public class TrainerBattleStats
 {
     // Fields
     /**
-     * Type of statistic
+     * Type of statistic.
      *
      * 1 = User, 2 = Trainer
      */
@@ -117,8 +117,7 @@ public class TrainerBattleStats
         deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERBATTLESTATS " +
                                             "WHERE type = ? AND id = ?" );
         insertStmt = conn.prepareStatement( "INSERT INTO TRAINERBATTLESTATS " +
-            "VALUES( ?, ?, 0, 0, 0, 0.0, 0.0, 0, 0," +
-                    "0.0, 0, 0.0, 0, 0, 0, 0 )" );
+            "VALUES( ?, ?, 0, 0.0, 0.0, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0 )" );
     }
 
     /**
@@ -264,13 +263,17 @@ public class TrainerBattleStats
      */
     public int[] getInts()
     {
-        return new int[]{ this.shotsFired, this.reloads, this.shotsHit,
-                          this.shotsEvaded, this.criticalsHit, this.safelyShot,
-                          this.battles, this.battlesWon };
+        return new int[]{
+            this.shotsFired, this.reloads, this.shotsHit, this.shotsEvaded,
+            this.criticalsHit, this.safelyShot, this.battles, this.battlesWon
+        };
     }
 
     /**
      * Gets the doubles in this statistic block.
+     *
+     * Includes the following fields: Damage Dealt, Damage Taken, Distance
+     * Moved, Damage Reduced
      *
      * @return Array of doubles in this statistic block
      */

@@ -290,7 +290,8 @@ public class GameLoop implements Runnable
      *
      * Iterates over each of the modifiers the trainer had equipped and
      * update's their stats.  Also, updates the user's proficiency if there
-     * was no proficiency modifier equipped.  Aborts if the trainer is an NPC.
+     * was no proficiency modifier equipped.  Also adds all of the battle
+     * statistics to the trainer accordingly.  Aborts if the trainer is an NPC.
      *
      * @param currentTime Current system time in millis
      * @param trainer Trainer that finished the battle
@@ -344,6 +345,14 @@ public class GameLoop implements Runnable
             EXPManager.grantUserEXP( user, generalTarget, target, 1 );
             EXPManager.grantUserEXP( user, specificTarget, target, 2 );
         }
+
+        // Add in the statistics
+        Trainer trnr = trainer.getTrainer();
+        int[] intStats = trainer.getStorableIntStatistics();
+        double[] doubleStats = trainer.getStorableDoubleStatistics();
+        intStats[ intStats.length - 1 ] = won ? 1 : 0;
+        EXPManager.addBattleStats( 1, trnr.getOwner(), intStats, doubleStats );
+        EXPManager.addBattleStats( 2, trnr.getID(), intStats, doubleStats );
     }
 
     /**

@@ -43,11 +43,6 @@ public class ArenaTrainer
     private int timesRan = 0;
 
     /**
-     * The total damage that has been inflicted upon this trainer
-     */
-    private double totalDamage = 0.0;
-
-    /**
      * Amount of time remaining to reload
      */
     private double reloadTimeRemain = 0.0;
@@ -73,6 +68,57 @@ public class ArenaTrainer
      * Modifiers this trainer has equipped
      */
     private List< Modifier > modifiers;
+    
+    // Fields that are stored in the DB
+    /**
+     * Number of times gun was fired
+     */
+    private int shotsFired;
+
+    /**
+     * Amount of damage dealt
+     */
+    private double damageDealt;
+
+    /**
+     * Amount of damage taken
+     */
+    private double damageTaken;
+
+    /**
+     * Number of times gun was reloaded
+     */
+    private int reloads;
+
+    /**
+     * Number of times gun shot hit the enemy
+     */
+    private int shotsHit;
+
+    /**
+     * Distance moved
+     */
+    private double distanceMoved;
+
+    /**
+     * Number of shots evaded to prevent damage
+     */
+    private int shotsEvaded;
+
+    /**
+     * Amount of damage reduced by shielding
+     */
+    private double damageReduced;
+
+    /**
+     * Number of critical hits landed
+     */
+    private int criticalsHit;
+
+    /**
+     * Number of times shot without being shot at
+     */
+    private int safelyShot;
 
     /**
      * All of the calculated attributes of the trainer
@@ -185,17 +231,26 @@ public class ArenaTrainer
      */
     public double getTotalDamage()
     {
-        return totalDamage;
+        return damageTaken;
     }
 
     /**
      * Adds to the amount of total damage taken
      *
-     * @param damage Amount to add to the total damage
+     * @param damage   Amount to add to the total damage
+     * @param attacker Trainer that inflicted the damage
      */
-    public void addTotalDamage( double damage )
+    public void addTotalDamage( double damage, ArenaTrainer attacker )
     {
-        totalDamage += damage;
+        this.damageTaken += damage;
+        attacker.damageDealt += damage;
+
+        if( getTotalDamage() >
+            (double)getTimesRan() * Weapon.getRunawayDamage() )
+        {
+            setRunning( true );
+            incrementTimesRan();
+        }
     }
 
     /**
@@ -271,7 +326,12 @@ public class ArenaTrainer
      */
     public void reload()
     {
-        timeToReload += getAttribute( ModifierTarget.ReloadRate );
+        setReloadTimeRemain( this.reloadTimeRemain - 1.0 );
+        if( this.reloadTimeRemain <= 0.0 )
+        {
+            timeToReload += getAttribute( ModifierTarget.ReloadRate );
+            this.reloads++;
+        }
     }
 
     /**
@@ -280,6 +340,160 @@ public class ArenaTrainer
     public void setLeftOverAtkSpd( double leftOverAtkSpd )
     {
         this.leftOverAtkSpd = leftOverAtkSpd;
+    }
+
+    /**
+     * "Fire"s the weapon.
+     *
+     * @return Number of times the weapon hit the target
+     */
+    public int fireWeapon()
+    {
+        // Update reload times
+        reduceTimeToReload( 1.0 );
+        if( getTimeToReload() < 0.0f )
+        {
+            setReloadTimeRemain( Weapon.getReloadTime() );
+        }
+
+        // Because there are only so many shots per second, we use a
+        // "left-over" attack speed.
+        // Initial attack speed = user's attack speed
+        Double atkSpd = getAttribute( ModifierTarget.AttackSpeed );
+        // Time per shot = 1.0 / user atk speed
+        Double timePerShot = 1.0 / atkSpd;
+        // Total time to shoot = 1.0 + left over
+        Double timeToShoot = 1.0 + getLeftOverAtkSpd();
+        // # of shots = Atk Speed * Total Time
+        Double maxShots = Math.floor( atkSpd * timeToShoot );
+        // Total time shot = Time per shot * shots
+        Double totalTime = timePerShot * maxShots;
+        // Next turn's left over = Total time to shoot - total
+        //                         time shooting
+        setLeftOverAtkSpd( timeToShoot - totalTime );
+
+        Integer shots = maxShots.intValue();
+        int shotsHitTarget = 0;
+
+        for( int j = 0; j < shots; j++ )
+        {
+            // If accuracy misses, shot misses
+            if( Math.random() <= getAttribute( ModifierTarget.Accuracy ) )
+            {
+                shotsHitTarget++;
+            }
+        }
+
+        // Update statistics
+        this.shotsFired += shots;
+        this.shotsHit += shotsHitTarget;
+
+        return shotsHitTarget;
+    }
+
+    /**
+     * Try to "Evade" a bullet
+     *
+     * @return True if the bullet is evaded, false otherwise
+     */
+    public boolean evade()
+    {
+        if( Math.random() < getAttribute( ModifierTarget.Flexibility ) )
+        {
+            this.shotsEvaded++;
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * "Shield"s a certain amount of the damage
+     *
+     * @param amount Amount of damage that hits the shield
+     * @return Amount of damage that penetrates the shield
+     */
+    public double shield( double amount )
+    {
+        double postShield = amount *
+                            ( 1.0 - getAttribute( ModifierTarget.Shielding ) );
+        this.damageReduced += amount - postShield;
+
+        return postShield;
+    }
+
+    /**
+     * Gets the amount of damage a bullet that hit will deal.
+     *
+     * If a critical hit lands this will return double the damage.  Otherwise,
+     * the damage attribute is simply returned.
+     *
+     * @return Damage to inflict on the opposing trainer
+     */
+    public double getDamageOutput()
+    {
+        Double damage = getAttribute( ModifierTarget.Damage );
+        if( Math.random() < getAttribute( ModifierTarget.Aim ) )
+        {
+            damage *= 2;
+            this.criticalsHit++;
+        }
+
+        return damage;
+    }
+
+    /**
+     * "Move"s the trainer towards the enemy to get in range.
+     *
+     * @return Amount to move forward
+     */
+    public double moveToEnemy()
+    {
+        double movement = getAttribute( ModifierTarget.Mobility );
+        this.distanceMoved += movement;
+        return movement;
+    }
+
+    /**
+     * Causes the trainer to run away from the enemy until out of the enemy's
+     * range.
+     *
+     * @return Distance ran away
+     */
+    public double runAway()
+    {
+        setRunning( true );
+        return getAttribute( ModifierTarget.Mobility );
+    }
+    
+    /**
+     * Gets a list of integers that deal with storable statistics.
+     * 
+     * Includes: Shots Fired, Reloads, Shots Hit, Shots Evaded, Criticals Hit,
+     * Times Safely Shot, 1 (Battles), 0(Battles Won)
+     * 
+     * @return List of integers
+     */
+    public int[] getStorableIntStatistics()
+    {
+        return new int[]{
+            this.shotsFired, this.reloads, this.shotsHit, this.shotsEvaded,
+            this.criticalsHit, this.safelyShot, 1, 0
+        };
+    }
+
+    /**
+     * Gets a list of doubles that deal with storable statistics.
+     *
+     * Includes : Damage Dealt, Damage Taken, Distance Moved, Damage Reduced
+     * 
+     * @return List of doubles
+     */
+    public double[] getStorableDoubleStatistics()
+    {
+        return new double[]{
+            this.damageDealt, this.damageTaken, this.distanceMoved,
+            this.damageReduced
+        };
     }
 
     /**

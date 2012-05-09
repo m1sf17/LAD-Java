@@ -208,8 +208,7 @@ public class TrainerBattle
             // Also, break out since all other actions will not be running
             if( thisTrnr.getNextAction() == ArenaTrainer.NextAction.RunAway )
             {
-                distance += thisTrnr.getAttribute( ModifierTarget.Mobility );
-                thisTrnr.setRunning( true );
+                distance += thisTrnr.runAway();
                 continue;
             }
 
@@ -218,84 +217,34 @@ public class TrainerBattle
             if( thisTrnr.getNextAction() ==
                 ArenaTrainer.NextAction.CloseDistance )
             {
-                distance -= thisTrnr.getAttribute( ModifierTarget.Mobility );
+                distance -= thisTrnr.moveToEnemy();
                 continue;
             }
             else if( thisTrnr.getNextAction() ==
                      ArenaTrainer.NextAction.Reload )
             {
-                thisTrnr.setReloadTimeRemain( thisTrnr.getReloadTimeRemain() -
-                                              1.0 );
-                if( thisTrnr.getReloadTimeRemain() <= 0.0 )
-                {
-                    thisTrnr.reload();
-                }
+                thisTrnr.reload();
                 continue;
             }
 
             // Trainer is attacking!!!
-            // Update reload times
-            thisTrnr.reduceTimeToReload( 1.0 );
-            if( thisTrnr.getTimeToReload() < 0.0f )
-            {
-                thisTrnr.setReloadTimeRemain( Weapon.getReloadTime() );
-            }
+            int shots = thisTrnr.fireWeapon();
 
-            // Because there are only so many shots per second, we use a
-            // "left-over" attack speed.
-            // Initial attack speed = user's attack speed
-            Double atkSpd =
-                    thisTrnr.getAttribute( ModifierTarget.AttackSpeed );
-            // Time per shot = 1.0 / user atk speed
-            Double timePerShot = 1.0 / atkSpd;
-            // Total time to shoot = 1.0 + left over
-            Double timeToShoot = 1.0 + thisTrnr.getLeftOverAtkSpd();
-            // # of shots = Atk Speed * Total Time
-            Double maxShots = Math.floor( atkSpd * timeToShoot );
-            // Total time shot = Time per shot * shots
-            Double totalTime = timePerShot * maxShots;
-            // Next turn's left over = Total time to shoot - total
-            //                         time shooting
-            thisTrnr.setLeftOverAtkSpd( timeToShoot - totalTime );
-
-            Integer shots = maxShots.intValue();
-
-            Debug.log( "Trainer " + i + " shoots " + shots + " times." );
             for( int j = 0; j < shots; j++ )
             {
-                // If accuracy misses or flexibility hits, shot misses
-                if( Math.random() >
-                    thisTrnr.getAttribute( ModifierTarget.Accuracy ) ||
-                    Math.random() <
-                    otherTrnr.getAttribute( ModifierTarget.Flexibility ) )
+                // If flexibility hits, shot misses
+                if( otherTrnr.evade() )
                 {
                     continue;
                 }
 
                 // Shot hit, calculate dmaage ( dmg * ( 1 - shielding ) )
-                Double damage =
-                    thisTrnr.getAttribute( ModifierTarget.Damage );
-                damage *= ( 1.0 -
-                    otherTrnr.getAttribute( ModifierTarget.Shielding ) );
+                Double preShieldDamage = thisTrnr.getDamageOutput();
+                Double postShieldDamage = otherTrnr.shield( preShieldDamage );
+                Debug.log( "Trainer " + i + " hit for: " + postShieldDamage );
 
-                // Critical will deal double damage
-                if( Math.random() <
-                    thisTrnr.getAttribute( ModifierTarget.Aim ) )
-                {
-                    damage *= 2.0;
-                }
-
-
-                Debug.log( "Trainer " + i + " hit for: " + damage );
                 // Inflict the damage
-                otherTrnr.addTotalDamage( damage );
-                if( otherTrnr.getTotalDamage() > (double)otherTrnr.getTimesRan() *
-                                            Weapon.getRunawayDamage() )
-                {
-                    // Morale broke, run away!
-                    otherTrnr.setRunning( true );
-                    otherTrnr.incrementTimesRan();
-                }
+                otherTrnr.addTotalDamage( postShieldDamage, thisTrnr );
             }
         }
 
