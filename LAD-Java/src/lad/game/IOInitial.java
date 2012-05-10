@@ -124,7 +124,7 @@ public class IOInitial extends MessageHandler
 
                 if( iter.hasNext() )
                 {
-                    write( "," );
+                    write( ",\n" );
                 }
             }
 
