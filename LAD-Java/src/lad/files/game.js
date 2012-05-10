@@ -132,7 +132,27 @@
 
                 ctx().html( "" ).append( "Trainer #" + trnr + "<br>" +
                     "Level: " + lvl + "<br>Exp: " + exp + "<br>" +
-                    "Battle State: " + st + "<br>" );
+                    "Battle State: " + st + "  " );
+
+                // Trainer battle state 1 == Can Battle
+                if( tb === 1 )
+                {
+                    $("<button>Arena Battle</button>").button()
+                    .click(function(){
+                        $.lad.trainer.arenabattledialog( trnr );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() );
+                }
+                // Trainer battle state 2 == Can Leave Battle
+                else if( tb === 2 )
+                {
+                    $("<button>Leave Arena</button>").button().click(function(){
+                        $.ladAjax({
+                            'trainerleavequeue':trnr
+                        });
+                    }).css( "margin-right", "10px" ).appendTo( ctx() );
+                }
+
+                ctx().append( "<br>" );
                 $.each( mins, function(i,v){
                     $.lad.minion.add( ( i + 1 ), v[ 1 ], v[ 2 ], trnr, v[ 0 ] );
                     if( v[ 1 ] > 0 )
@@ -159,23 +179,6 @@
                     }).css( "margin-right", "10px" ).appendTo( ctx() );
                 }
 
-                // Trainer battle state 1 == Can Battle
-                if( tb === 1 )
-                {
-                    $("<button>Arena Battle</button>").button()
-                    .click(function(){
-                        $.lad.trainer.arenabattledialog( trnr );
-                    }).css( "margin-right", "10px" ).appendTo( ctx() );
-                }
-                // Trainer battle state 2 == Can Leave Battle
-                else if( tb === 2 )
-                {
-                    $("<button>Leave Arena</button>").button().click(function(){
-                        $.ladAjax({
-                            'trainerleavequeue':trnr
-                        });
-                    }).css( "margin-right", "10px" ).appendTo( ctx() );
-                }
 
                 // Return to main button
                 $.lad.main.returnButton();
@@ -390,7 +393,8 @@
                     .append( $("<div></div>").addClass( "inner" ) )
                     .insertBefore( block ).css({
                         'width': block.width(),
-                        'height': block.height()
+                        'height': block.height(),
+                        'opacity': 0.6
                     }),
                 repeatFunction = function(){
                     var obj = $(".highlight-tutorial .inner");
