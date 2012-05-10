@@ -126,3 +126,24 @@ p.weaponSelector button {
     width: 100%;
     height: 100%;
 }
+
+.exptablegroup {
+    background-color: #232323;
+    display: inline-block;
+    margin-bottom: 25px;
+}
+
+.exptablegroup .exptableheader {
+    background-color: #565656;
+    font-size: xx-large;
+    font-weight: 700;
+    border-bottom: 2px solid #00cccc;
+    text-align: center;
+    
+}
+
+.exptablegroup .exptable {
+    display: inline-block;
+    margin: 0px 25px 25px 25px;
+    text-align: center;
+}

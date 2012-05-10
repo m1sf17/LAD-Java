@@ -329,14 +329,58 @@
         userexp: {
             overview: function( exps ){
                 var headers = {
-                    Type: "true",
                     Target: "true",
                     Level: "true",
-                    Exp: "true"
-                };
+                    Exp: "true",
+                    Action: ""
+                }, i, genTables = {}, specTables = {}, current, table,
+                addExpTable, addExpTableGroup;
 
-                ctx().html( "" )
-                    .append( makeSortableTable( headers, exps, 'userexp' ) );
+                for( i = 0; i < exps.length; i++ )
+                {
+                    current = exps[ i ];
+                    current.push( $("<span></span>").append("ACTION!") );
+                    table = current.shift();
+                    if( table === 'Two Hand' || table === 'Off Hand' ||
+                        table === 'Either Hand' || table === 'Main Hand' )
+                    {
+                        if( genTables[ table ] === undefined )
+                        {
+                            genTables[ table ] = [];
+                        }
+                        genTables[ table ].unshift( current );
+                    }
+                    else
+                    {
+                        if( specTables[ table ] === undefined )
+                        {
+                            specTables[ table ] = [];
+                        }
+                        specTables[ table ].push( current );
+                    }
+                }
+
+                ctx().html( "" );
+                addExpTable = function( i, v )
+                {
+                    var id = i.replace( /\s/, '_' ) + 'exp';
+                    $("<div></div>").addClass( "exptable" )
+                        .append( "<span>" + i + "</span>" )
+                        .append( makeSortableTable( headers, v, id ) )
+                        .appendTo( current );
+                };
+                addExpTableGroup = function( tables, group )
+                {
+                    current = $("<div></div>").appendTo( ctx() )
+                        .addClass( "exptablegroup" );
+                    $("<div></div>").append( group )
+                        .addClass( "exptableheader ui-corner-tl ui-corner-tr" )
+                        .appendTo( current );
+                    $.each( tables, addExpTable );
+                };
+                addExpTableGroup( genTables, "General" );
+                addExpTableGroup( specTables, "Specific" );
+                ctx().append( "<br>" );
                 $.lad.main.returnButton();
             }
         },
