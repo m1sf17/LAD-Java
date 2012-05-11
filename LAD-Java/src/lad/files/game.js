@@ -16,6 +16,7 @@
     }
     $.ladAjax = function( params )
     {
+        $.lad.tutorial( "" );
         return doAjax( 'java_run', params );
     };
     $.lad = function()
@@ -65,14 +66,14 @@
             oldBattleValue: -1,
             add: function( index, lvl, exp, trnr, id )
             {
-                var div = $("<div></div>");
-                ctx().append( div );
+                var div = $("<div></div>"), list = $(".minionList");
+                list.append( div );
                 div.append( "Minion #" + index + " Level: " + lvl + " Exp: " +
                             exp ).addClass( "minionItem ui-corner-all");
                 $("<button>Train</button>").button().click(function(){
                     $.lad.minion.doTrain( id, trnr );
                 }).appendTo( div );
-                ctx().append( '<br>' );
+                list.append( '<br>' );
             },
             doTrain: function( id, trnr )
             {
@@ -111,28 +112,38 @@
                     }
                     return select;
                 }
-                ctx().append( "<br>Battle: " )
-                     .append( createOptions().attr( 'id', 'minion1' ) )
-                     .append( " with " )
-                     .append( createOptions().attr( 'id', 'minion2' )
-                         .val( opt[ 1 ] ) )
-                     .append( "  " );
-                $('<button>Battle</button>').button().click(function(){
-                    $.ladAjax( { 'battleminion': trnr,
-                                 'minion1': $('#minion1').val(),
-                                 'minion2': $('#minion2').val()
-                    });
-                }).appendTo( ctx() );
-                ctx().append( "<br><br>" );
+
+                $("<div></div>").append( "Battle: " )
+                    .append( createOptions().attr( 'id', 'minion1' ) )
+                    .append( " with " )
+                    .append( createOptions().attr( 'id', 'minion2' )
+                        .val( opt[ 1 ] ) )
+                    .append( "  " )
+                    .append( $('<button>Battle</button>').button().click(
+                    function(){
+                        $.ladAjax( { 'battleminion': trnr,
+                                     'minion1': $('#minion1').val(),
+                                     'minion2': $('#minion2').val()
+                        });
+                    })).attr( "id", "minionBattleOptions" ).appendTo( ctx() );
+                ctx().append( "<br>" );
             }
         },
         trainer: {
             overview: function( trnr, lvl, exp, st, mins, tb ){
-                var minids = [];
+                var minids = [], trainerInfo = $("<div></div>"),
+                    minionList = $("<div></div>");
 
-                ctx().html( "" ).append( "Trainer #" + trnr + "<br>" +
+                ctx().html( "" ).append( trainerInfo ).append( "<br>" )
+                    .append( minionList );
+
+                trainerInfo.append( "Trainer #" + trnr + "<br>" +
                     "Level: " + lvl + "<br>Exp: " + exp + "<br>" +
-                    "Battle State: " + st + "  " );
+                    "Battle State: " + st + "  " ).attr( "id", "trnrOverview");
+                $.lad.tutorial( "This is the main view for your trainer.  " +
+                    "All of your trainer's stats are listed as well as the " +
+                    "minions that belong to your trainer.", $("#trnrOverview"),
+                    "Here are all of the stats for your trainer." );
 
                 // Trainer battle state 1 == Can Battle
                 if( tb === 1 )
@@ -140,7 +151,8 @@
                     $("<button>Arena Battle</button>").button()
                     .click(function(){
                         $.lad.trainer.arenabattledialog( trnr );
-                    }).css( "margin-right", "10px" ).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( trainerInfo )
+                        .attr( "id", "arenaBattleBtn" );
                 }
                 // Trainer battle state 2 == Can Leave Battle
                 else if( tb === 2 )
@@ -149,10 +161,17 @@
                         $.ladAjax({
                             'trainerleavequeue':trnr
                         });
-                    }).css( "margin-right", "10px" ).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( trainerInfo )
+                        .attr( "id", "arenaBattleBtn" );
                 }
 
-                ctx().append( "<br>" );
+                minionList.addClass( "minionList" );
+                $.lad.tutorial( "Minions are the method to increase a " +
+                    "trainer's experience and to acquire new modifiers.  " +
+                    "Minions advance in levels by simply clicking on their " +
+                    "train button.  Minions may only battle when they reach " +
+                    "level 1.", $(".minionList"), "Here are all of the " +
+                    "minions belonging to this trainer." );
                 $.each( mins, function(i,v){
                     $.lad.minion.add( ( i + 1 ), v[ 1 ], v[ 2 ], trnr, v[ 0 ] );
                     if( v[ 1 ] > 0 )
@@ -165,6 +184,15 @@
                 if( minids.length >= 2 )
                 {
                     $.lad.minion.battle( minids, trnr );
+                    $.lad.tutorial( "Once two minions reach level one, they " +
+                        "may battle each other.  However, the higher level " +
+                        "the minions are and the higher level the trainer is " +
+                        "plays a large role in the rarity of the modifier " +
+                        "you will receive.  The losing minion is killed " +
+                        "and the winning minion will receive 20% of the " +
+                        "losing minion's experience.",
+                        $("#minionBattleOptions"), "Here you may select " +
+                        "which minions to have battle each other." );
                 }
 
                 // If there is less than 8 minions allow the trainer to get
@@ -176,9 +204,30 @@
                             'addminion': '',
                             'trainer': trnr
                         });
-                    }).css( "margin-right", "10px" ).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() )
+                        .attr( "id", "addMinionBtn" );
+                    $.lad.tutorial( "You may also add a minion but may only " +
+                        "have up to 8 minions per trainer total.",
+                        $("#addMinionBtn"), "Click here to add a minion." );
                 }
 
+                if( tb === 1 )
+                {
+                    $.lad.tutorial( "Arena battles make up the core of life " +
+                        "and death.  They consist of your trainer being " +
+                        "sent into a duel (non-fatal) with another trainer.  " +
+                        "You can select the weapon your trainer takes but " +
+                        "nothing else.  Winning arena battles will grant " +
+                        "you weapon experience", $("#arenaBattleBtn"),
+                        "Click here to send your trainer into the arena." );
+                }
+                else if( tb === 2 )
+                {
+                    $.lad.tutorial( "So long as your trainer is in the " +
+                        "interim period they may be recalled and will stop " +
+                        "fighting in the arena.", $("#arenaBattleBtn"),
+                        "Click here to recall your trainer from the arena." );
+                }
 
                 // Return to main button
                 $.lad.main.returnButton();
@@ -293,37 +342,64 @@
             },
             overview: function( trnrs ){
                 // Output each
+                var trainerList = $("<div></div>").addClass( "trainerList" );
                 ctx().html( "" );
                 $.each( trnrs, function(i,v){
                     var num = i + 1,
                         trnrDiv = $("<div></div>");
                     trnrDiv.append( "Trainer " + num + ": Level " + v[ 1 ] +
                                     " Exp:" + v[ 2 ]+ "  " )
-                        .appendTo( ctx() )
+                        .appendTo( trainerList )
                         .addClass( "trainerItem ui-corner-all" );
                     $("<button>View</button>").button().click(function(){
                         $.ladAjax({'viewtrainer': v[ 0 ] });
                     }).appendTo( trnrDiv );
-                    ctx().append( "<br>" );
+                    trainerList.append( "<br>" );
                 });
+                
+                trainerList.appendTo( ctx() );
+
+                $.lad.tutorial( "This is the main view for managing your " +
+                    "trainers.  Each trainer will grow levels as they " +
+                    "have their minions battle.", $(".trainerList"), "Here " +
+                    "are the trainers that you command." );
+                $.lad.tutorial( "You may view any of the trainers to send " +
+                    "them into the arena or to manage their minions.",
+                    $(".trainerItem button"), "Click here to view the " +
+                    "trainer." );
 
                 // "Add trainer" button if less than 8
                 if( trnrs.length < 8 )
                 {
                     $("<button>Add Trainer</button>").button().click(function(){
                         $.ladAjax({'addtrainer':''});
-                    }).css( "margin-right", "10px" ).appendTo( ctx() );
+                    }).css( "margin-right", "10px" ).appendTo( ctx() )
+                        .attr( "id", "addTrainerBtn" );
+                    $.lad.tutorial( "At any given time you may add another " +
+                        "trainer that you will be able to command.",
+                        $("#addTrainerBtn"), "Click here to add a trainer." );
                 }
 
                 // Add the modifiers button
                 $("<button>Modifiers</button>").button().click(function(){
                     $.ladAjax({'viewmodifiers':''});
-                }).css( "margin-right", "10px" ).appendTo( ctx() );
+                }).css( "margin-right", "10px" ).appendTo( ctx() )
+                    .attr( "id", "modifiersBtn" );
+                $.lad.tutorial( "Modifiers are a critical component to arena " +
+                    "battles.  Having a good set of modifiers is often the " +
+                    "difference between a win and a loss.", $("#modifiersBtn"),
+                    "Click here to view your modifiers." );
 
                 // Add the User EXP button
                 $("<button>User EXP</button>").button().click(function(){
                     $.ladAjax({'viewuserexp': ''});
-                }).css( "margin-right", "10px" ).appendTo( ctx() );
+                }).css( "margin-right", "10px" ).appendTo( ctx() )
+                    .attr( "id", "userExpBtn" );
+                $.lad.tutorial( "As your trainers win arena battles, you " +
+                    "gain experience by watching them.  This experience is " +
+                    "then shared between all of your current and future " +
+                    "trainers.", $("#userExpBtn"), "Click here to view your " +
+                    "weapon experience." );
             }
         },
         userexp: {
@@ -372,7 +448,8 @@
                 addExpTableGroup = function( tables, group )
                 {
                     current = $("<div></div>").appendTo( ctx() )
-                        .addClass( "exptablegroup" );
+                        .addClass( "exptablegroup" )
+                        .attr( "id", group + "grp" );
                     $("<div></div>").append( group )
                         .addClass( "exptableheader ui-corner-tl ui-corner-tr" )
                         .appendTo( current );
@@ -381,6 +458,20 @@
                 addExpTableGroup( genTables, "General" );
                 addExpTableGroup( specTables, "Specific" );
                 ctx().append( "<br>" );
+
+                $.lad.tutorial( "General experience is broken down into " +
+                    "2-handed, main hand, off hand and either hand weapons." +
+                    "Each of the general categories grow at a normal rate in " +
+                    "trainer battles and increase whenever you win with a " +
+                    "weapon of the same type.", $("#Generalgrp"), "Here are " +
+                    "the various general experience groups." );
+                $.lad.tutorial( "Specific experience is based solely on the " +
+                    "specific weapon used in the arena battles.  Each of the " +
+                    "specific categories only increase whenever you win with " +
+                    "the corresponding weapon, but they will increase at " +
+                    "twice the rate of the general experience.",
+                    $("#Specificgrp"), "Here are the various specific " +
+                    "experience groups." );
                 $.lad.main.returnButton();
             }
         },
@@ -425,39 +516,45 @@
             {
                 $( "<div id='tutorial'></div>" )
                     .addClass( "ui-corner-tl ui-corner-bl" )
-                    .prependTo( ctx() );
+                    .prependTo( "#ladheader" );
+            }
+
+            // If the text block is empty, clear out the whole content
+            if( txt === undefined || txt.length === 0 )
+            {
+                $("#tutorial").html( "" );
+                return;
             }
 
             var tutorial = $("#tutorial"),
                 current = $("<div></div>");
             current.mouseover(function(){
-                $(".highlight-tutorial").remove();
-                var highlight = $("<div></div>")
-                    .addClass( "highlight-tutorial ui-corner-all" )
-                    .append( $("<div></div>").addClass( "inner" ) )
-                    .insertBefore( block ).css({
-                        'width': block.width(),
-                        'height': block.height(),
-                        'opacity': 0.6
-                    }),
-                repeatFunction = function(){
-                    var obj = $(".highlight-tutorial .inner");
+                $(".highlight-tutorial").removeClass( "highlight-tutorial" );
+                block.addClass( "highlight-tutorial" );
+                var repeatFunction = function(){
+                    var obj = $(".highlight-tutorial"), ran = false;
                     if( obj.length === 0 )
                     {
                         return;
                     }
-                    obj.animate({ opacity: 0.2 }, 500, function(){
-                        obj.animate({ opacity: 0.6 }, 500, function(){
-                            obj.queue(function(){
-                                repeatFunction();
-                                $(this).dequeue();
-                            });
-                        });
+                    obj.animate({ opacity: 0.6 }, 500 ).animate(
+                        { opacity: 1.0 }, 500, function(){
+                            if( !ran )
+                            {
+                                $(this).queue(function(){
+                                    repeatFunction();
+                                    $(this).dequeue();
+                                });
+                                ran = true;
+                            }
                     });
                 };
                 repeatFunction();
+                $(this).addClass( "highlight" );
             }).mouseout(function(){
-                $(".highlight-tutorial").remove();
+                $(".highlight-tutorial").queue( "fx", [] ).stop()
+                    .removeClass( "highlight-tutorial").css( "opacity", 1.0 );
+                $(this).removeClass( "highlight" );
             }).append( txt ).qtip({
                 content: tiptxt,
                 position: {

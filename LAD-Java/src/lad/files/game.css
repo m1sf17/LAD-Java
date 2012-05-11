@@ -5,6 +5,43 @@
         Specific CSS for the LAD module.
 */
 
+#ladbkgd {
+    top: 0px;
+    left: 0px;
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    background-color: #121212;
+    z-index: 200;
+    color: #EFEFEF;
+    font-size: 14pt;
+    text-align: center;
+}
+
+#closelad {
+    float: right;
+    padding: 4px;
+    margin-top: 4px;
+    margin-right: 8px;
+}
+
+#ladcontent {
+    margin: 4px;
+    display: inline-block;
+    overflow: auto;
+    max-height: 100%;
+}
+
+#notifier {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+}
+
+#notifier span {
+    display: block;
+}
+
 p.weaponSelector {
     width: 100%;
     height: 100%;
@@ -52,40 +89,6 @@ p.weaponSelector button {
     margin-top: 10px;
 }
 
-#ladbkgd {
-    top: 0px;
-    left: 0px;
-    position: fixed;
-    width: 100%;
-    height: 100%;
-    background-color: #121212;
-    z-index: 200;
-    color: #EFEFEF;
-    overflow: auto;
-    font-size: 14pt;
-}
-
-#closelad {
-    float: right;
-    padding: 4px;
-    margin-top: 4px;
-    margin-right: 8px;
-}
-
-#ladcontent {
-    margin: 4px;
-}
-
-#notifier {
-    position: absolute;
-    bottom: 5px;
-    right: 5px;
-}
-
-#notifier span {
-    display: block;
-}
-
 .trainerItem {
     background-color: #232323;
     font-size: 120%;
@@ -104,7 +107,7 @@ p.weaponSelector button {
 
 #tutorial {
     position: fixed;
-    width: 150px;
+    width: 175px;
     right: 0px;
     top: 50px;
     border-left: 2px solid #00cccc;
@@ -113,18 +116,23 @@ p.weaponSelector button {
     background-color: #2A2A2A;
     font-size: small;
     padding: 5px 2px 5px 2px;
-    cursor: pointer;
+    cursor: default;
+}
+
+#tutorial div {
+    border-top: 2px solid transparent;
+    border-bottom: 2px solid transparent;
+}
+
+#tutorial .highlight {
+    border-top: 2px solid #00cccc;
+    border-bottom: 2px solid #00cccc;
+    color: #34EF34;
+    background-color: #343434;
 }
 
 .highlight-tutorial {
     border: 1px dashed #00cccc;
-    position: absolute;
-}
-
-.highlight-tutorial .inner {
-    background-color: #565656;
-    width: 100%;
-    height: 100%;
 }
 
 .exptablegroup {
