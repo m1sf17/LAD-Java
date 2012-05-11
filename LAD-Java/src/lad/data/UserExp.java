@@ -4,6 +4,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import lad.db.EXPManager;
 import lad.db.MySQLDB;
 import lad.db.TableProfile;
@@ -46,19 +49,9 @@ public class UserExp implements TableProfile
     private int totalExp;
 
     /**
-     * Calculated value for remaining amount of exp for bonus levels
+     * List of points required to advance levels at the current level
      */
-    private int bonusExp;
-
-    /**
-     * Calculated value for levels able to gain via bonus route
-     */
-    private int bonusLevel;
-
-    /**
-     * Calculated value for offset via bonus route
-     */
-    private int bonusMultiplier;
+    private final List< Integer > bonusLevels = new ArrayList<>( 10 );
 
     /**
      * Statement for inserting a new trainer
@@ -94,7 +87,7 @@ public class UserExp implements TableProfile
         this.level = level;
         this.exp = exp;
         this.totalExp = totalexp;
-        refreshBonuses();
+        updateBonuses();
     }
 
     /**
@@ -168,27 +161,13 @@ public class UserExp implements TableProfile
     }
 
     /**
-     * @return the bonusExp
+     * Gets the array of bonus levels
+     *
+     * @return Bonus level array
      */
-    public int getBonusExp()
+    public List< Integer > getBonusLevels()
     {
-        return bonusExp;
-    }
-
-    /**
-     * @return the bonusLevel
-     */
-    public int getBonusLevel()
-    {
-        return bonusLevel;
-    }
-
-    /**
-     * @return the bonusMultiplier
-     */
-    public int getBonusMultiplier()
-    {
-        return bonusMultiplier;
+        return Collections.unmodifiableList( this.bonusLevels );
     }
 
     /**
@@ -282,7 +261,6 @@ public class UserExp implements TableProfile
                                      e.getMessage() );
         }
 
-        ret.refreshBonuses();
         return ret;
     }
 
@@ -343,34 +321,26 @@ public class UserExp implements TableProfile
     }
 
     /**
-     * Updates all of the bonus fields from scratch
-     */
-    private void refreshBonuses()
-    {
-        this.bonusExp = this.exp - getExpRequiredNextLevel();
-        this.bonusMultiplier = 0;
-        this.bonusLevel = 0;
-        updateBonuses();
-    }
-
-    /**
-     * Calculates all of the bonus fields.
+     * Clears and then refills the bonus levels array
      */
     private void updateBonuses()
     {
-        int expRequired =
-                EXPManager.expRequiredAtLevel( this.level + this.getBonusLevel() );
-        while( this.getBonusExp() > expRequired )
-        {
-            if( this.getBonusLevel() > 1 )
-            {
-                this.bonusMultiplier++;
-            }
-            this.bonusLevel += this.getBonusMultiplier();
-            this.bonusExp -= expRequired;
+        int bonusLevel = 0, bonusMultiplier = 1, bonusExp = this.exp,
+            expRequired = EXPManager.expRequiredAtLevel( this.level );
 
+        this.bonusLevels.clear();
+        
+        while( bonusExp > expRequired )
+        {
+            if( bonusLevel > 1 )
+            {
+                bonusMultiplier++;
+            }
+            bonusLevel += bonusMultiplier;
+            bonusExp -= expRequired;
+            this.bonusLevels.add( expRequired );
             expRequired = EXPManager.expRequiredAtLevel( this.level +
-                                                         this.getBonusLevel() );
+                                                         bonusLevel );
         }
     }
 
