@@ -203,6 +203,27 @@ public enum UserExpTarget
     }
 
     /**
+     * Converts a string into a user exp target.
+     *
+     * @param str String to translate from
+     * @return Corresponding user exp target
+     * @throws GameException Thrown if an invalid string is given
+     */
+    public static UserExpTarget fromString( String str )
+    {
+        for( UserExpTarget possible : values() )
+        {
+            if( possible.toString().compareToIgnoreCase( str ) == 0 )
+            {
+                return possible;
+            }
+        }
+
+        throw new GameException( 3, "Invalid user exp target from string: " +
+                                 str );
+    }
+
+    /**
      * Returns the appropriate general experience for the given weapon
      *
      * @param weapon Weapon to lookup the target for

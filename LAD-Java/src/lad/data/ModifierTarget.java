@@ -144,6 +144,27 @@ public enum ModifierTarget
     }
 
     /**
+     * Converts a string into a modifier target.
+     *
+     * @param str String to translate from
+     * @return Corresponding modifier target
+     * @throws GameException Thrown if an invalid string is given
+     */
+    public static ModifierTarget fromString( String str )
+    {
+        for( ModifierTarget possible : values() )
+        {
+            if( possible.toString().compareToIgnoreCase( str ) == 0 )
+            {
+                return possible;
+            }
+        }
+
+        throw new GameException( 3, "Invalid modifier target from string: " +
+                                 str );
+    }
+
+    /**
      * Returns the number of valid modifier targets.
      *
      * Valid targets are any target except for the InvalidTarget value.  Thus,
