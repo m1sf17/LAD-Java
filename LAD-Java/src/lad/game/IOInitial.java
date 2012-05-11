@@ -112,6 +112,7 @@ public class IOInitial extends MessageHandler
 
         if( pieces.contains( loginPiece ) )
         {
+            write( "$.lad.window();" );
             IOTrainer.getInstance().outputMainView( userid );
         }
         else if( pieces.contains( viewexpPiece ) )
@@ -178,7 +179,7 @@ public class IOInitial extends MessageHandler
             
             // Also include this so that the view works
             write( "addMenuButton('LAD','ui-icon-home',function(){" +
-                   "$.lad.window();});" );
+                   "$.ladAjax({ 'login': '' });});" );
         }
         else if( pieces.contains( getcssPiece ) )
         {

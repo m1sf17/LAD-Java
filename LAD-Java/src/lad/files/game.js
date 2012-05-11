@@ -38,6 +38,14 @@
                     text: false
                 }).attr( "title", "Leave LAD" ).click(function(){
                     ladbkgd.fadeOut( "slow" );
+                    $("#loginform button").button( "enable" )
+                        .button( "refresh" );
+                    $("#loginform button, #loginform input")
+                        .attr({
+                            "disabled": false,
+                            "readonly": false
+                        }).not( "#username" ).val( "" ).keyup();
+                    $("#password").focus();
                 });
 
                 // Add header/body
@@ -60,7 +68,7 @@
             // Fade in and run login
             ladbkgd.hide();
             ladbkgd.fadeIn( "slow" );
-            $.ladAjax({ 'login': '' });
+            
         },
         minion: {
             oldBattleValue: -1,
