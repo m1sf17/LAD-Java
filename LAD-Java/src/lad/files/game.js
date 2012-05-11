@@ -409,32 +409,46 @@
                     Level: "true",
                     Exp: "true",
                     Action: ""
-                }, i, genTables = {}, specTables = {}, current, table,
-                addExpTable, addExpTableGroup;
+                }, i, genTables = {}, specTables = {}, current, group,
+                addExpTable, addExpTableGroup, levels;
 
-                for( i = 0; i < exps.length; i++ )
-                {
-                    current = exps[ i ];
-                    current.push( $("<span></span>").append("ACTION!") );
-                    table = current.shift();
-                    if( table === 'Two Hand' || table === 'Off Hand' ||
-                        table === 'Either Hand' || table === 'Main Hand' )
+                $.each( exps, function(i,v){
+                    group = v[ 0 ];
+                    current = [ v[ 1 ], v[ 2 ], v[ 3 ] ];
+                    levels = v[ 4 ];
+
+                    if( levels !== undefined && levels.length > 0 )
                     {
-                        if( genTables[ table ] === undefined )
-                        {
-                            genTables[ table ] = [];
-                        }
-                        genTables[ table ].unshift( current );
+                        current.push( $("<button>Increase </button>")
+                            .append( "(" + levels.length + ")" )
+                            .click($.lad.userexp.increasePrompt).button()
+                            .data( "target", group ).data( "type", v[ 1 ] )
+                            .data( "level", v[ 2 ] ).data( "exp", v[ 3 ] )
+                            .data( "bonuses", v[ 4 ] )
+                        );
                     }
                     else
                     {
-                        if( specTables[ table ] === undefined )
-                        {
-                            specTables[ table ] = [];
-                        }
-                        specTables[ table ].push( current );
+                        current.push( "" );
                     }
-                }
+                    if( group === 'Two Hand' || group === 'Off Hand' ||
+                        group === 'Either Hand' || group === 'Main Hand' )
+                    {
+                        if( genTables[ group ] === undefined )
+                        {
+                            genTables[ group ] = [];
+                        }
+                        genTables[ group ].unshift( current );
+                    }
+                    else
+                    {
+                        if( specTables[ group ] === undefined )
+                        {
+                            specTables[ group ] = [];
+                        }
+                        specTables[ group ].push( current );
+                    }
+                });
 
                 ctx().html( "" );
                 addExpTable = function( i, v )
@@ -473,6 +487,54 @@
                     $("#Specificgrp"), "Here are the various specific " +
                     "experience groups." );
                 $.lad.main.returnButton();
+            },
+            increasePrompt: function( )
+            {
+                var type = $(this).data( "type" ),
+                    target = $(this).data( "target" ),
+                    exp = "<span style='color:#00DD00'>" +
+                          $(this).data( "exp" ) + "</span>",
+                    levels = $(this).data( "bonuses" ),
+                    dialog = $("<div></div>")
+                        .append( target + " " + type + "<br>You currently " +
+                                 "have " + exp + " experience.<br>" )
+                        .appendTo( $("body") ).attr( "title", "EXP Increase" ),
+                    increaseCost = $("<span style='color:#DD0000'></span>")
+                        .attr( "id", "increasecost" ),
+                    increaseLevel = $("<select></select>")
+                        .attr( "id", "increaselevel" ),
+                    increaseBtn = $("<button>Increase</button>")
+                        .attr( "id", "increaseBtn").button().click(function(){
+                            $.ladAjax( {
+                                'increaseexplevel': $("#increaselevel").val(),
+                                'type': type,
+                                'target': target
+                            });
+                            dialog.remove();
+                        }),
+                    levelCost = 0;
+
+                dialog.append( "It will cost you " )
+                    .append( increaseCost )
+                    .append( " experience to grow " )
+                    .append( increaseLevel )
+                    .append( " levels.  " )
+                    .append( increaseBtn )
+                    .dialog();
+                
+                $.each( levels, function(i,v){
+                    levelCost += v;
+                    var level = i + 1;
+                    increaseLevel.append( $("<option></option>")
+                        .attr( "value", level ).append( level )
+                        .data( "cost", levelCost )
+                    );
+                });
+                increaseLevel.change(function(){
+                    increaseCost.html(
+                        $(this).children( ":selected" ).data( "cost" )
+                    );
+                }).change();
             }
         },
         modifiers: {

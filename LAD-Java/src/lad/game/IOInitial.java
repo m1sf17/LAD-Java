@@ -2,6 +2,7 @@ package lad.game;
 
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.ModifierTarget;
 import lad.data.UserExp;
 import lad.data.UserExpTarget;
 import lad.data.Weapon;
@@ -12,7 +13,6 @@ import lad.db.EXPManager;
  *
  * TODO: Create view for user battle statistics
  * TODO: Create view for trainer battle statistics
- * TODO: Create view for granting user exp levels
  * TODO: Add more data to weapon selector dialog
  * TODO: Tests
  *
@@ -51,6 +51,12 @@ public class IOInitial extends MessageHandler
             viewexpPiece = new MessagePiece( "viewuserexp" );
 
     /**
+     * Piece for increasing the level of EXP for comparing to
+     */
+    private final static MessagePiece
+            increaseexpPiece = new MessagePiece( "increaseexplevel" );
+
+    /**
      * Piece for getting the JS
      */
     private final static MessagePiece getjsPiece = new MessagePiece( "getJS" );
@@ -76,6 +82,7 @@ public class IOInitial extends MessageHandler
      *
      * Piece: loginPiece
      * Piece: viewexpPiece
+     * Piece: increaseexpPiece
      * Piece: getjsPiece
      * Piece: getcssPiece
      *
@@ -89,6 +96,7 @@ public class IOInitial extends MessageHandler
         pieces.add( viewexpPiece );
         pieces.add( getjsPiece );
         pieces.add( getcssPiece );
+        pieces.add( increaseexpPiece );
         return pieces;
     }
 
@@ -108,26 +116,20 @@ public class IOInitial extends MessageHandler
         }
         else if( pieces.contains( viewexpPiece ) )
         {
-            // Simple output of all the EXP's
-            List< UserExp > userexp = EXPManager.getExpByUserID( userid );
-            ListIterator< UserExp > iter = userexp.listIterator();
-            
-            write( "$.lad.userexp.overview([" );
+            outputEXP( userid );
+        }
+        else if( pieces.contains( increaseexpPiece ) )
+        {
+            int levels =
+                    Integer.valueOf( pieces.getValue( "increaseexplevel" ) );
+            ModifierTarget type =
+                    ModifierTarget.fromString( pieces.getValue( "type" ) );
+            UserExpTarget target =
+                    UserExpTarget.fromString( pieces.getValue( "target" ) );
 
-            while( iter.hasNext() )
-            {
-                UserExp curr = iter.next();
-                write( "['" + curr.getTarget().toString() + "','" +
-                       curr.getType().toString() + "'," + curr.getLevel() +
-                       "," + curr.getExp() + ']');
+            EXPManager.advanceUserEXP( userid, target, type, levels );
 
-                if( iter.hasNext() )
-                {
-                    write( ",\n" );
-                }
-            }
-
-            write( "],'userexp');" );
+            outputEXP( userid );
         }
         else if( pieces.contains( getjsPiece ) )
         {
@@ -210,6 +212,48 @@ public class IOInitial extends MessageHandler
         CharSequence region = haystack.subSequence( startIndex, endIndex + 1 );
 
         return haystack.replace( region, replacement );
+    }
+
+    /**
+     * Outputs the EXP block
+     */
+    private void outputEXP( int userid )
+    {
+        // Simple output of all the EXP's
+        List< UserExp > userexp = EXPManager.getExpByUserID( userid );
+        ListIterator< UserExp > iter = userexp.listIterator();
+
+        write( "$.lad.userexp.overview([" );
+
+        while( iter.hasNext() )
+        {
+            UserExp curr = iter.next();
+            List< Integer > bonusLevels = curr.getBonusLevels();
+            ListIterator< Integer > bonusIter = bonusLevels.listIterator();
+            StringBuilder bonusLevelsStr = new StringBuilder( "[" );
+            while( bonusIter.hasNext() )
+            {
+                bonusLevelsStr.append( bonusIter.next() );
+
+                if( bonusIter.hasNext() )
+                {
+                    bonusLevelsStr.append( "," );
+                }
+            }
+            bonusLevelsStr.append( "]" );
+
+            write( "['" + curr.getTarget().toString() + "','" +
+                    curr.getType().toString() + "'," + curr.getLevel() +
+                    "," + curr.getExp() + ',' + bonusLevelsStr.toString() +
+                    "]" );
+
+            if( iter.hasNext() )
+            {
+                write( ",\n" );
+            }
+        }
+
+        write( "],'userexp');" );
     }
 
     private static class IOInitialHolder

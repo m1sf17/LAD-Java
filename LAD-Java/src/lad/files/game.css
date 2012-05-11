@@ -5,6 +5,11 @@
         Specific CSS for the LAD module.
 */
 
+/* OVERRIDE JQUERY DEFAULT */
+.ui-widget {
+    font-size: 0.8em;
+}
+
 #ladbkgd {
     top: 0px;
     left: 0px;
