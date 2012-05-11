@@ -50,6 +50,29 @@ public class PairList< E, F > extends ArrayList< Pair< E, F > >
     }
 
     /**
+     * Constructor from two arrays
+     *
+     * @param eArray Array of the first object class
+     * @param fArray Array of the second object class
+     */
+    public PairList( E[] eArray, F[] fArray )
+    {
+        super();
+
+        if( eArray.length != fArray.length )
+        {
+            throw new GameException( 4, "Pair list sizes do not match: e(" +
+                                     eArray.length + "), f(" + fArray.length +
+                                     ")" );
+        }
+
+        for( int i = 0; i < eArray.length; i++ )
+        {
+            this.add( new Pair<>( eArray[ i ], fArray[ i ] ) );
+        }
+    }
+
+    /**
      * Copy constructor
      *
      * @param other List to copy from
