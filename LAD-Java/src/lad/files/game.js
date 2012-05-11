@@ -46,6 +46,7 @@
                             "readonly": false
                         }).not( "#username" ).val( "" ).keyup();
                     $("#password").focus();
+                    $("#tutorial").remove();
                 });
 
                 // Add header/body
