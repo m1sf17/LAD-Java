@@ -1,5 +1,6 @@
 package lad.db;
 
+import static java.util.Collections.shuffle;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
@@ -89,6 +90,7 @@ public class ModifierManager extends DBManager
             }
         }
 
+        shuffle( ret );
         return ret;
     }
 
@@ -201,6 +203,22 @@ public class ModifierManager extends DBManager
     public void addModifier( Modifier modifier )
     {
         modifiers.add( modifier );
+    }
+
+    /**
+     * Deletes a modifier, both from the internal list and from the DB.
+     *
+     * @param modifier Modifier to delete
+     */
+    public void deleteModifier( Modifier modifier )
+    {
+        if( !modifiers.remove( modifier ) )
+        {
+            throw new GameException( 3, "Could not delete modifier because " +
+                                     "it was not being tracked." );
+        }
+
+        modifier.destroy();
     }
 
     /**
