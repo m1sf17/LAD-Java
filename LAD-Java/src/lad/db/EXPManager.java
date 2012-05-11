@@ -99,7 +99,7 @@ public class EXPManager extends DBManager
      * @param target Target of the exp
      * @return EXP that was found, or null if it does not exist
      */
-    public static UserExp getExp( int user, UserExpTarget target,
+    private static UserExp getExp( int user, UserExpTarget target,
                                   ModifierTarget type )
     {
         ListIterator< UserExp > iter = getInstance().exps.listIterator();
