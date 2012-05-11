@@ -21,6 +21,7 @@
     color: #EFEFEF;
     font-size: 14pt;
     text-align: center;
+    overflow: auto;
 }
 
 #closelad {
@@ -31,10 +32,8 @@
 }
 
 #ladcontent {
-    margin: 4px;
+    padding-top: 25px;
     display: inline-block;
-    overflow: auto;
-    max-height: 100%;
 }
 
 #notifier {
@@ -142,7 +141,7 @@ p.weaponSelector button {
 
 .exptablegroup {
     background-color: #232323;
-    display: inline-block;
+    display: block;
     margin-bottom: 25px;
 }
 

@@ -638,7 +638,9 @@
                 position: {
                     my: 'top left',
                     at: 'bottom right',
-                    target: block
+                    target: block,
+                    container: $("#ladbkgd"),
+                    viewport: $("#ladbkgd")
                 }
             }).appendTo( tutorial );
         }
