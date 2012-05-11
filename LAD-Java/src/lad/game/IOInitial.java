@@ -14,7 +14,6 @@ import lad.db.EXPManager;
  * TODO: Create view for trainer battle statistics
  * TODO: Create view for granting user exp levels
  * TODO: Add more data to weapon selector dialog
- * TODO: Split EXP view to general/specific weapons
  * TODO: Tests
  *
  * @author msflowers
