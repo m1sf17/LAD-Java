@@ -2,6 +2,7 @@ package lad.game;
 
 import java.util.List;
 import java.util.ListIterator;
+import lad.data.GameException;
 import lad.data.Modifier;
 import lad.db.ModifierManager;
 
@@ -37,9 +38,16 @@ public class IOModifier extends MessageHandler
             viewModifiersPiece = new MessagePiece( "viewmodifiers" );
 
     /**
+     * Deleting a modifier for comparing to
+     */
+    private final static MessagePiece
+            deleteModifierPiece = new MessagePiece( "deletemodifier" );
+
+    /**
      * Handleable pieces.
      *
      * Piece: viewModifiersPiece
+     *        deleteModifierPiece
      *
      * @return List with the above pieces
      */
@@ -48,6 +56,7 @@ public class IOModifier extends MessageHandler
     {
         MessageList pieces = new MessageList();
         pieces.add( viewModifiersPiece );
+        pieces.add( deleteModifierPiece );
         return pieces;
     }
 
@@ -59,33 +68,62 @@ public class IOModifier extends MessageHandler
     {
         if( pieces.contains( viewModifiersPiece ) )
         {
+            outputModifiers( userid );
+        }
+        else if( pieces.contains( deleteModifierPiece ) )
+        {
             ModifierManager mm = ModifierManager.getInstance();
-            List< Modifier > modifiers =
-                    mm.getByUserID( userid );
+            int modID = Integer.valueOf( pieces.getValue( "deletemodifier" ) );
+            Modifier mod = mm.getByID( modID );
 
-            // Output a fancy table if possible
-            if( modifiers.size() > 0 )
+            // Make sure user actually owns piece
+            if( mod.getOwner() != userid )
             {
-                ListIterator< Modifier > iter = modifiers.listIterator();
-                int index = 1;
-
-                write( "$.lad.modifiers.overview([" );
-                while( iter.hasNext() )
-                {
-                    Modifier curr = iter.next();
-
-                    write( "[\"" + curr.toString() +
-                           "\"," + curr.getBattles() + "," +
-                           "'']" );
-                    index++;
-
-                    if( iter.hasNext() )
-                    {
-                        write( "," );
-                    }
-                }
-                write( "]);" );
+                throw new GameException( 2, "Modifier does not belong to " +
+                                         "requestor (mod:" + modID + ",owner:" +
+                                         mod.getOwner() + ")" );
             }
+
+            // User owns it, delete it
+            mm.deleteModifier( mod );
+
+            // Re-output new listing
+            outputModifiers( userid );
+        }
+    }
+
+    /**
+     * Outputs the list of modifiers.
+     *
+     * @param userid ID of the user to get the modifiers for
+     */
+    protected void outputModifiers( int userid )
+    {
+        ModifierManager mm = ModifierManager.getInstance();
+        List< Modifier > modifiers = mm.getByUserID( userid );
+
+        // Output a fancy table if possible
+        if( modifiers.size() > 0 )
+        {
+            ListIterator< Modifier > iter = modifiers.listIterator();
+            int index = 1;
+
+            write( "$.lad.modifiers.overview([" );
+            while( iter.hasNext() )
+            {
+                Modifier curr = iter.next();
+
+                write( "[" + curr.getID() + "," +
+                       "\"" + curr.toString() +
+                        "\"," + curr.getBattles() + "]" );
+                index++;
+
+                if( iter.hasNext() )
+                {
+                    write( "," );
+                }
+            }
+            write( "]);" );
         }
     }
 

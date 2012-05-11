@@ -335,7 +335,7 @@ public class Modifier implements TableProfile
      *
      * @throws GameException Thrown if the update fails
      */
-    void destroy()
+    public void destroy()
     {
         // Ensure the delete statement is prepared
         try

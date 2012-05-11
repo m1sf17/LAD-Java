@@ -481,18 +481,35 @@
                     Type: "true",
                     Battles: "true",
                     Action: ""
-                };
+                }, btn, modList = [], row;
+
+                $.each( mods, function(i,v){
+                    alert( v );
+                    btn = $("<button>Destroy</button>").click(function(){
+                        $.ladAjax({ 'deletemodifier': v[ 0 ] });
+                    }).button();
+                    // [ID, type, battles] => [type, battles, action]
+                    row = [ v[ 1 ], v[ 2 ], btn ];
+                    modList.push( row );
+                });
 
                 ctx().html( "" )
-                    .append( makeSortableTable( headers, mods, 'mods' ) );
-                $.lad.main.returnButton();
+                    .append( makeSortableTable( headers, modList, 'mods' ) );
                 $.lad.tutorial( "Modifiers are the core of advancing a " +
                     "trainer in battle.  Each trainer may bring up to 3 " +
-                    "modifier into battle.  Every modifier must apply to " +
-                    "a different area.  Furthermore, not all modifiers are " +
-                    "the same.  Some will grant bonuses more often, whereas " +
-                    "others will last longer in battle.", $("#modstbl"),
+                    "modifiers into battle.  Every modifier brought must " +
+                    "apply to a different area (Aim, Flexibility, etc.).  " +
+                    "Furthermore, some will grant bonuses more often, " +
+                    "whereas others will last longer in battle.", $("#modstbl"),
                     "Here is the table of all the modifiers you own." );
+                $.lad.tutorial( "As your trainers only bring up to 3 " +
+                    "modifiers (different types each) it is sometimes smart " +
+                    "to delete your less wanted modifiers.  This way you " +
+                    "are more likely to use your better modifiers.",
+                    $("#modstbl tbody tr td button"), "Click here to destroy " +
+                    "one of your modifiers." );
+                $.lad.main.returnButton();
+
             }
         },
         blockedAction: function(txt){
