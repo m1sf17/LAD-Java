@@ -484,7 +484,6 @@
                 }, btn, modList = [], row;
 
                 $.each( mods, function(i,v){
-                    alert( v );
                     btn = $("<button>Destroy</button>").click(function(){
                         $.ladAjax({ 'deletemodifier': v[ 0 ] });
                     }).button();
