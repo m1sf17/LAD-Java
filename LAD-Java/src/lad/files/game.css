@@ -71,25 +71,42 @@ p.weaponSelector .rows .row .rowHeader {
     text-align: center;
     font-size: larger;
     font-weight: bolder;
+    background-color: #343434;
+    color: #E97A00
 }
 
-p.weaponSelector .rows .row .weapon {
+p.weaponSelector .rows .row .weapon-liner {
     width: 50%;
-    text-align: center;
+    display: inline-block;
+}
+
+p.weaponSelector .rows .row .weapon-liner .weapon {
+    width: 100%;
     cursor: pointer;
     display: inline-block;
-    height: 50px;
 }
 
-p.weaponSelector .rows .row .weapon-hover {
+p.weaponSelector .rows .row .weapon-liner .weapon-hover {
     background-color: #9A9A9A;
     color: #EFEF34;
     font-weight: bolder;
 }
 
-p.weaponSelector .rows .row .weapon-selected {
+p.weaponSelector .rows .row .weapon-liner .weapon-selected {
     color: #34EF34;
+    background-color: #90A0A0;
     font-weight: bolder;
+}
+
+p.weaponSelector .rows .row .weapon-liner .weapon .weapon-name {
+    text-align: center;
+}
+
+p.weaponSelector .rows .row .weapon-liner .weapon .attribute {
+    text-align: left;
+    display: inline-block;
+    font-size: smaller;
+    font-weight: normal;
 }
 
 p.weaponSelector button {

@@ -1,6 +1,8 @@
 package lad.data;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -306,6 +308,26 @@ public enum Weapon
         ret.put( ModifierTarget.Range, getRange() );
         ret.put( ModifierTarget.ReloadRate, getReloadRate() );
         ret.put( ModifierTarget.Shielding, getShielding() );
+        return ret;
+    }
+
+    /**
+     * Returns a list of all the attributes
+     *
+     * @return List of attributes
+     */
+    public List< Double > getAttributesList()
+    {
+        List< Double > ret = new ArrayList<>( 9 );
+        ret.add( getAtkSpd() );
+        ret.add( getDamage() );
+        ret.add( getReloadRate() );
+        ret.add( getAccuracy() );
+        ret.add( getMobility() );
+        ret.add( getFlexibility() );
+        ret.add( getShielding() );
+        ret.add( getAim() );
+        ret.add( getRange() );
         return ret;
     }
 

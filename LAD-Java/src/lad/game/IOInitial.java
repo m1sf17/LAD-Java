@@ -12,7 +12,6 @@ import lad.db.EXPManager;
 /**
  * Handles initial connection with users to the java module.
  *
- * TODO: Add more data to weapon selector dialog
  * TODO: Tests
  *
  * @author msflowers
@@ -171,12 +170,26 @@ public class IOInitial extends MessageHandler
                 {
                     // Type
                     UserExpTarget gen = UserExpTarget.generalFromWeapon( w );
+                    List< Double > atts = w.getAttributesList();
+                    ListIterator< Double > iter = atts.listIterator();
 
                     buffer.append( "this.weapon( \"" );
                     buffer.append( w.toString() );
                     buffer.append( "\"," );
 
                     buffer.append( gen.getValue() );
+                    buffer.append( "," );
+
+                    while( iter.hasNext() )
+                    {
+                        buffer.append( String.format( "%.2f", iter.next() ) );
+
+                        if( iter.hasNext() )
+                        {
+                            buffer.append( "," );
+                        }
+                    }
+
                     buffer.append( ")," );
                 }
                 buffer.deleteCharAt( buffer.length() - 1 );

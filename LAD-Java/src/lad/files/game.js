@@ -253,7 +253,8 @@
             arenabattledialog: function(trnr){
                 function createRow( hand ){
                     return $("<div></div>").addClass( "row" ).append(
-                        $("<div></div>").append( hand ).addClass( "rowHeader")
+                        $("<div></div>").append( hand )
+                        .addClass( "rowHeader ui-corner-tl ui-corner-tr" )
                     );
                 }
                 var weaponButtons = {},
@@ -268,8 +269,10 @@
                     okButton = $("<button>Ok</button>"),
                     cancelButton = $("<button>Cancel</button>");
                 $.each( weaponData, function(i,v){
-                    var div = $("<div></div>").append( v.name )
-                        .addClass( "weapon" ).mouseover(function(){
+                    var div = $("<div></div>").append( $( "<div></div>" )
+                            .append( v.name ).addClass( "weapon-name" ) )
+                        .addClass( "weapon ui-corner-all" )
+                        .mouseover(function(){
                             $(this).toggleClass( "weapon-hover" );
                         }).mouseout(function(){
                             $(this).toggleClass( "weapon-hover" );
@@ -280,20 +283,34 @@
                             $(this).addClass( "weapon-selected" );
                             okButton.button( "enable" );
                             okButton.data( "selectedWeapon", i + 1 );
-                        });
+                        }),
+                        liner = $("<div></div>").addClass( "weapon-liner" );
+
+                    $.each( v, function(wi,wv){
+                        if( wi !== 'name' && wi !== 'type' )
+                        {
+                            var att = wi.replace( /_/, ' ' ),
+                                attdiv = $("<div></div>");
+                            attdiv.append( att + ": " + wv + "&nbsp;&nbsp;" )
+                                .addClass( "attribute").appendTo( div );
+                        }
+                    });
+
+                    liner.append( div );
+
                     switch( v.type )
                     {
                         case 1:
-                            offRow.append( div );
+                            offRow.append( liner );
                             break;
                         case 2:
-                            twoRow.append( div );
+                            twoRow.append( liner );
                             break;
                         case 3:
-                            eitherRow.append( div );
+                            eitherRow.append( liner );
                             break;
                         case 4:
-                            mainRow.append( div );
+                            mainRow.append( liner );
                             break;
                     }
                     weaponButtons[ i ] = div;
@@ -305,30 +322,29 @@
 
                 // Setup Buttons
                 cancelButton.button().click(function(){
-                    dialog.dialog( "close" ).remove();
+                    dialog.remove();
                 }).appendTo( topContainer );
                 okButton.button().click(function(){
                     $.ladAjax({
                         'trainertoarena': trnr,
                         'weapon': okButton.data( "selectedWeapon" )
                     });
-                    dialog.dialog( "close" ).remove();
+                    dialog.remove();
                 }).button( "disable" ).appendTo( topContainer );
 
                 // Setup row container
-                rowContainer.addClass( "rows" )
-                    .append( twoRow ).append( mainRow )
-                    .append( offRow ).append( eitherRow );
+                rowContainer.addClass( "rows" ).append( mainRow )
+                    .append( offRow ).append( eitherRow ).append( twoRow );
 
                 dialog.attr({
                     "title": "Weapon Selection",
                     "id": "dialog-weapon"
                 }).append( topContainer ).appendTo( $("body") )
                 .dialog({
+                    width: '500px',
                     resizable: false,
-                    height: 400,
-                    width: 525,
-                    modal: true
+                    modal: true,
+                    close: function(){ $(this).remove(); }
                 });
             },
             createbutton: function( id, txt ) {
@@ -347,14 +363,24 @@
             },
             all: function(){
                 //# WEAPON OBJECTS
-                return [ this.weapon( "Bombarder", 2 ) ];
+                return [ this.weapon( "Bombarder", '...' ) ];
                 //# END WEAPON OBJECTS
             },
-            weapon: function( name, type ){
+            weapon: function( name, type, atkSpd, dmg, reload, accy, moby,
+                              flex, shield, aim, range ){
                 // Type: 1 = Off, 2 = Two, 3 = Either, 4 = Main
                 return {
                     'name': name,
-                    'type': type
+                    'type': type,
+                    'Attack_Speed': atkSpd,
+                    'Damage': dmg,
+                    'Reload_Rate': reload,
+                    'Accuracy': accy,
+                    'Mobility': moby,
+                    'Flexibility': flex,
+                    'Shielding': shield,
+                    'Aim': aim,
+                    'Range': range
                 };
             }
         },
