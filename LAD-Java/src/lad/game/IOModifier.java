@@ -84,6 +84,12 @@ public class IOModifier extends MessageHandler
                                          mod.getOwner() + ")" );
             }
 
+            // Don't allow modifiers in battle to be deleted
+            if( mod.getEquipped() != null )
+            {
+                throw new GameException( 2, "Modifer is in battle." );
+            }
+
             // User owns it, delete it
             mm.deleteModifier( mod );
 
@@ -112,10 +118,12 @@ public class IOModifier extends MessageHandler
             while( iter.hasNext() )
             {
                 Modifier curr = iter.next();
+                String isEquipped = curr.getEquipped() == null ? "0" : "1";
 
                 write( "[" + curr.getID() + "," +
                        "\"" + curr.toString() +
-                        "\"," + curr.getBattles() + "]" );
+                       "\"," + curr.getBattles() + 
+                       "," + isEquipped + "]" );
                 index++;
 
                 if( iter.hasNext() )

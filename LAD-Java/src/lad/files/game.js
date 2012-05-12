@@ -629,10 +629,12 @@
                 }, btn, modList = [], row;
 
                 $.each( mods, function(i,v){
-                    btn = $("<button>Destroy</button>").click(function(){
-                        $.ladAjax({'deletemodifier': v[ 0 ]});
-                    }).button();
-                    // [ID, type, battles] => [type, battles, action]
+                    // If modifier is equipped don't let it be destroyed
+                    btn = v[ 3 ] ? "In Battle" :
+                        $("<button>Destroy</button>").click(function(){
+                            $.ladAjax({'deletemodifier': v[ 0 ]});
+                        }).button();
+                    // [ID, type, battles, equipped] => [type, battles, action]
                     row = [ v[ 1 ], v[ 2 ], btn ];
                     modList.push( row );
                 });
