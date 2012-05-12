@@ -119,7 +119,7 @@ public class Pair< E, F >
         builder.append( first );
         builder.append( "','" );
         builder.append( second );
-        builder.append( "]" );
+        builder.append( "']" );
         return builder.toString();
     }
 }
