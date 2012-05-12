@@ -61,6 +61,9 @@ public abstract class MessageHandler
             byte buff[] = new byte[ avail ];
             stream.read( buff );
 
+            // Close the stream
+            stream.close();
+
             // Write out the buffer
             return new String( buff );
         }
