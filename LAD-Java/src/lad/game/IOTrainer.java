@@ -5,7 +5,9 @@ import java.util.ListIterator;
 import lad.data.GameException;
 import lad.data.Minion;
 import lad.data.Trainer;
+import lad.data.TrainerBattleStats;
 import lad.data.Weapon;
+import lad.db.EXPManager;
 import lad.db.ModifierManager;
 import lad.db.TrainerManager;
 
@@ -83,6 +85,12 @@ public class IOTrainer extends MessageHandler
             trainerleavequeuePiece = new MessagePiece( "trainerleavequeue" );
 
     /**
+     * Piece for viewing a trainer's stats for comparing to
+     */
+    private final static MessagePiece
+            viewtrainerstatsPiece = new MessagePiece( "viewtrainerstats" );
+
+    /**
      * Handleable pieces.
      *
      * Piece: viewalltrainersPiece
@@ -93,6 +101,7 @@ public class IOTrainer extends MessageHandler
      * Piece: viewtrainerPiece
      * Piece: trainertoarenaPiece
      * Piece: trainerleavequeuePiece
+     * Piece: viewtrainerstatsPiece
      *
      * @return List with all of the above pieces
      */
@@ -108,6 +117,7 @@ public class IOTrainer extends MessageHandler
         pieces.add( viewtrainerPiece );
         pieces.add( trainertoarenaPiece );
         pieces.add( trainerleavequeuePiece );
+        pieces.add( viewtrainerstatsPiece );
         return pieces;
     }
 
@@ -308,6 +318,15 @@ public class IOTrainer extends MessageHandler
             // Output the trainer again
             outputTrainerView( userid, trnrID );
         }
+        else if( pieces.contains( viewtrainerstatsPiece ) )
+        {
+            int trnrID = Integer.valueOf( pieces.getValue(
+                    "viewtrainerstats" ) );
+            TrainerBattleStats stats = EXPManager.getBattleStats( 2, trnrID );
+
+            write( "$.lad.stats.view(" + stats.toJSString() + ",'Trainer'," +
+                   trnrID + ");" );
+        }
     }
 
     /**
@@ -334,7 +353,18 @@ public class IOTrainer extends MessageHandler
                 write( "," );
             }
         }
-        write( "]);" );
+        write( "]," );
+
+        // Check if we have user stats
+        if( EXPManager.battleStatsExist( 1, userid ) )
+        {
+            write( "1" );
+        }
+        else
+        {
+            write( "0" );
+        }
+        write( ");" );
     }
 
     /**
@@ -397,7 +427,11 @@ public class IOTrainer extends MessageHandler
             }
             index++;
         }
-        write( "]," + stateNumber + ");" );
+
+        String hasBattleStats = EXPManager.battleStatsExist( 2, trainer ) ?
+            "1" : "0";
+
+        write( "]," + stateNumber + "," + hasBattleStats + ");" );
     }
 
     private static class IOTrainerHolder

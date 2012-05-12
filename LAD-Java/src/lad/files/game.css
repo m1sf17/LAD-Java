@@ -10,6 +10,11 @@
     font-size: 0.8em;
 }
 
+/* OVERRIDE TABLE DEFAULT */
+table {
+    color: #EFEFEF;
+}
+
 #ladbkgd {
     top: 0px;
     left: 0px;
