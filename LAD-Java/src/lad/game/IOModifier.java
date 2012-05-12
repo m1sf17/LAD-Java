@@ -108,31 +108,28 @@ public class IOModifier extends MessageHandler
         ModifierManager mm = ModifierManager.getInstance();
         List< Modifier > modifiers = mm.getByUserID( userid );
 
-        // Output a fancy table if possible
-        if( modifiers.size() > 0 )
+        // Output a fancy table
+        ListIterator< Modifier > iter = modifiers.listIterator();
+        int index = 1;
+
+        write( "$.lad.modifiers.overview([" );
+        while( iter.hasNext() )
         {
-            ListIterator< Modifier > iter = modifiers.listIterator();
-            int index = 1;
+            Modifier curr = iter.next();
+            String isEquipped = curr.getEquipped() == null ? "0" : "1";
 
-            write( "$.lad.modifiers.overview([" );
-            while( iter.hasNext() )
+            write( "[" + curr.getID() + "," +
+                    "\"" + curr.toString() +
+                    "\"," + curr.getBattles() + 
+                    "," + isEquipped + "]" );
+            index++;
+
+            if( iter.hasNext() )
             {
-                Modifier curr = iter.next();
-                String isEquipped = curr.getEquipped() == null ? "0" : "1";
-
-                write( "[" + curr.getID() + "," +
-                       "\"" + curr.toString() +
-                       "\"," + curr.getBattles() + 
-                       "," + isEquipped + "]" );
-                index++;
-
-                if( iter.hasNext() )
-                {
-                    write( "," );
-                }
+                write( "," );
             }
-            write( "]);" );
         }
+        write( "]);" );
     }
 
     private static class IOModifierHolder

@@ -171,19 +171,24 @@
                 }
 
                 minionList.addClass( "minionList" );
-                $.lad.tutorial( "Minions are the method to increase a " +
-                    "trainer's experience and to acquire new modifiers.  " +
-                    "Minions advance in levels by simply clicking on their " +
-                    "train button.  Minions may only battle when they reach " +
-                    "level 1.", $(".minionList"), "Here are all of the " +
-                    "minions belonging to this trainer." );
-                $.each( mins, function(i,v){
-                    $.lad.minion.add( ( i + 1 ), v[ 1 ], v[ 2 ], trnr, v[ 0 ] );
-                    if( v[ 1 ] > 0 )
-                    {
-                        minids.push( v[ 0 ] );
-                    }
-                });
+
+                if( mins.length > 0 )
+                {
+                    $.lad.tutorial( "Minions are the method to increase a " +
+                        "trainer's experience and to acquire new modifiers.  " +
+                        "Minions advance in levels by simply clicking on " +
+                        "their train button.  Minions may only battle when " +
+                        "they reach level 1.", $(".minionList"), "Here are " +
+                        "all of the minions belonging to this trainer." );
+                    $.each( mins, function(i,v){
+                        $.lad.minion.add( i + 1, v[ 1 ], v[ 2 ],
+                                          trnr, v[ 0 ] );
+                        if( v[ 1 ] > 0 )
+                        {
+                            minids.push( v[ 0 ] );
+                        }
+                    });
+                }
 
                 // If more than 2 eligible minions, let them battle
                 if( minids.length >= 2 )
@@ -216,6 +221,20 @@
                         $("#addMinionBtn"), "Click here to add a minion." );
                 }
 
+                // If the trainer has battle stats, and the button to view them
+                if( hasBS )
+                {
+                    $("<button>Trainer Battle Stats</button>").click(function(){
+                        $.ladAjax({'viewtrainerstats': trnr});
+                    }).button().css( "margin-right", "10px" ).appendTo( ctx() )
+                        .attr( "id", "trainerBSBtn" );
+                    $.lad.tutorial( "You may also view the arena battle " +
+                        "statistics for this trainer here.", $("#trainerBSBtn"),
+                        "Click here to view this trainer's battle " +
+                        "statistics." );
+                }
+
+                // Moved the arena battle tutorial down here, it's more fun :P
                 if( tb === 1 )
                 {
                     $.lad.tutorial( "Arena battles make up the core of life " +
@@ -232,19 +251,6 @@
                         "interim period they may be recalled and will stop " +
                         "fighting in the arena.", $("#arenaBattleBtn"),
                         "Click here to recall your trainer from the arena." );
-                }
-
-                // If the trainer has battle stats, and the button to view them
-                if( hasBS )
-                {
-                    $("<button>Trainer Battle Stats</button>").click(function(){
-                        $.ladAjax({'viewtrainerstats': trnr});
-                    }).button().css( "margin-right", "10px" ).appendTo( ctx() )
-                        .attr( "id", "trainerBSBtn" );
-                    $.lad.tutorial( "You may also view the arena battle " +
-                        "statistics for this trainer here.", $("#trainerBSBtn"),
-                        "Click here to view this trainer's battle " +
-                        "statistics." );
                 }
 
                 // Return to main button
@@ -344,7 +350,7 @@
                     width: '500px',
                     resizable: false,
                     modal: true,
-                    close: function(){ $(this).remove(); }
+                    close: function(){$(this).remove();}
                 });
             },
             createbutton: function( id, txt ) {
@@ -409,14 +415,17 @@
                 
                 trainerList.appendTo( ctx() );
 
-                $.lad.tutorial( "This is the main view for managing your " +
-                    "trainers.  Each trainer will grow levels as they " +
-                    "have their minions battle.", $(".trainerList"), "Here " +
-                    "are the trainers that you command." );
-                $.lad.tutorial( "You may view any of the trainers to send " +
-                    "them into the arena or to manage their minions.",
-                    $(".trainerItem button"), "Click here to view the " +
-                    "trainer." );
+                if( trnrs.length > 0 )
+                {
+                    $.lad.tutorial( "This is the main view for managing your " +
+                        "trainers.  Each trainer will grow levels as they " +
+                        "have their minions battle.", $(".trainerList"),
+                        "Here are the trainers that you command." );
+                    $.lad.tutorial( "You may view any of the trainers to " +
+                        "send them into the arena or to manage their minions.",
+                        $(".trainerItem button"), "Click here to view the " +
+                        "trainer." );
+                }
 
                 // "Add trainer" button if less than 8
                 if( trnrs.length < 8 )
@@ -475,6 +484,18 @@
                 }, i, genTables = {}, specTables = {}, current, group,
                 addExpTable, addExpTableGroup, levels;
 
+                ctx().html( "" );
+                
+                if( exps.length === 0 )
+                {
+                    ctx().append( "<div style='text-align:center'>" +
+                        "You have no experience!" );
+                    $.lad.main.returnButton().appendTo( ctx() );
+                    $.lad.tutorial( "Gain experience by having your trainers " +
+                        "fight in the arena." );
+                    return;
+                }
+
                 $.each( exps, function(i,v){
                     group = v[ 0 ];
                     current = [ v[ 1 ], v[ 2 ], v[ 3 ] ];
@@ -513,7 +534,6 @@
                     }
                 });
 
-                ctx().html( "" );
                 addExpTable = function( i, v )
                 {
                     var id = i.replace( /\s/, '_' ) + 'exp';
@@ -664,22 +684,37 @@
                     row = [ v[ 1 ], v[ 2 ], btn ];
                     modList.push( row );
                 });
+                
+                ctx().html( "" );
 
-                ctx().html( "" )
-                    .append( makeSortableTable( headers, modList, 'mods' ) );
-                $.lad.tutorial( "Modifiers are the core of advancing a " +
-                    "trainer in battle.  Each trainer may bring up to 3 " +
-                    "modifiers into battle.  Every modifier brought must " +
-                    "apply to a different area (Aim, Flexibility, etc.).  " +
-                    "Furthermore, some will grant bonuses more often, " +
-                    "whereas others will last longer in battle.", $("#modstbl"),
-                    "Here is the table of all the modifiers you own." );
-                $.lad.tutorial( "As your trainers only bring up to 3 " +
-                    "modifiers (different types each) it is sometimes smart " +
-                    "to delete your less wanted modifiers.  This way you " +
-                    "are more likely to use your better modifiers.",
-                    $("#modstbl tbody tr td button"), "Click here to destroy " +
-                    "one of your modifiers." );
+                if( mods.length > 0 )
+                {
+                    ctx().append(
+                        makeSortableTable( headers, modList, 'mods' )
+                    );
+                    $.lad.tutorial( "Modifiers are the core of advancing a " +
+                        "trainer in battle.  Each trainer may bring up to 3 " +
+                        "modifiers into battle.  Every modifier brought must " +
+                        "apply to a different area (Aim, Flexibility, etc.).  " +
+                        "Furthermore, some will grant bonuses more often, " +
+                        "whereas others will last longer in battle.", $("#modstbl"),
+                        "Here is the table of all the modifiers you own." );
+                    $.lad.tutorial( "As your trainers only bring up to 3 " +
+                        "modifiers (different types each) it is sometimes smart " +
+                        "to delete your less wanted modifiers.  This way you " +
+                        "are more likely to use your better modifiers.",
+                        $("#modstbl tbody tr td button"), "Click here to destroy " +
+                        "one of your modifiers." );
+                }
+                else
+                {
+                    ctx().append( "<div stlye='text-align:center'>" +
+                        "You have no modifiers!</div>" );
+
+                    $.lad.tutorial( "Get some modifiers by having your " +
+                        "trainers battle their minions." );
+                }
+
                 $.lad.main.returnButton().appendTo( ctx() );
 
             }
@@ -715,9 +750,11 @@
                 return;
             }
 
-            var tutorial = $("#tutorial"),
-                current = $("<div></div>");
-            current.mouseover(function(){
+            // Make sure block is okay
+            block = $(block);
+
+            var tutorial = $("#tutorial");
+            $("<div></div>").mouseover(function(){
                 $(".highlight-tutorial").removeClass( "highlight-tutorial" );
                 block.addClass( "highlight-tutorial" );
                 var repeatFunction = function(){
