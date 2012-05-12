@@ -13,6 +13,18 @@ import lad.db.EXPManager;
  * Handles initial connection with users to the java module.
  *
  * TODO: Tests
+ * TODO: Initialize JS/CSS on startup
+ * TODO: Output errors on GameException
+ * TODO: Balance weapons
+ * TODO: (maybe) Organize tutorials into paged format
+ * TODO: Add ability to turn off/on tutorial
+ * TODO: Add losing/winning to arena battle status
+ * TODO: Add strike through to used modifiers
+ * TODO: Add percentages to user exp statistics
+ * TODO: On same page updates, do not refresh screen
+ * TODO: Custom naming of trainers
+ * TODO: Internal naming of minions (based on ID)
+ * TODO: Add notification for trainer battle completionrr
  *
  * @author msflowers
  */
@@ -72,6 +84,12 @@ public class IOInitial extends MessageHandler
             getcssPiece = new MessagePiece( "getCSS" );
 
     /**
+     * Piece for getting an image
+     */
+    private final static MessagePiece
+            getimagePiece = new MessagePiece( "getimg" );
+
+    /**
      * Cached version of the JS
      */
     private static String cachedJS = null;
@@ -90,6 +108,7 @@ public class IOInitial extends MessageHandler
      * Piece: getjsPiece
      * Piece: getcssPiece
      * Piece: viewuserstatsPiece
+     * Piece: getimagePiece
      *
      * @return List with all of the above pieces
      */
@@ -103,6 +122,7 @@ public class IOInitial extends MessageHandler
         pieces.add( getcssPiece );
         pieces.add( increaseexpPiece );
         pieces.add( viewuserstatsPiece );
+        pieces.add( getimagePiece );
         return pieces;
     }
 
@@ -212,6 +232,11 @@ public class IOInitial extends MessageHandler
             // Also include this so that the view works
             write( "addMenuButton('LAD','ui-icon-home',function(){" +
                    "$.ladAjax({ 'login': '' });});" );
+        }
+        else if( pieces.contains( getimagePiece ) )
+        {
+            String img = pieces.getValue( "getimg" );
+            write( readPackagedFile( "lad/files/" + img ) );
         }
         else if( pieces.contains( getcssPiece ) )
         {
