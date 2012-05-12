@@ -611,6 +611,9 @@ public class Modifier implements TableProfile
      */
     public void battled( boolean won, Weapon weapon )
     {
+        // Clear the trainer
+        equipped = null;
+        
         // Abort if the modifier has no more uses
         if( getBattles() == 0 )
         {
@@ -634,7 +637,6 @@ public class Modifier implements TableProfile
                                        weapon );
         EXPManager.grantUserEXP( user, generalTarget, target, exp );
         EXPManager.grantUserEXP( user, specificTarget, target, exp * 2 );
-
     }
 
     /**
