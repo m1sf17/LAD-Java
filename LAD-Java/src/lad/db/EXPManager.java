@@ -273,6 +273,30 @@ public class EXPManager extends DBManager
     }
 
     /**
+     * Tests if a specific statistic block exists.
+     *
+     * @param type Type of the target of the statistic block
+     * @param id   ID of the target of the statistic block
+     * @return True if it exists, false otherwise
+     */
+    public static boolean battleStatsExist( int type, int id )
+    {
+        ListIterator< TrainerBattleStats > iter =
+                getInstance().trainerBattleStats.listIterator();
+        while( iter.hasNext() )
+        {
+            TrainerBattleStats current = iter.next();
+
+            if( current.getType() == type && current.getID() == id )
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Grants some values to a given statistic.
      *
      * The integer array must contain 8 values and the integer array must
