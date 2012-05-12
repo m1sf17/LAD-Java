@@ -106,7 +106,7 @@ public class ModifierManager extends DBManager
      */
     public List< Modifier > getAvailableSetByUserID( int userid )
     {
-        return getAvailableSetByUserID( userid, ModifierTarget.getLength() );
+        return getAvailableSetByUserID( userid, 0 );
     }
 
     /**
@@ -118,7 +118,7 @@ public class ModifierManager extends DBManager
      * returned will simply be empty.
      *
      * @param userid User ID to get modifiers for
-     * @param max    Maximum number of modifiers to get
+     * @param max    Maximum number of modifiers to get, 0 to ignore
      * @return List of found modifiers
      */
     public List< Modifier > getAvailableSetByUserID( int userid, int max )
@@ -137,6 +137,15 @@ public class ModifierManager extends DBManager
             {
                 ret.add( current );
                 found.add( target );
+            }
+        }
+
+        if( max > 0 && ret.size() > max )
+        {
+            shuffle( ret );
+            while( ret.size() > max )
+            {
+                ret.remove( 0 );
             }
         }
 
