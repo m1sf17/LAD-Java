@@ -14,7 +14,7 @@ package lad.data;
  */
 public class GameException extends RuntimeException
 {
-    private static final long serialVersionUID = 2030111L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Holds the severity of this exception
