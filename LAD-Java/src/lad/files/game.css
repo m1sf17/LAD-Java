@@ -110,7 +110,7 @@ p.weaponSelector button {
 }
 
 #tutorial {
-    position: fixed;
+    position: absolute;
     width: 175px;
     right: 0px;
     top: 50px;
