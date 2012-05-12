@@ -7,6 +7,7 @@ import java.sql.SQLException;
 import lad.db.EXPManager;
 import lad.db.MySQLDB;
 import lad.db.TableProfile;
+import lad.game.PairList;
 
 /**
  * Data handler for trainer battle statistics
@@ -327,6 +328,92 @@ public class TrainerBattleStats implements TableProfile
         battles = battlesWon = criticalsHit = id = reloads = safelyShot =
                   shotsEvaded = shotsFired = shotsHit = type = 0;
         damageDealt = damageReduced = damageTaken = distanceMoved = 0.0;
+    }
+
+    /**
+     * Gets a human-readable list of pairs from the various battle statistics
+     * to their corresponding modifier target.
+     *
+     * @return List of pairs
+     */
+    public static PairList< String, String > getStatTypes()
+    {
+        return new PairList<>(
+            new String[]{
+                "Shots Fired",
+                "Shots Hit",
+                "Damage Dealt",
+                "Crital Hits",
+                "Safely Shot",
+                "Reloads",
+                "Shots Evaded",
+                "Damage Reduced",
+                "Distance Moved",
+                "Damage Taken",
+                "Battles Won",
+                "Battles"
+            },
+            new String[]{
+                "Attack Speed",
+                "Accuracy",
+                "Damage",
+                "Aim",
+                "Range",
+                "Reload Rate",
+                "Flexibility",
+                "Shielding",
+                "Mobility",
+                "--",
+                "--",
+                "--"
+            }
+        );
+    }
+
+    /**
+     * Gets a list of strings from the various battle statistics.
+     *
+     * @return List of string
+     */
+    public String[] getStats()
+    {
+        return new String[]{
+            new Integer( this.shotsFired ).toString(),
+            new Integer( this.shotsHit ).toString(),
+            new Double( this.damageDealt ).toString(),
+            new Integer( this.criticalsHit ).toString(),
+            new Integer( this.safelyShot ).toString(),
+            new Integer( this.reloads ).toString(),
+            new Integer( this.shotsEvaded ).toString(),
+            new Double( this.damageReduced ).toString(),
+            new Double( this.distanceMoved ).toString(),
+            new Double( this.damageTaken ).toString(),
+            new Integer( this.battlesWon ).toString(),
+            new Integer( this.battles ).toString(),
+        };
+    }
+
+    /**
+     * Returns a JS string representation of these battle statistics
+     *
+     * @return JS String
+     */
+    public String toJSString()
+    {
+        StringBuilder builder = new StringBuilder( 100 );
+        String strings[] = getStats();
+        builder.append( "[" );
+        for( int i = 0; i < strings.length; i++ )
+        {
+            builder.append( strings[ i ] );
+
+            if( i != strings.length - 1 )
+            {
+                builder.append( "," );
+            }
+        }
+        builder.append( "]" );
+        return builder.toString();
     }
     
     /**
