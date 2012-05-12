@@ -586,6 +586,7 @@
                     modRow.append( "<td>" + v[ 1 ] + "</td>" );
                 });
                 $.each( stats, function(i,v){
+                    v = Math.round( v * 10000 ) / 10000;
                     valueRow.append( "<td>" + v + "</td>" );
                 });
                 tbl.append( statRow ).append( modRow ).append( valueRow )
