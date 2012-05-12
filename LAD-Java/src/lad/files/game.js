@@ -19,11 +19,7 @@
         $.lad.tutorial( "" );
         return doAjax( 'java_run', params );
     };
-    $.lad = function()
-    {
-        return ctx();
-    };
-    $.extend( $.lad, {
+    $.lad = {
         window: function(){
             function create(){
                 var ladbkgd,
@@ -86,7 +82,7 @@
             },
             doTrain: function( id, trnr )
             {
-                $.ladAjax( { 'trainminion': id, 'trainer': trnr } );
+                $.ladAjax( {'trainminion': id, 'trainer': trnr} );
             },
             battle: function( opt, trnr )
             {
@@ -130,7 +126,7 @@
                     .append( "  " )
                     .append( $('<button>Battle</button>').button().click(
                     function(){
-                        $.ladAjax( { 'battleminion': trnr,
+                        $.ladAjax( {'battleminion': trnr,
                                      'minion1': $('#minion1').val(),
                                      'minion2': $('#minion2').val()
                         });
@@ -139,7 +135,7 @@
             }
         },
         trainer: {
-            overview: function( trnr, lvl, exp, st, mins, tb ){
+            overview: function( trnr, lvl, exp, st, mins, tb, hasBS ){
                 var minids = [], trainerInfo = $("<div></div>"),
                     minionList = $("<div></div>");
 
@@ -238,8 +234,21 @@
                         "Click here to recall your trainer from the arena." );
                 }
 
+                // If the trainer has battle stats, and the button to view them
+                if( hasBS )
+                {
+                    $("<button>Trainer Battle Stats</button>").click(function(){
+                        $.ladAjax({'viewtrainerstats': trnr});
+                    }).button().css( "margin-right", "10px" ).appendTo( ctx() )
+                        .attr( "id", "trainerBSBtn" );
+                    $.lad.tutorial( "You may also view the arena battle " +
+                        "statistics for this trainer here.", $("#trainerBSBtn"),
+                        "Click here to view this trainer's battle " +
+                        "statistics." );
+                }
+
                 // Return to main button
-                $.lad.main.returnButton();
+                $.lad.main.returnButton().appendTo( ctx() );
             },
             arenabattledialog: function(trnr){
                 function createRow( hand ){
@@ -321,6 +330,13 @@
                     width: 525,
                     modal: true
                 });
+            },
+            createbutton: function( id, txt ) {
+                return $("<button></button>").button({
+                    "label": txt
+                }).click(function(){
+                    $.ladAjax({'viewtrainer': id});
+                });
             }
         },
         weapons: {
@@ -344,12 +360,12 @@
         },
         main: {
             returnButton: function(){
-                $("<button>Return to Overview</button>").button().click(
-                  function(){
-                      $.ladAjax({ 'viewalltrainers': '' });
-                }).css( "margin-right", "10px" ).appendTo( ctx() );
+                return $("<button>Return to Overview</button>").button()
+                    .click(function(){
+                        $.ladAjax({'viewalltrainers': ''});
+                }).button().css( "margin-right", "10px" );
             },
-            overview: function( trnrs ){
+            overview: function( trnrs, hasBS ){
                 // Output each
                 var trainerList = $("<div></div>").addClass( "trainerList" );
                 ctx().html( "" );
@@ -360,9 +376,8 @@
                                     " Exp:" + v[ 2 ]+ "  " )
                         .appendTo( trainerList )
                         .addClass( "trainerItem ui-corner-all" );
-                    $("<button>View</button>").button().click(function(){
-                        $.ladAjax({'viewtrainer': v[ 0 ] });
-                    }).appendTo( trnrDiv );
+                    $.lad.trainer.createbutton( v[ 0 ], "View" )
+                        .appendTo( trnrDiv );
                     trainerList.append( "<br>" );
                 });
                 
@@ -409,6 +424,19 @@
                     "then shared between all of your current and future " +
                     "trainers.", $("#userExpBtn"), "Click here to view your " +
                     "weapon experience." );
+
+                // If the user has battle stats, and the button to view them
+                if( hasBS )
+                {
+                    $("<button>User Battle Stats</button>").click(function(){
+                        $.ladAjax({'viewuserstats':''});
+                    }).button().css( "margin-right", "10px" ).appendTo( ctx() )
+                        .attr( "id", "userBSBtn" );
+                    $.lad.tutorial( "You may also view the cumulative " +
+                        "statistics for all of your trainers here.",
+                        $("#userBSBtn"), "Click here to view your cumulative " +
+                        "battle statistics." );
+                }
             }
         },
         userexp: {
@@ -495,7 +523,7 @@
                     "twice the rate of the general experience.",
                     $("#Specificgrp"), "Here are the various specific " +
                     "experience groups." );
-                $.lad.main.returnButton();
+                $.lad.main.returnButton().appendTo( ctx() );
             },
             increasePrompt: function( )
             {
@@ -546,6 +574,51 @@
                 }).change();
             }
         },
+        stats: {
+            view: function( stats, mode, trnr ) {
+                var statTypes = $.lad.stats.types(),
+                    statRow = $("<tr></tr>"), modRow = $("<tr></tr>"),
+                    valueRow = $("<tr></tr>"), tbl = $("<table></table>");
+                    
+                ctx().html( "" );
+                $.each( statTypes, function(i,v){
+                    statRow.append( "<td>" + v[ 0 ] + "</td>" );
+                    modRow.append( "<td>" + v[ 1 ] + "</td>" );
+                });
+                $.each( stats, function(i,v){
+                    valueRow.append( "<td>" + v + "</td>" );
+                });
+                tbl.append( statRow ).append( modRow ).append( valueRow )
+                    .appendTo( ctx() ).attr({
+                        "id": "battlestatstbl",
+                        "border": 1
+                    });
+                $.lad.tutorial( "Here are all of the statistics for your " +
+                    "battles in the arena.  The first row contains a " +
+                    "description of what the statistic is.  The second row " +
+                    "contains which modifier type affects the given " +
+                    "statistic.  The final row is your actual value.",
+                    $("#battlestatstbl"), "Here is the table of your " +
+                    "statistics." );
+
+                // Output return button
+                if( mode === "Trainer" )
+                {
+                    $.lad.trainer.createbutton( trnr, "Return to Trainer" )
+                        .appendTo( ctx() );
+                }
+                else
+                {
+                    // Return to main button
+                    $.lad.main.returnButton().appendTo( ctx() );
+                }
+            },
+            types: function() {
+                //# STAT TYPES
+                return [ [ "Damage Dealt", "Damage" ], [ "...", "..." ] ];
+                //# END STAT TYPES
+            }
+        },
         modifiers: {
             overview: function( mods ){
                 var headers = {
@@ -556,7 +629,7 @@
 
                 $.each( mods, function(i,v){
                     btn = $("<button>Destroy</button>").click(function(){
-                        $.ladAjax({ 'deletemodifier': v[ 0 ] });
+                        $.ladAjax({'deletemodifier': v[ 0 ]});
                     }).button();
                     // [ID, type, battles] => [type, battles, action]
                     row = [ v[ 1 ], v[ 2 ], btn ];
@@ -578,7 +651,7 @@
                     "are more likely to use your better modifiers.",
                     $("#modstbl tbody tr td button"), "Click here to destroy " +
                     "one of your modifiers." );
-                $.lad.main.returnButton();
+                $.lad.main.returnButton().appendTo( ctx() );
 
             }
         },
@@ -624,8 +697,8 @@
                     {
                         return;
                     }
-                    obj.animate({ opacity: 0.6 }, 500 ).animate(
-                        { opacity: 1.0 }, 500, function(){
+                    obj.animate({opacity: 0.6}, 500 ).animate(
+                        {opacity: 1.0}, 500, function(){
                             if( !ran )
                             {
                                 $(this).queue(function(){
@@ -653,5 +726,5 @@
                 }
             }).appendTo( tutorial );
         }
-    });
+    };
 }));

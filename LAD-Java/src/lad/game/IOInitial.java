@@ -3,6 +3,7 @@ package lad.game;
 import java.util.List;
 import java.util.ListIterator;
 import lad.data.ModifierTarget;
+import lad.data.TrainerBattleStats;
 import lad.data.UserExp;
 import lad.data.UserExpTarget;
 import lad.data.Weapon;
@@ -11,8 +12,6 @@ import lad.db.EXPManager;
 /**
  * Handles initial connection with users to the java module.
  *
- * TODO: Create view for user battle statistics
- * TODO: Create view for trainer battle statistics
  * TODO: Add more data to weapon selector dialog
  * TODO: Tests
  *
@@ -57,6 +56,12 @@ public class IOInitial extends MessageHandler
             increaseexpPiece = new MessagePiece( "increaseexplevel" );
 
     /**
+     * Piece for viewing the user's battle stats for comparing to
+     */
+    private final static MessagePiece
+            viewuserstatsPiece = new MessagePiece( "viewuserstats" );
+
+    /**
      * Piece for getting the JS
      */
     private final static MessagePiece getjsPiece = new MessagePiece( "getJS" );
@@ -85,6 +90,7 @@ public class IOInitial extends MessageHandler
      * Piece: increaseexpPiece
      * Piece: getjsPiece
      * Piece: getcssPiece
+     * Piece: viewuserstatsPiece
      *
      * @return List with all of the above pieces
      */
@@ -97,6 +103,7 @@ public class IOInitial extends MessageHandler
         pieces.add( getjsPiece );
         pieces.add( getcssPiece );
         pieces.add( increaseexpPiece );
+        pieces.add( viewuserstatsPiece );
         return pieces;
     }
 
@@ -132,6 +139,12 @@ public class IOInitial extends MessageHandler
 
             outputEXP( userid );
         }
+        else if( pieces.contains( viewuserstatsPiece ) )
+        {
+            TrainerBattleStats stats = EXPManager.getBattleStats( 1, userid );
+
+            write( "$.lad.stats.view(" + stats.toJSString() + ",'User');" );
+        }
         else if( pieces.contains( getjsPiece ) )
         {
             if( cachedJS == null )
@@ -166,9 +179,15 @@ public class IOInitial extends MessageHandler
                     buffer.append( gen.getValue() );
                     buffer.append( ")," );
                 }
-                buffer.deleteCharAt( buffer.length() -1 );
+                buffer.deleteCharAt( buffer.length() - 1 );
                 buffer.append( "];" );
                 js = magicComment( "WEAPON OBJECTS", js, buffer );
+
+                // Battle Statistic Types
+               String stats = "return " +
+                   TrainerBattleStats.getStatTypes().toJSString() + ";";
+
+               js = magicComment( "STAT TYPES", js, stats );
                 
                 // Cache it
                 cachedJS = js;
