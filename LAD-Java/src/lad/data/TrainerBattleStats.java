@@ -32,62 +32,67 @@ public class TrainerBattleStats implements TableProfile
     /**
      * Number of times gun was fired
      */
-    private int shotsFired;
+    private int shotsFired = 0;
 
     /**
      * Amount of damage dealt
      */
-    private double damageDealt;
+    private double damageDealt = 0;
 
     /**
      * Amount of damage taken
      */
-    private double damageTaken;
+    private double damageTaken = 0;
 
     /**
      * Number of times gun was reloaded
      */
-    private int reloads;
+    private int reloads = 0;
 
     /**
      * Number of times gun shot hit the enemy
      */
-    private int shotsHit;
+    private int shotsHit = 0;
 
     /**
      * Distance moved
      */
-    private double distanceMoved;
+    private double distanceMoved = 0;
 
     /**
      * Number of shots evaded to prevent damage
      */
-    private int shotsEvaded;
+    private int shotsEvaded = 0;
 
     /**
      * Amount of damage reduced by shielding
      */
-    private double damageReduced;
+    private double damageReduced = 0;
 
     /**
      * Number of critical hits landed
      */
-    private int criticalsHit;
+    private int criticalsHit = 0;
 
     /**
      * Number of times shot without being shot at
      */
-    private int safelyShot;
+    private int safelyShot = 0;
+
+    /**
+     * Number of times ran away from damage
+     */
+    private int ranAway = 0;
 
     /**
      * Number of battles taken part of
      */
-    private int battles;
+    private int battles = 0;
 
     /**
      * Number of battles won
      */
-    private int battlesWon;
+    private int battlesWon = 0;
 
     /**
      * Statement for inserting a new statistic block
@@ -130,7 +135,7 @@ public class TrainerBattleStats implements TableProfile
     {
         this.type = type;
         this.id = id;
-        if( ints.length != 8 )
+        if( ints.length != 9 )
         {
             throw new GameException( 4, "Invalid battle statistic integers." );
         }
@@ -147,6 +152,7 @@ public class TrainerBattleStats implements TableProfile
         this.safelyShot   = ints[ 5 ];
         this.battles      = ints[ 6 ];
         this.battlesWon   = ints[ 7 ];
+        this.ranAway      = ints[ 8 ];
 
         this.damageDealt  = doubles[ 0 ];
         this.damageTaken  = doubles[ 1 ];
@@ -165,7 +171,7 @@ public class TrainerBattleStats implements TableProfile
     public void addValues( int ints[], double doubles[] )
     {
         // Validate lengths
-        if( ints.length != 8 )
+        if( ints.length != 9 )
         {
             throw new GameException( 4, "Invalid battle statistic integers." );
         }
@@ -183,6 +189,7 @@ public class TrainerBattleStats implements TableProfile
         this.safelyShot   += ints[ 5 ];
         this.battles      += ints[ 6 ];
         this.battlesWon   += ints[ 7 ];
+        this.ranAway      += ints[ 8 ];
 
         this.damageDealt  += doubles[ 0 ];
         this.damageTaken  += doubles[ 1 ];
@@ -202,10 +209,11 @@ public class TrainerBattleStats implements TableProfile
             updateStmt.setDouble( 8, this.damageReduced );
             updateStmt.setInt( 9, this.criticalsHit );
             updateStmt.setInt( 10, this.safelyShot );
-            updateStmt.setInt( 11, this.battles );
-            updateStmt.setInt( 12, this.battlesWon );
-            updateStmt.setInt( 13, this.type );
-            updateStmt.setInt( 14, this.id );
+            updateStmt.setInt( 11, this.ranAway );
+            updateStmt.setInt( 12, this.battles );
+            updateStmt.setInt( 13, this.battlesWon );
+            updateStmt.setInt( 14, this.type );
+            updateStmt.setInt( 15, this.id );
 
             MySQLDB.delaySQL( updateStmt );
         }
@@ -241,7 +249,7 @@ public class TrainerBattleStats implements TableProfile
      *
      * Does not include the ID or the type.  Includes the following fields:
      * Shots Fired, Reloads, Shots Hit, Shots Evaded, Criticals Hit,
-     * Times Safely Shot, Battles, Battles Won
+     * Times Safely Shot, Battles, Battles Won, Ran Away
      *
      * @return Array of integers in this statistic block
      */
@@ -249,7 +257,8 @@ public class TrainerBattleStats implements TableProfile
     {
         return new int[]{
             this.shotsFired, this.reloads, this.shotsHit, this.shotsEvaded,
-            this.criticalsHit, this.safelyShot, this.battles, this.battlesWon
+            this.criticalsHit, this.safelyShot, this.battles, this.battlesWon,
+            this.ranAway
         };
     }
 
@@ -347,7 +356,8 @@ public class TrainerBattleStats implements TableProfile
                 "Safely Shot",
                 "Reloads",
                 "Shots Evaded",
-                "Damage Reduced",
+                "Damage Shielded",
+                "Times Ran Away",
                 "Distance Moved",
                 "Damage Taken",
                 "Battles Won",
@@ -363,6 +373,7 @@ public class TrainerBattleStats implements TableProfile
                 "Flexibility",
                 "Shielding",
                 "Mobility",
+                "--",
                 "--",
                 "--",
                 "--"
@@ -386,6 +397,7 @@ public class TrainerBattleStats implements TableProfile
             new Integer( this.reloads ).toString(),
             new Integer( this.shotsEvaded ).toString(),
             new Double( this.damageReduced ).toString(),
+            new Integer( this.ranAway ).toString(),
             new Double( this.distanceMoved ).toString(),
             new Double( this.damageTaken ).toString(),
             new Integer( this.battlesWon ).toString(),
@@ -459,6 +471,7 @@ public class TrainerBattleStats implements TableProfile
             "`damageReduced` double unsigned NOT NULL," +
             "`criticalsHit` int(10) unsigned NOT NULL," +
             "`safelyShot` int(10) unsigned NOT NULL," +
+            "`ranAway` int(10) unsigned NOT NULL," +
             "`battles` int(10) unsigned NOT NULL," +
             "`battlesWon` int(10) unsigned NOT NULL," +
             "PRIMARY KEY (`type`,`id`)" +
@@ -478,7 +491,7 @@ public class TrainerBattleStats implements TableProfile
         return new String[]{ "type", "id",
             "shotsFired", "damageDealt", "damageTaken", "reloads",
             "shotsHit", "distanceMoved", "shotsEvaded",
-            "damageReduced", "criticalsHit", "safelyShot",
+            "damageReduced", "criticalsHit", "safelyShot", "ranAway",
             "battles", "battlesWon" };
     }
 
@@ -499,8 +512,9 @@ public class TrainerBattleStats implements TableProfile
         int n_shotsEvaded = rs.getInt( 9 );
         int n_criticalsHit = rs.getInt( 11 );
         int n_safelyShot = rs.getInt( 12 );
-        int n_battles = rs.getInt( 13 );
-        int n_battlesWon = rs.getInt( 14 );
+        int n_ranAway = rs.getInt( 13 );
+        int n_battles = rs.getInt( 14 );
+        int n_battlesWon = rs.getInt( 15 );
 
         double n_damageDealt = rs.getDouble( 4 );
         double n_damageTaken = rs.getDouble( 5 );
@@ -509,7 +523,7 @@ public class TrainerBattleStats implements TableProfile
 
         int ints[] = new int[]{ n_shotsFired, n_reloads, n_shotsHit,
             n_shotsEvaded, n_criticalsHit, n_safelyShot, n_battles,
-            n_battlesWon
+            n_battlesWon, n_ranAway
         };
         double doubles[] = new double[]{ n_damageDealt, n_damageTaken,
             n_distanceMoved, n_damageReduced
@@ -534,12 +548,13 @@ public class TrainerBattleStats implements TableProfile
         updateStmt = conn.prepareStatement( "UPDATE TRAINERBATTLESTATS SET " +
             "shotsFired = ?, damageDealt = ?, damageTaken = ?, reloads = ?, " +
             "shotsHit = ?, distanceMoved = ?, shotsEvaded = ?, " +
-            "damageReduced = ?, criticalsHit = ?, safelyShot = ?, " +
-            "battles = ?, battlesWon = ? WHERE type = ? AND id = ?" );
+            "damageReduced = ?, criticalsHit = ?, safelyShot = ?," +
+            "ranAway = ?, battles = ?, battlesWon = ? WHERE " +
+            "type = ? AND id = ?" );
         deleteStmt = conn.prepareStatement( "DELETE FROM TRAINERBATTLESTATS " +
                                             "WHERE type = ? AND id = ?" );
         insertStmt = conn.prepareStatement( "INSERT INTO TRAINERBATTLESTATS " +
-            "VALUES( ?, ?, 0, 0.0, 0.0, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0 )" );
+            "VALUES( ?, ?, 0, 0.0, 0.0, 0, 0, 0.0, 0, 0.0, 0, 0, 0, 0, 0 )" );
     }
 
     /**

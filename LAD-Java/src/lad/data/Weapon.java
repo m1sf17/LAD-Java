@@ -72,7 +72,7 @@ public enum Weapon
     /**
      * Mobility Base/Multiplier
      */
-    private final double mobilityBase = 2.7, mobilityMult = 1.3;
+    private final double mobilityBase = 150, mobilityMult = 50;
 
     /**
      * Flexibility Base/Multiplier
@@ -205,16 +205,6 @@ public enum Weapon
     }
 
     /**
-     * Returns the amount of damage a trainer can take before it must run.
-     *
-     * @return 500.0
-     */
-    public static double getRunawayDamage()
-    {
-        return 500.0;
-    }
-
-    /**
      * Returns the reload rate
      *
      * @return reloadRate
@@ -222,16 +212,6 @@ public enum Weapon
     public double getReloadRate()
     {
         return this.reloadRate;
-    }
-
-    /**
-     * Returns the time a trainer must reload for
-     *
-     * @return 4.0
-     */
-    public static double getReloadTime()
-    {
-        return 4.0;
     }
 
     /**
@@ -288,6 +268,26 @@ public enum Weapon
     public double getRange()
     {
         return this.range;
+    }
+
+    /**
+     * Returns the time a trainer must reload for
+     *
+     * @return 4.0
+     */
+    public static double getReloadTime()
+    {
+        return 4.0;
+    }
+
+    /**
+     * Returns the movement speed of the trainer
+     *
+     * @return 5.0
+     */
+    public static double getMovementSpeed()
+    {
+        return 5.0;
     }
 
     /**

@@ -121,6 +121,16 @@ public class ArenaTrainer
     private int safelyShot;
 
     /**
+     * Number of times ran away from damage
+     */
+    private int ranAway = 0;
+
+    /**
+     * Number of turns left to remain broken
+     */
+    private int turnsBroken = 0;
+
+    /**
      * All of the calculated attributes of the trainer
      */
     private Map< ModifierTarget, Double > attributes = new HashMap<>( 10 );
@@ -203,11 +213,36 @@ public class ArenaTrainer
     }
 
     /**
-     * @param running the running to set
+     * Checks if the trainer is broken and cowering
+     *
+     * @return True if broken, false otherwise
      */
-    public void setRunning( boolean running )
+    public boolean isBroken()
     {
-        this.running = running;
+        return turnsBroken == 0;
+    }
+
+    /**
+     * Stop running away from the other trainer
+     */
+    void stopRunning()
+    {
+        this.running = false;
+    }
+
+    /**
+     * Ensures the trainer is running and if it is not, then it starts
+     */
+    public void ensureRunning()
+    {
+        if( this.running )
+        {
+            return;
+        }
+
+        this.ranAway++;
+        this.running = true;
+        this.turnsBroken = 3;
     }
 
     /**
@@ -216,14 +251,6 @@ public class ArenaTrainer
     public int getTimesRan()
     {
         return timesRan;
-    }
-
-    /**
-     * Increments the number of times ran
-     */
-    public void incrementTimesRan()
-    {
-        timesRan++;
     }
 
     /**
@@ -245,12 +272,24 @@ public class ArenaTrainer
         this.damageTaken += damage;
         attacker.damageDealt += damage;
 
-        if( getTotalDamage() >
-            (double)getTimesRan() * Weapon.getRunawayDamage() )
+        double runaway = getRunawayDamage();
+        double disregardedDamage = (double)getTimesRan() * runaway;
+        double regardedDamage = this.damageTaken - disregardedDamage;
+
+        if( regardedDamage > runaway )
         {
-            setRunning( true );
-            incrementTimesRan();
+            ensureRunning();
         }
+    }
+
+    /**
+     * Returns the amount of damage required to make this trainer run away
+     *
+     * @return Damage to cause fleeing
+     */
+    public double getRunawayDamage()
+    {
+        return getAttribute( ModifierTarget.Mobility );
     }
 
     /**
@@ -448,9 +487,17 @@ public class ArenaTrainer
      */
     public double moveToEnemy()
     {
-        double movement = getAttribute( ModifierTarget.Mobility );
+        double movement = Weapon.getMovementSpeed();
         this.distanceMoved += movement;
         return movement;
+    }
+
+    /**
+     * "Cower"s in fear because of being recently broken.
+     */
+    public void cower()
+    {
+        this.turnsBroken--;
     }
 
     /**
@@ -461,8 +508,7 @@ public class ArenaTrainer
      */
     public double runAway()
     {
-        setRunning( true );
-        return getAttribute( ModifierTarget.Mobility );
+        return Weapon.getMovementSpeed();
     }
     
     /**
@@ -477,7 +523,7 @@ public class ArenaTrainer
     {
         return new int[]{
             this.shotsFired, this.reloads, this.shotsHit, this.shotsEvaded,
-            this.criticalsHit, this.safelyShot, 1, 0
+            this.criticalsHit, this.safelyShot, this.ranAway, 1, 0
         };
     }
 
@@ -517,6 +563,10 @@ public class ArenaTrainer
          * After too much damage has been taken the unit is broken
          * and will run.
          */
-        RunAway
+        RunAway,
+        /**
+         * Initial effect of taking too much damage before running
+         */
+        Broken
     }
 }

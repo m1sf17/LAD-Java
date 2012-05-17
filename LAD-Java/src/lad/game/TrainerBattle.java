@@ -168,6 +168,11 @@ public class TrainerBattle
         {
             ArenaTrainer thisTrnr = trainer[ i ];
             ArenaTrainer otherTrnr = trainer[ i == 0 ? 1 : 0 ];
+            if( thisTrnr.isBroken() )
+            {
+                Debug.log( "Trainer " + i + "next action: cower." );
+                thisTrnr.setNextAction( ArenaTrainer.NextAction.Broken );
+            }
             if( thisTrnr.isRunning() &&
                 otherTrnr.getAttribute( ModifierTarget.Range ) >= distance )
             {
@@ -191,13 +196,6 @@ public class TrainerBattle
             }
         }
 
-        // Update running
-        for( int i = 0; i < trainerlen; i++ )
-        {
-            trainer[ i ].setRunning( trainer[ i ].getNextAction() ==
-                                     ArenaTrainer.NextAction.RunAway );
-        }
-
         // Do actions
         for( int i = 0; i < trainerlen; i++ )
         {
@@ -209,11 +207,19 @@ public class TrainerBattle
             if( thisTrnr.getNextAction() == ArenaTrainer.NextAction.RunAway )
             {
                 distance += thisTrnr.runAway();
+                thisTrnr.stopRunning();
+                continue;
+            }
+
+            // If borken, then just cower
+            if( thisTrnr.getNextAction() == ArenaTrainer.NextAction.Broken )
+            {
+                thisTrnr.cower();
                 continue;
             }
 
             // Not running, so don't run
-            thisTrnr.setRunning( false );
+            thisTrnr.stopRunning();
             if( thisTrnr.getNextAction() ==
                 ArenaTrainer.NextAction.CloseDistance )
             {

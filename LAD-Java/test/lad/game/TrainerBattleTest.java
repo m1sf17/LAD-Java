@@ -40,7 +40,7 @@ public class TrainerBattleTest
             wins.put( w, 0 );
         }
 
-        for( int i = 0; i < 2000; i++ )
+        for( int i = 0; i < 1000; i++ )
         {
             ArenaTrainer winner = doArena( trnr, mods );
             Weapon weapon = winner.getWeapon();
