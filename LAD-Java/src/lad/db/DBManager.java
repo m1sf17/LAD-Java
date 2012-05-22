@@ -4,6 +4,8 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import lad.data.GameException;
+import lad.game.Debug;
 
 /**
  * Low level class for handling the loading of all DB tables.
@@ -67,7 +69,22 @@ public abstract class DBManager
                 System.err.println( "Error with " + tableName + " headers." +
                                     e.toString() );
                     System.exit( -1 );
+            }
+            catch( GameException g )
+            {
+                Debug.log( "Recreating table " + tableName, "Thread" );
+                try
+                {
+                    db.dropStructure( tableName );
+                    db.validateTable( tableName, createStr );
                 }
+                catch( SQLException e )
+                {
+                    System.err.println( "Can't drop table " + tableName +
+                                        e.toString() );
+                    System.exit( -1 );
+                }
+            }
 
             try
             {

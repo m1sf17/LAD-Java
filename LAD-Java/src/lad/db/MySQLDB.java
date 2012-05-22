@@ -10,6 +10,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Properties;
+import lad.data.GameException;
 import lad.game.Debug;
 import lad.game.LADJava;
 
@@ -173,15 +174,28 @@ public class MySQLDB
     }
 
     /**
+     * Drops a MySQL table from the database
+     *
+     * @param table Name of the table
+     * @throws SQLException Thrown if an error occurs with the query
+     */
+    public void dropStructure( String table ) throws SQLException
+    {
+        Statement stmt = getConnection().createStatement();
+        stmt.executeUpdate( "DROP TABLE " + table );
+    }
+
+    /**
      * Validates that a MySQL Table is valid for information.
      *
      * @param fields Array of fields that the table should have
      * @param tblName Name of the table
-     * @throws SQLException Thrown when either a header is mismatched or the
-     *                      column count is wrong
+     * @throws SQLException Thrown if an error occurs with the query
+     * @throws GameException Thrown when either a header is mismatched or the
+     *                       column count is wrong
      */
     public void validateStructure( String[] fields, String tblName )
-                throws SQLException
+                throws SQLException, GameException
     {
         Statement stmt = getConnection().createStatement();
         ResultSet result = stmt.executeQuery( "SHOW COLUMNS FROM " + tblName );
@@ -192,7 +206,7 @@ public class MySQLDB
         {
             if( fields[ i ].compareToIgnoreCase( result.getString( 1 ) ) != 0 )
             {
-                throw new SQLException( "Table header error." );
+                throw new GameException( 3, "Table header error." );
             }
             i++;
         }
@@ -200,7 +214,7 @@ public class MySQLDB
         // Just in case a column is missing off the end
         if( i != fields.length )
         {
-            throw new SQLException( "Table column miscount." );
+            throw new GameException( 3, "Table column miscount." );
         }
     }
 
