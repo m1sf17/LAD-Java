@@ -17,7 +17,7 @@ import lad.data.Weapon;
  * Many of the basic elements of this class are public fields to make it easier
  * for the TrainerBattle class to make rapid changes to them.
  *
- * @see lad.java.TrainerBattle
+ * @see lad.game.TrainerBattle
  * @author msflowers
  */
 public class ArenaTrainer
@@ -138,8 +138,9 @@ public class ArenaTrainer
     /**
      * Basic ctor
      *
-     * @param t Trainer that is battling
-     * @param w Weapon that the trainer is wielding
+     * @param trainer   Trainer that is battling
+     * @param modifiers Modifiers that the trainer has
+     * @param userMult  User multiplier for experience
      */
     ArenaTrainer( Trainer trainer, Weapon weapon,
                   List< Modifier > modifiers,

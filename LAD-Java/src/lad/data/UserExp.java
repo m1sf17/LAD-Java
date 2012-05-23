@@ -292,7 +292,7 @@ public class UserExp implements TableProfile
      * This function does not calculate the remaining experience required, only
      * the total experience required for the next level.
      *
-     * @see lad.java.UserExp#getExpRemainingNextLevel()
+     * @see lad.data.UserExp#getExpRemainingNextLevel()
      * @return EXP required for next level.
      */
     public int getExpRequiredNextLevel()
@@ -307,7 +307,7 @@ public class UserExp implements TableProfile
      * This function will never return a value less than 0.  If 0 is returned,
      * it means this block is ready to be leveled.
      *
-     * @see lad.java.UserExp#getExpRequiredNextLevel()
+     * @see lad.data.UserExp#getExpRequiredNextLevel()
      * @return EXP remaining for next level.
      */
     public int getExpRemainingNextLevel()

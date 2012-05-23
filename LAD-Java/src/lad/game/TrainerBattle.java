@@ -338,12 +338,10 @@ public class TrainerBattle
      * bonuses and the modifiers.
      *
      * @param trainer Trainer to evaluate for
-     * @param mods    Modifiers to evaluate for
-     * @param weapon  Weapon the trainer will be using
      * @return Map of bonuses
      */
     private static Map< ModifierTarget, Double > generateNPCBonuses(
-            Trainer trainer, Weapon weapon )
+            Trainer trainer )
     {
         int user = trainer.getOwner();
         Map< ModifierTarget, Double > ret = new HashMap<>( 10 );
@@ -430,7 +428,7 @@ public class TrainerBattle
         userBonus = generateBonuses( trainer, userMods, weapon );
 
         // Obfuscate the user bonuses and copy them to the NPC's
-        npcBonus = generateNPCBonuses( trainer, npcWeapon );
+        npcBonus = generateNPCBonuses( trainer );
 
         // Return the generated battle
         return new TrainerBattle( trainer, npcTrainer, weapon, npcWeapon,

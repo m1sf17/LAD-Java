@@ -120,7 +120,7 @@ public class GameLoop implements Runnable
      * By only allowing the semaphore to acquire one lock at a time this will
      * ensure only one thread has control a time.
      *
-     * @see release
+     * @see lad.game.GameLoop#release()
      * @throws InterruptedException
      */
     public static void acquire() throws InterruptedException
@@ -131,7 +131,7 @@ public class GameLoop implements Runnable
     /**
      * Releases the semaphore.
      *
-     * @see release
+     * @see lad.game.GameLoop#acquire()
      */
     public static void release()
     {

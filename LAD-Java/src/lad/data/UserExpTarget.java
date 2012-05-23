@@ -164,7 +164,7 @@ public enum UserExpTarget
     /**
      * Returns a string representation of the target
      *
-     * @returns Target with an additional space in a couple of cases
+     * @return Target with an additional space in a couple of cases
      * @throws GameException Thrown if this is invalid
      */
     @Override

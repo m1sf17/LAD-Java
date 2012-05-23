@@ -237,7 +237,7 @@ public class Modifier implements TableProfile
      * Warning: This function will not commit the data to the DB.  This must
      * be performed by calling commit.
      *
-     * @see lad.java.Modifier#commit()
+     * @see lad.data.Modifier#commit()
      */
     public void reduceBattles()
     {
@@ -250,7 +250,7 @@ public class Modifier implements TableProfile
      * Called whenever this modifier is done being constantly modified in order
      * to commit the changes to the DB.
      *
-     * @see lad.java.Modifier#reduceBattles()
+     * @see lad.data.Modifier#reduceBattles()
      * @throws GameException Thrown if the update fails
      */
     public void commit()
@@ -520,9 +520,9 @@ public class Modifier implements TableProfile
      * Mod of,
      * Modifier Target String
      *
-     * @see lad.java.Modifier#rarityString(int)
-     * @see lad.java.Modifier#multiplierString(int)
-     * @see lad.java.ModifierTarget#toString()
+     * @see lad.data.Modifier#rarityString(int)
+     * @see lad.data.Modifier#multiplierString(int)
+     * @see lad.data.ModifierTarget#toString()
      *
      * @param target Target the modifier affects
      * @param mult Multiplier the modifier initially had
@@ -544,7 +544,7 @@ public class Modifier implements TableProfile
     /**
      * Returns a string representation of this modifier.
      *
-     * @see lad.java.Modifier#generateString(lad.java.ModifierTarget, int, int)
+     * @see lad.data.Modifier#generateString(lad.data.ModifierTarget, int, int)
      * @return Generated string
      * @throws GameException Thrown if a bad value is present
      */
